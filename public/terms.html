@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Terms of Service - G E U S E</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./favicon.png">
+    <style>
+        body {
+            background: #edcfcf;
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+        }
+
+        .chat-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            height: 80vh;
+            background: transparent;
+            border-radius: 22px;
+            border: 1.5px solid rgba(66, 133, 244, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .chat-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(249, 247, 242, 0.624);
+            border-radius: 22px 22px 0 0;
+            border-bottom: none;
+            padding: 1px 18px 1px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 38px;
+            border-bottom: 1.5px solid rgba(255,255,255,0.18);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        .header-dot {
+            width: 16px;
+            height: 16px;
+            background: #FF5F57;
+            border-radius: 50%;
+            margin-right: 0px;
+            border: 1.5px solid rgba(0, 0, 0, 0.18);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .header-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .header-dot:active {
+            transform: scale(0.95);
+        }
+
+        .chat-header-title {
+            flex: 1;
+            text-align: center;
+            color: #fff;
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            margin-right: 0px;
+            font-family: inherit;
+            text-shadow: 1px 1px #00000042;
+            text-decoration: none;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 60px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            background: transparent;
+        }
+
+        .message {
+            max-width: 100%;
+            padding: 15px;
+            border-radius: 18px;
+            color: #fff;
+            word-wrap: break-word;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            background: rgba(73, 63, 59, 0.369);
+            backdrop-filter: blur(10px) saturate(180%);
+            -webkit-backdrop-filter: blur(10px) saturate(180%);
+            border: 1.5px solid rgba(255,255,255,0.18);
+            text-shadow: 1px 1px #00000042;
+        }
+
+        .message h2 {
+            color: #FF5F57;
+            margin-top: 0;
+        }
+
+        .message h3 {
+            color: #FF5F57;
+            margin-top: 1.5em;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #FF5F57;
+            color: #fff;
+            border: none;
+            border-radius: 22px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 1rem;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-dot" onclick="window.location.href='index.html'" title="Back to Home"></div>
+            <div class="chat-header-title">Terms of Service</div>
+        </div>
+        <div class="chat-messages">
+            <div class="message">
+                <h2>Terms of Service</h2>
+                <p>Last updated: March 2024</p>
+
+                <h3>1. Acceptance of Terms</h3>
+                <p>By accessing and using G E U S E's services, you agree to be bound by these Terms of Service and all applicable laws and regulations.</p>
+
+                <h3>2. Description of Service</h3>
+                <p>G E U S E provides AI-powered chat services and related features. We reserve the right to modify, suspend, or discontinue any aspect of the service at any time.</p>
+
+                <h3>3. User Conduct</h3>
+                <p>You agree not to:</p>
+                <ul>
+                    <li>Use the service for any illegal purpose</li>
+                    <li>Attempt to gain unauthorized access to any part of the service</li>
+                    <li>Interfere with the proper working of the service</li>
+                    <li>Use the service to harass, abuse, or harm others</li>
+                    <li>Submit false or misleading information</li>
+                </ul>
+
+                <h3>4. Intellectual Property</h3>
+                <p>All content, features, and functionality of the service are owned by G E U S E and are protected by international copyright, trademark, and other intellectual property laws.</p>
+
+                <h3>5. Limitation of Liability</h3>
+                <p>G E U S E shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the service.</p>
+
+                <h3>6. Disclaimer of Warranties</h3>
+                <p>The service is provided "as is" without any warranties of any kind, either express or implied.</p>
+
+                <h3>7. Changes to Terms</h3>
+                <p>We reserve the right to modify these terms at any time. We will notify users of any material changes by posting the new Terms of Service on this page.</p>
+
+                <h3>8. Governing Law</h3>
+                <p>These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which G E U S E operates, without regard to its conflict of law provisions.</p>
+
+                <h3>9. Contact Information</h3>
+                <p>For any questions about these Terms of Service, please contact us at:</p>
+                <p>Email: info@geuse.io</p>
+            </div>
+        </div>
+    </div>
+    <a href="index.html" class="back-button">Back to Home</a>
+</body>
+</html> 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="- solutions for any ask -" >
+    <meta name="theme-color" content="#edcfcf">
+    <title>G E U S E</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Special+Elite&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="https://www.geuse.io/static/media/sprite.png" as="image" type="image/png">
+    <link rel="preload" href="https://s3.us-east-1.amazonaws.com/www.geuse.io/static/media/glitch.gif" as="image" type="image/gif">
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://s3.us-east-1.amazonaws.com">
+    <link rel="preconnect" href="https://www.geuse.io">
+
+    <style>
+        body {
+            font-family: "Space Grotesk", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">- G E U S E -</div>
+    <script type="module" src="/src/index.js"></script>
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html> 
