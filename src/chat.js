@@ -1,4 +1,4 @@
-const WEBHOOK_URL = 'https://n8n.geuse.io/webhook/4ad22b68-3837-4fd0-bf9e-aeb3627f6da6/chat';
+const WEBHOOK_URL = 'https://n8n.geuse.io/webhook/bbad90cf-8af3-4a65-a78c-39016073f135';
 
 class Chat {
     constructor() {
