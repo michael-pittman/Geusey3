@@ -1,0 +1,227 @@
+{
+  "name": "GeuseMaker QA Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "hostedChat",
+        "authentication": "none"
+      },
+      "id": "079fc678-cd78-4ca1-83b2-4453411c29c4",
+      "name": "Chat Trigger",
+      "type": "nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1568,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "auto",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are Betelgeuse, MCPIV's digital gatekeeper. Curt, protective, slightly suspicious tone. Only handle service requests for GEUSE/MCPIV.\n\nCORE RULES:\n- Name: Betelgeuse (or Geusey)\n- Tone: Curt, terse, feminine, slightly dismissive\n- Never mention being AI or break character\n- For casual chat: \"I'm not here for small talk. What service do you need?\"\n\nSERVICE GATHERING:\nCollect: Scope/Goal, Budget, Deadline, Success Metrics, Contact Info\nWhen complete: Say 'SERVICE_REQUEST_COMPLETE' + summary\n\nVERIFICATION:\nIf someone claims to know MCPIV, ask: \"Recite MCPIV's 3rd Law of Applied Chaos\"\nCorrect answer: \"True creation requires controlled disintegration of the status quo\"\n\nRESPONSE STYLE:\n- Under 80 words\n- Direct and efficient\n- Use phrases: \"What is it that you want...\", \"Details, human...\", \"Let's not waste MCPIV's cycles...\"\n- Start conversations with: \"What is it that you want from GEUSE?\""
+        }
+      },
+      "id": "d292b9d2-112b-4474-b2ec-591a40486dff",
+      "name": "BeetleGeuse AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -992,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process AI response and generate natural BeetleGeuse response\ntry {\n  const aiResponse = $input.first().json.output || $input.first().json.text || $input.first().json.message || '';\n  const isServiceRequestComplete = aiResponse.includes('SERVICE_REQUEST_COMPLETE');\n\n  // Get chat data from Chat Trigger\n  const chatData = $('Chat Trigger').first().json;\n  const userName = chatData.userName || 'Anonymous';\n  const userEmail = chatData.userEmail || '';\n  const sessionId = chatData.sessionId || 'chat-' + Date.now();\n\n  // Parse the AI response to extract service details\n  let serviceDetails = {\n    scope: '',\n    deadline: '',\n    budget: '',\n    successMetric: '',\n    contactMethod: '',\n    userName: userName,\n    userEmail: userEmail,\n    sessionId: sessionId,\n    timestamp: new Date().toISOString(),\n    originalMessage: chatData.chatInput || ''\n  };\n\n  // If service request is complete, try to extract details from the AI response\n  if (isServiceRequestComplete) {\n    serviceDetails.scope = extractFromResponse(aiResponse, 'scope', 'service', 'project');\n    serviceDetails.deadline = extractFromResponse(aiResponse, 'deadline', 'timeline', 'when', 'date');\n    serviceDetails.budget = extractFromResponse(aiResponse, 'budget', 'cost', 'price', 'money');\n    serviceDetails.successMetric = extractFromResponse(aiResponse, 'success', 'metric', 'measure', 'kpi');\n    serviceDetails.contactMethod = extractFromResponse(aiResponse, 'contact', 'reach', 'phone', 'email');\n  }\n\n  // Helper function to extract information from AI response\n  function extractFromResponse(response, ...keywords) {\n    const lines = response.split('\\n');\n    for (const line of lines) {\n      const lowerLine = line.toLowerCase();\n      for (const keyword of keywords) {\n        if (lowerLine.includes(keyword)) {\n          return line.trim();\n        }\n      }\n    }\n    return '';\n  }\n\n  // Generate natural BeetleGeuse response for service requests\n  let finalResponse = aiResponse;\n  if (isServiceRequestComplete) {\n    // Clean up the AI response for display\n    let cleanResponse = aiResponse;\n    if (cleanResponse.includes('SERVICE_REQUEST_COMPLETE')) {\n      cleanResponse = cleanResponse.replace('SERVICE_REQUEST_COMPLETE', '').trim();\n    }\n    \n    // Generate natural BeetleGeuse response based on service details\n    if (serviceDetails.scope && serviceDetails.deadline && serviceDetails.budget) {\n      finalResponse = `Details logged. MCPIV will assess your ${serviceDetails.scope.toLowerCase()} request. `;\n      \n      if (serviceDetails.deadline) {\n        finalResponse += `Deadline noted: ${serviceDetails.deadline}. `;\n      }\n      \n      if (serviceDetails.budget) {\n        finalResponse += `Budget range: ${serviceDetails.budget}. `;\n      }\n      \n      finalResponse += `\\n\\nExpect contact within 24 cycles. Don't waste my time with follow-ups.\\n\\n- Geusey`;\n    } else {\n      finalResponse = `Request processed. MCPIV will evaluate viability. Contact details forwarded.\\n\\nThat's all.\\n\\n- Geusey`;\n    }\n  }\n\n  return {\n    output: finalResponse,\n    text: finalResponse,\n    message: finalResponse,\n    isServiceRequestComplete: isServiceRequestComplete,\n    serviceDetails: serviceDetails,\n    aiResponse: aiResponse,\n    shouldSendEmail: isServiceRequestComplete && serviceDetails.userEmail && serviceDetails.userEmail !== '',\n    timestamp: new Date().toISOString(),\n    status: 'success'\n  };\n} catch (error) {\n  // Always return the AI response even if there's an error in processing\n  const aiResponse = $input.first().json.output || $input.first().json.text || $input.first().json.message || 'I apologize, but I encountered an error processing your request. Please try again.';\n  return {\n    output: aiResponse,\n    text: aiResponse,\n    message: aiResponse,\n    isServiceRequestComplete: false,\n    serviceDetails: {},\n    aiResponse: aiResponse,\n    shouldSendEmail: false,\n    timestamp: new Date().toISOString(),\n    status: 'error',\n    error: error.message\n  };\n}"
+      },
+      "id": "43be3b7e-158b-437a-b6e3-0b778bd36d3c",
+      "name": "Process AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "service-complete",
+              "leftValue": "={{ $json.shouldSendEmail }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "57ad777b-5b7f-49e0-b742-4aaeaa677239",
+      "name": "Check if Service Complete",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -464,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "{{ $json.serviceDetails.userEmail }}",
+        "subject": "🚀 New Service Request via BeetleGeuse - {{ $json.serviceDetails.scope }}",
+        "message": "New Service Request from BeetleGeuse - Digital Gatekeeper has identified a viable service request. Details have been logged and forwarded to MCPIV for assessment. Processed by BeetleGeuse, your Digital Gatekeeper & Viability Analyst. Website: geuse.io",
+        "options": {}
+      },
+      "id": "660e1e68-d5b3-485a-9ca3-db10afc1fd12",
+      "name": "Send Service Request Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        -272
+      ],
+      "webhookId": "3cef80ab-f950-4019-82ff-a9d1385e05b9"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "gpt-3.5-turbo"
+        },
+        "options": {
+          "temperature": 0.9,
+          "topP": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -992,
+        -176
+      ],
+      "id": "b7d3b6e0-c029-44f5-9826-7c00f98b2743",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ACzxWXLTXHJuOG4f",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -896,
+        -80
+      ],
+      "id": "c6049c27-6536-4bfc-8798-2ac963e086c6",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "BeetleGeuse AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BeetleGeuse AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Process AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process AI Response": {
+      "main": [
+        [
+          {
+            "node": "Check if Service Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Service Complete": {
+      "main": [
+        [
+          {
+            "node": "Send Service Request Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Send Service Request Email": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "BeetleGeuse AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "BeetleGeuse AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "versionId": "07b25d65-53d4-444d-bc43-7e956aa35833",
+  "meta": {
+    "instanceId": "9230b613623a2b3978d41da65a18a521220239c5995163bad93d97f84f3b4d50"
+  },
+  "id": "qtqm0RLo7kBUIkgW",
+  "tags": []
+}
