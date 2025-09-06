@@ -1,4 +1,6 @@
-const WEBHOOK_URL = 'https://n8n.geuse.io/webhook/bbad90cf-8af3-4a65-a78c-39016073f135';
+import { config } from '../config.js';
+
+const WEBHOOK_URL = config.webhookUrl;
 
 class Chat {
     constructor() {
@@ -45,8 +47,8 @@ class Chat {
             // Update chat icon image
             if (this.chatIcon) {
                 this.chatIcon.src = this.isVisible ? 
-                    'https://www.geuse.io/static/media/fire.gif' : 
-                    'https://s3.us-east-1.amazonaws.com/www.geuse.io/static/media/glitch.gif';
+                    'https://www.geuse.io/media/fire.gif' : 
+                    'https://www.geuse.io/media/glitch.gif';
             }
         });
 
@@ -101,12 +103,21 @@ class Chat {
         try {
             const response = await fetch(WEBHOOK_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                mode: 'cors',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify({
                     action: 'loadPreviousSession',
                     sessionId: this.sessionId
                 })
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
             if (data.data) {
                 this.messages = data.data.map(msg => ({
@@ -117,6 +128,7 @@ class Chat {
             }
         } catch (error) {
             console.error('Failed to load previous session:', error);
+            // Don't show error to user for loading previous session
         }
     }
 
@@ -194,7 +206,11 @@ class Chat {
         try {
             const response = await fetch(WEBHOOK_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                mode: 'cors',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify({
                     action: 'sendMessage',
                     sessionId: this.sessionId,
@@ -202,15 +218,25 @@ class Chat {
                 })
             });
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
             const botResponse = data.output || data.text || '';
             
             if (botResponse) {
                 this.addMessage(botResponse, 'bot');
+            } else {
+                this.addMessage('I received your message but didn\'t get a response. Please try again.', 'bot');
             }
         } catch (error) {
             console.error('Failed to send message:', error);
-            this.addMessage('Sorry, there was an error sending your message.', 'bot');
+            if (error.name === 'TypeError' && error.message.includes('CORS')) {
+                this.addMessage('Connection error: Unable to reach the server. Please check your internet connection.', 'bot');
+            } else {
+                this.addMessage('Sorry, there was an error sending your message. Please try again.', 'bot');
+            }
         } finally {
             this.setLoading(false);
         }

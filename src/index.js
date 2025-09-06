@@ -38,7 +38,7 @@ function createChatIconSprite() {
     div.setAttribute('tabindex', '0');
 
     const img = document.createElement('img');
-    img.src = 'https://s3.us-east-1.amazonaws.com/www.geuse.io/static/media/glitch.gif';
+    img.src = 'https://www.geuse.io/media/glitch.gif';
     img.style.width = '100%';
     img.style.height = '100%';
     img.loading = 'eager'; // Since this is above the fold
@@ -47,7 +47,7 @@ function createChatIconSprite() {
     div.addEventListener('click', async () => {
         const chatInstance = await loadChat();
         const isVisible = chatInstance.toggle();
-        img.src = isVisible ? 'https://www.geuse.io/static/media/fire.gif' : 'https://s3.us-east-1.amazonaws.com/www.geuse.io/static/media/glitch.gif';
+        img.src = isVisible ? 'https://www.geuse.io/media/fire.gif' : 'https://www.geuse.io/media/glitch.gif';
     });
 
     document.body.appendChild(div);
@@ -191,7 +191,7 @@ function init() {
             createChunk();
         });
         
-        image.src = 'https://www.geuse.io/static/media/sprite.png';
+        image.src = 'https://www.geuse.io/media/sprite.png';
         
         // Create a dedicated container for the renderer
         const rendererContainer = document.createElement('div');

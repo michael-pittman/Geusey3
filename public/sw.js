@@ -10,9 +10,9 @@ const ASSETS_TO_CACHE = [
     '/android-chrome-192x192.png',
     '/android-chrome-512x512.png',
     '/site.webmanifest',
-    'https://www.geuse.io/static/media/sprite.png',
-    'https://s3.us-east-1.amazonaws.com/www.geuse.io/static/media/glitch.gif',
-    'https://www.geuse.io/static/media/fire.gif'
+    'https://www.geuse.io/media/sprite.png',
+    'https://www.geuse.io/media/glitch.gif',
+    'https://www.geuse.io/media/fire.gif'
 ];
 
 // Install event - cache assets
