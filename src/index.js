@@ -80,6 +80,7 @@ function createChatIconSprite() {
 
     const img = document.createElement('img');
     img.src = 'https://www.geuse.io/media/glitch.gif';
+    img.alt = 'Open chat interface';
     img.style.width = '100%';
     img.style.height = '100%';
     img.loading = 'eager'; // Since this is above the fold
@@ -211,7 +212,13 @@ function init() {
                 const end = Math.min(start + chunkSize, particlesTotal);
                 
                 for (let i = start; i < end; i++) {
-                    const object = new CSS3DSprite(image.cloneNode());
+                    const clonedImage = image.cloneNode();
+                    // Section 508 compliance: Mark decorative images
+                    clonedImage.alt = '';
+                    clonedImage.setAttribute('role', 'presentation');
+                    clonedImage.setAttribute('aria-hidden', 'true');
+                    
+                    const object = new CSS3DSprite(clonedImage);
                     object.position.x = Math.random() * 4000 - 2000;
                     object.position.y = Math.random() * 4000 - 2000;
                     object.position.z = Math.random() * 4000 - 2000;

@@ -1,5 +1,250 @@
 @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
 
+/* CSS Custom Properties for Enhanced Chat UX */
+:root {
+    /* Viewport units with fallbacks */
+    --viewport-height: 100vh;
+    --viewport-width: 100vw;
+    --chat-container-height: 100dvh;
+    --chat-max-height: min(600px, 100dvh);
+    
+    /* Modern Breakpoints for Chat Interface */
+    --breakpoint-xs: 320px;   /* Small phones */
+    --breakpoint-sm: 480px;   /* Large phones */
+    --breakpoint-md: 768px;   /* Tablets */
+    --breakpoint-lg: 1024px;  /* Desktop */
+    --breakpoint-xl: 1440px;  /* Large desktop */
+    
+    /* Chat-specific Design Tokens */
+    --chat-width-mobile: min(95vw, 380px);
+    --chat-width-tablet: min(85vw, 450px);
+    --chat-width-desktop: min(400px, 30vw);
+    
+    /* iOS 26 Liquid Glass Material System - Ultra Transparent */
+    /* Primary Liquid Glass - Ultra-thin, highly transparent like geuse.io */
+    --liquid-glass-primary: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.03) 0%,
+        rgba(255, 255, 255, 0.01) 15%,
+        rgba(255, 255, 255, 0.005) 35%,
+        rgba(255, 255, 255, 0.01) 65%,
+        rgba(255, 255, 255, 0.02) 85%,
+        rgba(255, 255, 255, 0.04) 100%
+    );
+    
+    /* Secondary Liquid Glass - Ultra transparent like geuse.io */
+    --liquid-glass-secondary: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.02) 0%,
+        rgba(255, 255, 255, 0.01) 30%,
+        rgba(255, 255, 255, 0.005) 50%,
+        rgba(255, 255, 255, 0.01) 70%,
+        rgba(255, 255, 255, 0.03) 100%
+    );
+    
+    /* Tertiary Liquid Glass - Minimal opacity like geuse.io */
+    --liquid-glass-tertiary: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.02) 0%,
+        rgba(255, 255, 255, 0.01) 50%,
+        rgba(255, 255, 255, 0.03) 100%
+    );
+    
+    /* Dynamic Liquid Glass Borders - Ultra Transparent like geuse.io */
+    --liquid-border-primary: rgba(255, 255, 255, 0.06);
+    --liquid-border-secondary: rgba(255, 255, 255, 0.04);
+    --liquid-border-accent: rgba(255, 255, 255, 0.08);
+    
+    /* Advanced Liquid Glass Shadow System */
+    --liquid-shadow-primary: 
+        0 1px 0 rgba(255, 255, 255, 0.4) inset,
+        0 12px 48px rgba(31, 38, 135, 0.18),
+        0 24px 96px rgba(0, 0, 0, 0.12),
+        0 48px 120px rgba(0, 0, 0, 0.08),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+    
+    --liquid-shadow-secondary:
+        0 1px 0 rgba(255, 255, 255, 0.35) inset,
+        0 8px 32px rgba(31, 38, 135, 0.15),
+        0 16px 64px rgba(0, 0, 0, 0.10),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+    
+    /* iOS 26 Liquid Glass Backdrop Filters */
+    --liquid-backdrop-ultra: blur(60px) saturate(200%) brightness(115%) contrast(125%) hue-rotate(2deg);
+    --liquid-backdrop-primary: blur(45px) saturate(190%) brightness(112%) contrast(118%) hue-rotate(1deg);
+    --liquid-backdrop-secondary: blur(32px) saturate(175%) brightness(108%) contrast(112%);
+    --liquid-backdrop-subtle: blur(24px) saturate(160%) brightness(105%) contrast(108%);
+    
+    /* Animation Timing Functions */
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* Micro-interaction Durations */
+    --duration-fast: 0.15s;
+    --duration-normal: 0.3s;
+    --duration-slow: 0.6s;
+    --duration-extra-slow: 0.8s;
+
+    /* Chat bubble readability tokens */
+    --bubble-text: rgba(48, 36, 36, 0.92);
+    --bubble-text-shadow-1: rgba(255, 255, 255, 0.85);
+    --bubble-text-shadow-2: rgba(255, 255, 255, 0.6);
+    --bubble-user-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.14) 100%);
+    --bubble-user-border: rgba(255, 255, 255, 0.28);
+    --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%);
+    --bubble-bot-border: rgba(255, 255, 255, 0.24);
+}
+
+/* Dark mode (system-controlled). Optional [data-force-dark] attribute is ONLY for automated tests */
+@media (prefers-color-scheme: dark) {
+    :root,
+    :root[data-force-dark="true"] {
+        /* Background hues */
+        --liquid-glass-primary: linear-gradient(135deg,
+            rgba(20, 20, 24, 0.35) 0%,
+            rgba(18, 18, 22, 0.24) 35%,
+            rgba(16, 16, 20, 0.22) 100%
+        );
+        --liquid-glass-secondary: linear-gradient(135deg,
+            rgba(24, 24, 28, 0.35) 0%,
+            rgba(20, 20, 24, 0.22) 100%
+        );
+        --liquid-glass-tertiary: linear-gradient(135deg,
+            rgba(28, 28, 32, 0.35) 0%,
+            rgba(24, 24, 28, 0.22) 100%
+        );
+
+        /* Borders and shadows tuned for dark */
+        --liquid-border-primary: rgba(255, 255, 255, 0.10);
+        --liquid-border-secondary: rgba(255, 255, 255, 0.08);
+        --liquid-border-accent: rgba(255, 255, 255, 0.14);
+
+        --liquid-shadow-primary:
+            0 1px 0 rgba(255, 255, 255, 0.06) inset,
+            0 16px 48px rgba(0, 0, 0, 0.45),
+            0 32px 96px rgba(0, 0, 0, 0.35),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+        --liquid-shadow-secondary:
+            0 1px 0 rgba(255, 255, 255, 0.05) inset,
+            0 8px 24px rgba(0, 0, 0, 0.35),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+
+        /* Backdrop filters remain strong but slightly less bright */
+        --liquid-backdrop-ultra: blur(60px) saturate(180%) brightness(90%) contrast(120%);
+        --liquid-backdrop-primary: blur(45px) saturate(170%) brightness(88%) contrast(115%);
+        --liquid-backdrop-secondary: blur(32px) saturate(160%) brightness(86%) contrast(110%);
+        --liquid-backdrop-subtle: blur(24px) saturate(150%) brightness(84%) contrast(108%);
+
+        /* Text contrast in dark */
+        --bubble-text: rgba(245, 245, 248, 0.92);
+        --bubble-text-shadow-1: rgba(0, 0, 0, 0.65);
+        --bubble-text-shadow-2: rgba(0, 0, 0, 0.45);
+
+        --bubble-user-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.06) 100%);
+        --bubble-user-border: rgba(255, 255, 255, 0.16);
+        --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%);
+        --bubble-bot-border: rgba(255, 255, 255, 0.14);
+    }
+
+    body {
+        background: #141416;
+        color: var(--bubble-text);
+    }
+
+    .chat-header-title {
+        color: rgba(240, 240, 245, 0.92);
+        text-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.6),
+            0 0 1px rgba(0, 0, 0, 0.45);
+    }
+
+    .chat-send svg { stroke: #8ec7ff; }
+}
+
+/* Test-only dark mode override (no user toggle). Used by automated checks */
+:root[data-force-dark="true"] {
+    --liquid-glass-primary: linear-gradient(135deg,
+        rgba(20, 20, 24, 0.35) 0%,
+        rgba(18, 18, 22, 0.24) 35%,
+        rgba(16, 16, 20, 0.22) 100%
+    );
+    --liquid-glass-secondary: linear-gradient(135deg,
+        rgba(24, 24, 28, 0.35) 0%,
+        rgba(20, 20, 24, 0.22) 100%
+    );
+    --liquid-glass-tertiary: linear-gradient(135deg,
+        rgba(28, 28, 32, 0.35) 0%,
+        rgba(24, 24, 28, 0.22) 100%
+    );
+
+    --liquid-border-primary: rgba(255, 255, 255, 0.10);
+    --liquid-border-secondary: rgba(255, 255, 255, 0.08);
+    --liquid-border-accent: rgba(255, 255, 255, 0.14);
+
+    --liquid-shadow-primary:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 16px 48px rgba(0, 0, 0, 0.45),
+        0 32px 96px rgba(0, 0, 0, 0.35),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+    --liquid-shadow-secondary:
+        0 1px 0 rgba(255, 255, 255, 0.05) inset,
+        0 8px 24px rgba(0, 0, 0, 0.35),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+
+    --liquid-backdrop-ultra: blur(60px) saturate(180%) brightness(90%) contrast(120%);
+    --liquid-backdrop-primary: blur(45px) saturate(170%) brightness(88%) contrast(115%);
+    --liquid-backdrop-secondary: blur(32px) saturate(160%) brightness(86%) contrast(110%);
+    --liquid-backdrop-subtle: blur(24px) saturate(150%) brightness(84%) contrast(108%);
+
+    --bubble-text: rgba(245, 245, 248, 0.92);
+    --bubble-text-shadow-1: rgba(0, 0, 0, 0.65);
+    --bubble-text-shadow-2: rgba(0, 0, 0, 0.45);
+    --bubble-user-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.06) 100%);
+    --bubble-user-border: rgba(255, 255, 255, 0.16);
+    --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%);
+    --bubble-bot-border: rgba(255, 255, 255, 0.14);
+}
+
+:root[data-force-dark="true"] body {
+    background: #141416;
+    color: var(--bubble-text);
+}
+
+:root[data-force-dark="true"] .chat-header-title {
+    color: rgba(240, 240, 245, 0.92);
+    text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.6),
+        0 0 1px rgba(0, 0, 0, 0.45);
+}
+
+:root[data-force-dark="true"] .chat-send svg { stroke: #8ec7ff; }
+
+/* Support for dynamic viewport units */
+@supports (height: 100dvh) {
+    :root {
+        --viewport-height: 100dvh;
+        --chat-container-height: 100dvh;
+    }
+}
+
+/* Support for small viewport units (better keyboard handling) */
+@supports (height: 100svh) {
+    :root {
+        --chat-container-height: 100svh;
+    }
+}
+
+/* Section 508 Compliance: Screen reader only content */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
 body {
     background: #edcfcf;
     text-align: center;
@@ -9,51 +254,392 @@ body {
 }
 
 .chat-container {
-    position: fixed;
-    bottom: env(safe-area-inset-bottom, 20px);
-    left: env(safe-area-inset-left, 20px);
-    right: env(safe-area-inset-right, 20px);
-    width: calc(100% - 40px);
-    max-width: 380px;
-    height: calc(100% - 40px);
-    max-height: 600px;
-    background: transparent;
-    border-radius: 22px;
-    border: 1.5px solid rgba(66, 133, 244, 0.18);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+    /* STRIPPED - NO POSITIONING RULES */
+    
+    /* Basic Dimensions Only */
+    width: 380px;
+    height: 600px;
+    
+    /* iOS 26 Liquid Glass Primary Material */
+    background: var(--liquid-glass-primary);
+    
+    /* Liquid Glass Border Radius - Organic, flowing curves */
+    border-radius: 32px;
+    
+    /* Advanced Liquid Glass Border System */
+    border: 1px solid var(--liquid-border-primary);
+    background-clip: padding-box;
+    position: relative;
+    
+    /* iOS 26 Liquid Glass Shadow System */
+    box-shadow: var(--liquid-shadow-primary);
+    
+    /* Flexbox Layout with Modern Properties */
     display: flex;
     flex-direction: column;
     overflow: hidden;
     z-index: 1001;
-    font-family: monospace;
-    transform: translateY(100%);
+    
+    /* Typography Enhancement */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* Initial State for Entrance Animation */
     opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: blur(8px);
+    
+    /* HARMONIZED - Clean Single Transition */
+    transition: 
+        opacity var(--duration-slow) var(--ease-smooth),
+        filter var(--duration-slow) var(--ease-smooth);
     display: none;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    letter-spacing: 0.05em;
+    
+    /* iOS 26 Liquid Glass Backdrop Filter - Ultra-premium */
+    backdrop-filter: var(--liquid-backdrop-ultra);
+    -webkit-backdrop-filter: var(--liquid-backdrop-ultra);
+    
+    letter-spacing: 0.01em;
     margin: auto;
+    
+    /* NO CONFLICTING ANIMATIONS - Removed to prevent choppiness */
+    
+    /* Modern Container Query Support */
+    container-type: inline-size;
 }
 
-.chat-container.visible {
-    transform: translateY(0);
-    opacity: 1;
-    display: flex;
-}
+/* REMOVED - Conflicting animation that caused choppiness */
 
-@media (max-height: 600px) {
-    .chat-container {
-        height: calc(100% - 20px);
-        max-height: none;
+/* Subtle Message Entrance Animation */
+@keyframes messageSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
-@media (max-width: 400px) {
+/* Typing Indicator Animation */
+@keyframes typingPulse {
+    0%, 60%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Input Focus Glow Animation */
+@keyframes inputFocusGlow {
+    0% {
+        box-shadow: 
+            0 1px 0 rgba(255, 255, 255, 0.4) inset,
+            0 0 0 0 rgba(91, 182, 248, 0);
+    }
+    100% {
+        box-shadow: 
+            0 1px 0 rgba(255, 255, 255, 0.5) inset,
+            0 0 0 3px rgba(91, 182, 248, 0.15),
+            0 4px 20px 0 rgba(91, 182, 248, 0.1);
+    }
+}
+
+/* Button Press Micro-interaction */
+@keyframes buttonPress {
+    0% { transform: translateY(50%) scale(1); }
+    50% { transform: translateY(50%) scale(0.95); }
+    100% { transform: translateY(50%) scale(1.05); }
+}
+
+/* iOS 26 Liquid Glass Advanced Border Effect */
+.chat-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 32px;
+    padding: 1.5px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.08) 15%,
+        rgba(255, 255, 255, 0.04) 35%,
+        rgba(255, 255, 255, 0.06) 50%,
+        rgba(255, 255, 255, 0.04) 65%,
+        rgba(255, 255, 255, 0.08) 85%,
+        rgba(255, 255, 255, 0.15) 100%
+    );
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+    
+    /* Liquid Glass Dynamic Border Animation */
+    animation: liquidGlassBorderFlow 8s ease-in-out infinite;
+}
+
+/* iOS 26 Liquid Glass Border Flow Animation */
+@keyframes liquidGlassBorderFlow {
+    0%, 100% { 
+        background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.08) 15%,
+            rgba(255, 255, 255, 0.04) 35%,
+            rgba(255, 255, 255, 0.06) 50%,
+            rgba(255, 255, 255, 0.04) 65%,
+            rgba(255, 255, 255, 0.08) 85%,
+            rgba(255, 255, 255, 0.15) 100%
+        );
+    }
+    25% { 
+        background: linear-gradient(165deg, 
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(255, 255, 255, 0.06) 20%,
+            rgba(255, 255, 255, 0.03) 40%,
+            rgba(255, 255, 255, 0.04) 50%,
+            rgba(255, 255, 255, 0.03) 60%,
+            rgba(255, 255, 255, 0.06) 80%,
+            rgba(255, 255, 255, 0.12) 100%
+        );
+    }
+    50% { 
+        background: linear-gradient(195deg, 
+            rgba(255, 255, 255, 0.14) 0%,
+            rgba(255, 255, 255, 0.07) 25%,
+            rgba(255, 255, 255, 0.03) 45%,
+            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0.03) 55%,
+            rgba(255, 255, 255, 0.07) 75%,
+            rgba(255, 255, 255, 0.14) 100%
+        );
+    }
+    75% { 
+        background: linear-gradient(225deg, 
+            rgba(255, 255, 255, 0.13) 0%,
+            rgba(255, 255, 255, 0.06) 30%,
+            rgba(255, 255, 255, 0.03) 45%,
+            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0.03) 55%,
+            rgba(255, 255, 255, 0.06) 70%,
+            rgba(255, 255, 255, 0.13) 100%
+        );
+    }
+}
+
+/* iOS 26 Liquid Glass Refraction Layer */
+.chat-container::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 29px;
+    background: linear-gradient(125deg, 
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.04) 15%,
+        transparent 25%,
+        transparent 40%,
+        rgba(255, 255, 255, 0.06) 50%,
+        transparent 60%,
+        transparent 75%,
+        rgba(255, 255, 255, 0.04) 85%,
+        rgba(255, 255, 255, 0.12) 100%
+    );
+    pointer-events: none;
+    opacity: 0.8;
+    
+    /* Subtle liquid refraction animation */
+    animation: liquidRefractionFlow 12s ease-in-out infinite;
+}
+
+/* iOS 26 Liquid Glass Refraction Animation */
+@keyframes liquidRefractionFlow {
+    0%, 100% { 
+        background: linear-gradient(125deg, 
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(255, 255, 255, 0.04) 15%,
+            transparent 25%,
+            transparent 40%,
+            rgba(255, 255, 255, 0.06) 50%,
+            transparent 60%,
+            transparent 75%,
+            rgba(255, 255, 255, 0.04) 85%,
+            rgba(255, 255, 255, 0.12) 100%
+        );
+    }
+    33% { 
+        background: linear-gradient(145deg, 
+            rgba(255, 255, 255, 0.10) 0%,
+            rgba(255, 255, 255, 0.06) 20%,
+            transparent 30%,
+            rgba(255, 255, 255, 0.04) 45%,
+            transparent 55%,
+            rgba(255, 255, 255, 0.08) 70%,
+            transparent 80%,
+            rgba(255, 255, 255, 0.10) 100%
+        );
+    }
+    66% { 
+        background: linear-gradient(165deg, 
+            rgba(255, 255, 255, 0.08) 0%,
+            transparent 20%,
+            rgba(255, 255, 255, 0.05) 35%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.07) 65%,
+            transparent 80%,
+            rgba(255, 255, 255, 0.08) 100%
+        );
+    }
+}
+
+/* REMOVED - Unused animation */
+
+.chat-container.visible {
+    /* HARMONIZED - Clean Visible State */
+    opacity: 1;
+    filter: blur(0);
+    display: flex;
+    
+    /* NO CONFLICTING ANIMATIONS - Clean state only */
+    
+    /* iOS 26 Liquid Glass Enhanced Active Shadow */
+    box-shadow: var(--liquid-shadow-primary);
+    
+    /* Enhanced backdrop filter for active state */
+    backdrop-filter: var(--liquid-backdrop-ultra);
+    -webkit-backdrop-filter: var(--liquid-backdrop-ultra);
+}
+
+/* REMOVED - Conflicting visible state animation */
+
+/* Modern Responsive Breakpoints with Design Tokens */
+
+/* Small Phones (320px+) - STRIPPED */
+@media (max-width: 480px) {
     .chat-container {
-        width: calc(100% - 20px);
-        left: 10px;
+        width: 360px;
+        height: 500px;
+        border-radius: 24px;
+    }
+    
+    .chat-messages {
+        padding: 50px 12px 70px 12px;
+        gap: 14px;
+    }
+    
+    .message {
+        font-size: 0.95rem;
+        padding: 10px 14px;
+        max-width: min(88%, 280px);
+    }
+    
+    .chat-input {
+        padding: 10px 44px 10px 14px;
+        font-size: 0.95rem;
+    }
+    
+    .chat-send {
+        width: 36px;
+        height: 36px;
+        right: 6px;
+    }
+}
+
+/* Tablets (768px+) - STRIPPED */
+@media (min-width: 768px) {
+    .chat-container {
+        width: 450px;
+        height: 600px;
+        border-radius: 32px;
+    }
+    
+    .message {
+        font-size: 1.05rem;
+        padding: 14px 18px;
+        max-width: min(80%, 360px);
+    }
+    
+    .chat-input {
+        padding: 14px 50px 14px 18px;
+        font-size: 1.05rem;
+        border-radius: 26px;
+    }
+    
+    .chat-send {
+        width: 42px;
+        height: 42px;
         right: 10px;
+    }
+}
+
+/* Desktop (1024px+) - STRIPPED */
+@media (min-width: 1024px) {
+    .chat-container {
+        width: 420px;
+        height: 600px;
+    }
+}
+
+/* Height-based Responsive Adjustments - STRIPPED */
+@media (max-height: 600px) {
+    .chat-container {
+        height: 450px;
+        border-radius: 20px;
+    }
+    
+    .chat-header {
+        min-height: 36px;
+        padding: 8px 16px 8px 12px;
+    }
+    
+    .chat-messages {
+        padding: 44px 12px 64px 12px;
+        gap: 12px;
+    }
+}
+
+/* Mobile Keyboard Handling - STRIPPED */
+@media (max-height: 500px) and (max-width: 768px) {
+    .chat-container {
+        height: 400px;
+        width: 350px;
+    }
+}
+
+/* Ultra-compact mode - STRIPPED */
+@media (max-height: 400px) {
+    .chat-container {
+        height: 350px;
+        width: 320px;
+    }
+    
+    .chat-header {
+        min-height: 28px;
+        padding: 1px 8px 1px 6px;
+    }
+    
+    .chat-messages {
+        padding: 35px 6px 50px 6px;
+        gap: 10px;
+    }
+    
+    .chat-input {
+        padding: 6px 35px 6px 8px;
+        font-size: 0.95rem;
+    }
+    
+    .chat-send {
+        width: 28px;
+        height: 28px;
+        right: 5px;
+    }
+    
+    .message {
+        font-size: 0.9rem;
+        padding: 5px 8px;
     }
 }
 
@@ -73,21 +659,51 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(249, 247, 242, 0.624);
-    border-radius: 22px 22px 0 0;
+    
+    /* iOS 26 Liquid Glass Header Material */
+    background: var(--liquid-glass-secondary);
+    
+    border-radius: 32px 32px 0 0;
     border-bottom: none;
-    padding: 1px 18px 1px 12px;
+    padding: 2px 20px 2px 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 38px;
-    border-bottom: 1.5px solid rgba(255,255,255,0.18);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-height: 42px;
+    
+    /* iOS 26 Liquid Glass Header Border */
+    border-bottom: 1px solid var(--liquid-border-secondary);
+    
+    /* iOS 26 Advanced Backdrop Filter for Liquid Header */
+    backdrop-filter: var(--liquid-backdrop-primary);
+    -webkit-backdrop-filter: var(--liquid-backdrop-primary);
+    
+    /* iOS 26 Liquid Glass Header Shadow */
+    box-shadow: var(--liquid-shadow-secondary);
+    
     z-index: 2;
     font-family: "Special Elite", system-ui;
+    
+    /* Subtle liquid animation */
+    animation: liquidHeaderFloat 10s ease-in-out infinite;
+}
+
+@keyframes liquidHeaderFloat {
+    0%, 100% { 
+        backdrop-filter: blur(35px) saturate(190%) brightness(115%) contrast(110%);
+        box-shadow: 
+            0 1px 0 rgba(255, 255, 255, 0.3) inset,
+            0 4px 12px rgba(0, 0, 0, 0.08),
+            0 8px 24px rgba(0, 0, 0, 0.05);
     }
+    50% { 
+        backdrop-filter: blur(37px) saturate(195%) brightness(117%) contrast(115%);
+        box-shadow: 
+            0 1px 0 rgba(255, 255, 255, 0.35) inset,
+            0 5px 15px rgba(0, 0, 0, 0.1),
+            0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+}
 
 .header-dot {
     width: 15px;
@@ -111,13 +727,16 @@ body {
 .chat-header-title {
     flex: 1;
     text-align: center;
-    color: #00000048;
+    color: rgba(60, 40, 40, 0.8);
     font-size: 1.35rem;
-    font-weight: 0;
+    font-weight: 600;
     letter-spacing: 0.01em;
     margin-right: 0px;
     font-family: inherit;
-    text-shadow: .5px 1px #00000042;
+    text-shadow: 
+        0 1px 3px rgba(255, 255, 255, 0.9),
+        0 0 1px rgba(255, 255, 255, 0.7),
+        0 2px 4px rgba(0, 0, 0, 0.1);
     text-decoration: none;
     position: relative;
     display: inline-block;
@@ -152,99 +771,256 @@ body {
 .chat-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 60px 8px 80px 8px;
+    /* Create an inset, rounded glass panel like the screenshot */
+    margin: 56px 12px 76px 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 18px;
-    background: transparent;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+    border-radius: 18px;
+    /* Ultra transparent liquid glass surface */
+    background: var(--liquid-glass-secondary);
+    border: 1px solid var(--liquid-border-secondary);
+    /* Stronger blur for the panel to enhance transparency */
+    backdrop-filter: var(--liquid-backdrop-ultra);
+    -webkit-backdrop-filter: var(--liquid-backdrop-ultra);
+    /* Subtle inner/outer shadow for depth */
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.35) inset,
+        0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .message {
-    max-width: 85%;
-    padding: 7px 10px;
-    border-radius: 18px;
-    color: #fff;
+    /* Modern Message Layout */
+    max-width: min(85%, 340px);
+    padding: 12px 16px;
+    border-radius: 16px;
     word-wrap: break-word;
-    line-height: 1.6;
-    font-size: 1.05rem;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
-    border: none;
+    line-height: 1.5;
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    
+    /* Enhanced Typography */
+    font-feature-settings: "kern" 1, "liga" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    
+    /* Ultra-transparent liquid glass base for all bubbles */
+    background: var(--liquid-glass-tertiary);
+    border: 1px solid var(--liquid-border-secondary);
+    backdrop-filter: blur(28px) saturate(190%) brightness(112%);
+    -webkit-backdrop-filter: blur(28px) saturate(190%) brightness(112%);
+    color: var(--bubble-text);
+    text-shadow:
+        0 1px 2px var(--bubble-text-shadow-1),
+        0 0 1px var(--bubble-text-shadow-2);
+    
+    /* Premium Glass Shadow */
+    box-shadow:
+        0 4px 16px rgba(31, 38, 135, 0.10),
+        0 8px 28px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    
+    /* Subtle Entrance Animation */
+    animation: messageSlideIn 0.3s ease-out;
+    
+    /* Micro-interaction on Hover */
+    transition:
+        transform var(--duration-fast) var(--ease-smooth),
+        box-shadow var(--duration-fast) var(--ease-smooth);
+    
+    /* Better Touch Interaction */
+    cursor: default;
+    user-select: text;
+    
+    /* Ensure messages stay visible during updates */
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+.message:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+        0 6px 20px rgba(31, 38, 135, 0.15),
+        0 12px 40px rgba(0, 0, 0, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.20);
 }
 
 .message.user {
     align-self: flex-end;
-    background: rgba(0, 0, 0, 0.598);
-    backdrop-filter: blur(10px) saturate(180%);
-    color: #ffffff;
-    border-radius: 18px 18px 6px 18px;
-    font-weight: 500;
-    text-shadow: 1px 1px #00000042;
-    border: 1.5px solid rgba(66, 133, 244, 0.18);
+    /* Slight warm tint but keep mostly neutral glass */
+    background: var(--bubble-user-bg);
+    border-radius: 16px 16px 8px 16px;
+    border-color: var(--bubble-user-border);
+    backdrop-filter: blur(30px) saturate(195%) brightness(114%);
+    -webkit-backdrop-filter: blur(30px) saturate(195%) brightness(114%);
+}
+
+.message.user:hover {
+    box-shadow: 
+        0 6px 20px rgba(237, 207, 207, 0.20),
+        0 12px 40px rgba(220, 180, 180, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .message.bot {
     align-self: flex-start;
-    background: rgba(73, 63, 59, 0.369);
-    backdrop-filter: blur(10px) saturate(180%);
-    -webkit-backdrop-filter: blur(10px) saturate(180%);
-    border-radius: 18px 18px 18px 6px;
-    border: 1.5px solid rgba(255,255,255,0.18);
-    color: #fff;
-    text-shadow: 1px 1px #00000042;
-    font-weight: 400;
+    /* Slight cool tint to differentiate, still very transparent */
+    background: var(--bubble-bot-bg);
+    border-radius: 16px 16px 16px 8px;
+    border-color: var(--bubble-bot-border);
+    backdrop-filter: blur(28px) saturate(185%) brightness(110%);
+    -webkit-backdrop-filter: blur(28px) saturate(185%) brightness(110%);
 }
 
-.chat-input-container {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: transparent;
-    border-top: 1.5px solid rgba(255,255,255,0.18);
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 6px 3px;
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
+.message.bot:hover {
+    box-shadow: 
+        0 6px 20px rgba(180, 140, 140, 0.18),
+        0 12px 40px rgba(160, 120, 120, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.30);
 }
+
+
+/* REMOVED - Unused conflicting animation */
 
 .chat-input {
+    /* Modern Input Layout */
     flex: 1 1 auto;
     width: 100%;
     max-width: none;
-    padding: 9px 44px 9px 14px;
-    border-radius: 22px;
-    border: 1px solid #8f8f99de;
-    background: #ffffffaf;
-    color: #222;
-    font-size: 1.08rem;
-    box-shadow: 0 4px 16px 0 rgba(0,0,0,0.07);
+    padding: 12px 48px 12px 16px;
+    border-radius: 24px;
+    
+    /* iOS 26 Liquid Glass Input Border */
+    border: 1px solid var(--liquid-border-secondary);
+    
+    /* iOS 26 Liquid Glass Input Background */
+    background: var(--liquid-glass-tertiary);
+    
+    /* Typography Enhancement - Enhanced readability */
+    color: rgba(60, 40, 40, 0.95);
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: inherit;
+    line-height: 1.4;
+    
+    /* Enhanced text shadow for better visibility */
+    text-shadow: 
+        0 1px 2px rgba(255, 255, 255, 0.8),
+        0 0 1px rgba(255, 255, 255, 0.6);
+    
+    /* Enhanced Glass Shadow */
+    box-shadow: 
+        0 1px 0 rgba(255, 255, 255, 0.4) inset,
+        0 4px 16px rgba(0, 0, 0, 0.06),
+        0 8px 32px rgba(0, 0, 0, 0.04);
+    
     position: relative;
+    
+    /* iOS 26 Liquid Glass Input Backdrop Filter */
+    backdrop-filter: var(--liquid-backdrop-secondary);
+    -webkit-backdrop-filter: var(--liquid-backdrop-secondary);
+    
+    /* Smooth Transitions */
+    transition: 
+        all var(--duration-normal) var(--ease-smooth),
+        box-shadow var(--duration-normal) var(--ease-smooth);
+    
+    /* Better Accessibility */
+    caret-color: #5bb6f8;
+}
+
+.chat-input::placeholder {
+    color: rgba(60, 40, 40, 0.7);
+    font-weight: 400;
+    text-shadow: 
+        0 1px 2px rgba(255, 255, 255, 0.6),
+        0 0 1px rgba(255, 255, 255, 0.4);
+    transition: opacity var(--duration-fast) var(--ease-smooth);
+}
+
+.chat-input:focus::placeholder {
+    opacity: 0.7;
+}
+
+.chat-input:focus {
+    outline: none;
+    border-color: rgba(91, 182, 248, 0.5);
+    
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.35) 0%,
+        rgba(255, 255, 255, 0.28) 50%,
+        rgba(255, 255, 255, 0.25) 100%
+    );
+    
+    /* Animated Focus Glow */
+    animation: inputFocusGlow var(--duration-normal) var(--ease-smooth) forwards;
+    
+    /* Enhanced Backdrop Filter on Focus */
+    backdrop-filter: blur(30px) saturate(170%) brightness(108%);
+    -webkit-backdrop-filter: blur(30px) saturate(170%) brightness(108%);
+    
+    /* Focus Scale Effect */
+    transform: scale(1.02);
 }
 
 .chat-send {
+    /* Modern Send Button Layout */
     position: absolute;
     right: 8px;
     bottom: 50%;
     transform: translateY(50%);
     margin-left: 0;
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
     padding: 0;
     border-radius: 50%;
-    border: 1px solid #8f8f99de;
-    background:transparent;
+    
+    /* FIX: Ensure button is clickable and not intercepted */
+    z-index: 1000;
+    pointer-events: all;
+    
+    /* Ensure button stays above input field */
+    position: absolute;
+    
+    /* iOS 26 Liquid Glass Button Border */
+    border: 1px solid var(--liquid-border-secondary);
+    
+    /* iOS 26 Liquid Glass Button Background */
+    background: var(--liquid-glass-tertiary);
+    
     color: #5bb6f8;
-    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.07), inset 0 2px 6px 0 rgba(0,0,0,0.10);
+    
+    /* Premium Button Shadow */
+    box-shadow: 
+        0 1px 0 rgba(255, 255, 255, 0.4) inset,
+        0 4px 12px rgba(91, 182, 248, 0.15),
+        0 8px 24px rgba(0, 0, 0, 0.08);
+    
     cursor: pointer;
-    transition: background 0.2s, border 0.2s, box-shadow 0.2s;
+    
+    /* iOS 26 Liquid Glass Button Backdrop Filter */
+    backdrop-filter: var(--liquid-backdrop-subtle);
+    -webkit-backdrop-filter: var(--liquid-backdrop-subtle);
+    
+    /* Smooth Transitions with Spring Physics */
+    transition: 
+        all var(--duration-normal) var(--ease-smooth),
+        transform var(--duration-fast) var(--ease-bounce);
+    
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2;
+    
+    /* Better Accessibility */
+    outline-offset: 2px;
+}
+
+.chat-send:focus-visible {
+    outline: 2px solid rgba(91, 182, 248, 0.5);
+    outline-offset: 2px;
 }
 
 .chat-send svg {
@@ -253,17 +1029,55 @@ body {
     stroke: #5bb6f8;
 }
 
-.chat-send:hover, .chat-send:focus {
-    background: #f5fafdb5;
-    border-color: #8f8f99de;
-    outline: none;
-    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.07), inset 0 2px 8px 0 rgba(66,133,244,0.08);
+.chat-send:hover {
+    border-color: rgba(91, 182, 248, 0.6);
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.30) 0%,
+        rgba(255, 255, 255, 0.22) 50%,
+        rgba(255, 255, 255, 0.18) 100%
+    );
+    
+    /* Enhanced Hover Glow */
+    box-shadow: 
+        0 1px 0 rgba(255, 255, 255, 0.5) inset,
+        0 0 0 3px rgba(91, 182, 248, 0.20),
+        0 6px 16px rgba(91, 182, 248, 0.25),
+        0 12px 32px rgba(0, 0, 0, 0.12);
+    
+    /* Enhanced Backdrop Filter on Hover */
+    backdrop-filter: blur(30px) saturate(170%) brightness(112%);
+    -webkit-backdrop-filter: blur(30px) saturate(170%) brightness(112%);
+    
+    /* Smooth Hover Scale */
+    transform: translateY(50%) scale(1.08);
+    
+    color: #4a9eff;
 }
 
 .chat-send:active {
-    background: #e3f2fd;
-    border-color: #8f8f99de;
-    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07), inset 0 1.5px 6px 0 rgba(66,133,244,0.10);
+    /* Premium Active State */
+    background: linear-gradient(135deg, 
+        rgba(91, 182, 248, 0.15) 0%,
+        rgba(66, 133, 244, 0.12) 50%,
+        rgba(91, 182, 248, 0.10) 100%
+    );
+    border-color: rgba(91, 182, 248, 0.8);
+    
+    /* Active Press Shadow */
+    box-shadow: 
+        0 1px 0 rgba(255, 255, 255, 0.6) inset,
+        0 0 0 2px rgba(91, 182, 248, 0.3),
+        0 2px 8px rgba(91, 182, 248, 0.3),
+        0 4px 16px rgba(0, 0, 0, 0.15);
+    
+    /* Enhanced Active Backdrop Filter */
+    backdrop-filter: blur(35px) saturate(180%) brightness(115%);
+    -webkit-backdrop-filter: blur(35px) saturate(180%) brightness(115%);
+    
+    /* Button Press Animation */
+    animation: buttonPress var(--duration-fast) var(--ease-bounce);
+    
+    color: #2196f3;
 }
 
 /* Custom scrollbar */
@@ -284,8 +1098,133 @@ body {
     background: rgba(255, 255, 255, 0.28);
 }
 
+/* Enhanced input container positioning for keyboard responsiveness */
 .chat-input-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
+    /* Ensure input container stays visible above keyboard */
+    transform: translateZ(0);
+    will-change: transform;
+    
+    /* Create stacking context for proper z-index behavior */
+    isolation: isolate;
+    
+    /* iOS 26 Liquid Glass Input Container Background */
+    background: var(--liquid-glass-secondary);
+    
+    /* iOS 26 Liquid Glass Input Container Border */
+    border-top: 1px solid var(--liquid-border-accent);
+    
+    /* iOS 26 Liquid Glass Input Container Shadow */
+    box-shadow: var(--liquid-shadow-secondary);
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 4px;
+    
+    /* iOS 26 Advanced Liquid Glass Input Container Backdrop Filter */
+    backdrop-filter: var(--liquid-backdrop-enhanced);
+    -webkit-backdrop-filter: var(--liquid-backdrop-enhanced);
+    
+    /* HARMONIZED - No conflicting animations */
+}
+
+/* Enhanced Visual Viewport API support for better keyboard handling */
+@supports (height: 100dvh) {
+    .chat-container:has(.chat-input:focus) {
+        /* Adjust container when input is focused */
+        height: calc(100dvh - env(keyboard-inset-height, 0px) - 40px);
+        transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+/* Improved mobile keyboard handling with viewport adjustments */
+@media (max-width: 768px) {
+    .chat-container {
+        /* Better mobile positioning */
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        
+        /* Ensure full visibility on mobile */
+        max-height: calc(100vh - env(safe-area-inset-top, 20px) - env(safe-area-inset-bottom, 20px));
+    }
+    
+    .chat-input:focus {
+        /* Ensure input scrolls into view on mobile */
+        scroll-margin-bottom: 20px;
+    }
+}
+
+/* Fallback for browsers without Visual Viewport API */
+.chat-input:focus {
+    /* Ensure input stays visible when keyboard appears */
     position: relative;
+    z-index: 1000;
+}
+
+/* Additional responsive enhancements for mobile interaction */
+@media (hover: none) and (pointer: coarse) {
+    /* Touch device optimizations */
+    .chat-container {
+        /* Better touch scrolling */
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+    
+    .chat-messages {
+        /* Smooth scrolling on touch devices */
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+    }
+    
+    .chat-input {
+        /* Better touch target size */
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+    
+    .chat-send {
+        /* Ensure button is easily tappable */
+        min-width: 44px;
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+}
+
+/* Orientation change handling */
+@media (orientation: landscape) and (max-height: 500px) {
+    .chat-container {
+        height: calc(100svh - 10px);
+        max-height: calc(100svh - 10px);
+    }
+    
+    .chat-messages {
+        padding: 45px 8px 65px 8px;
+    }
+}
+
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+    .chat-container {
+        /* Fix for iOS Safari viewport issues */
+        height: calc(var(--chat-container-height, 100vh) - 40px);
+    }
+    
+    /* When keyboard is visible, use smaller viewport */
+    @media (max-height: 500px) {
+        .chat-container {
+            height: calc(100vh - 40px);
+        }
+    }
 }
 
 .chat-send-loader {
@@ -305,16 +1244,21 @@ body {
     display: flex;
 }
 
+/* Enhanced Typing Indicator */
 .chat-send .dot {
     display: inline-block;
-    animation: chat-dot-bounce 1.2s infinite;
+    animation: typingPulse 1.4s ease-in-out infinite;
     font-weight: bold;
-    font-size: 1.2em;
-    opacity: 0.7;
-    margin: 0 0px;
-    vertical-align:auto;
+    font-size: 1.1em;
+    opacity: 0.6;
+    margin: 0 1px;
+    vertical-align: middle;
+    color: #5bb6f8;
 }
 
+.chat-send .dot:nth-child(1) {
+    animation-delay: 0s;
+}
 .chat-send .dot:nth-child(2) {
     animation-delay: 0.2s;
 }
@@ -322,7 +1266,60 @@ body {
     animation-delay: 0.4s;
 }
 
+/* Enhanced Typing Animation */
 @keyframes chat-dot-bounce {
-    0%, 80%, 100% { transform: translateY(0); opacity: 0.7; }
-    40% { transform: translateY(-6px); opacity: 1; }
+    0%, 60%, 100% { 
+        transform: translateY(0) scale(1); 
+        opacity: 0.6; 
+    }
+    30% { 
+        transform: translateY(-4px) scale(1.2); 
+        opacity: 1; 
+    }
+}
+
+/* Typing Indicator for Messages */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    margin: 8px 0;
+    background: var(--glass-bg-secondary);
+    border-radius: 20px 20px 20px 8px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px) saturate(180%) brightness(105%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(105%);
+    max-width: 80px;
+    align-self: flex-start;
+    animation: messageSlideIn var(--duration-slow) var(--ease-smooth);
+}
+
+.typing-indicator .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+    margin: 0 2px;
+    animation: typingPulse 1.4s ease-in-out infinite;
+}
+
+.typing-indicator .dot:nth-child(1) { animation-delay: 0s; }
+.typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Enhanced Loading State */
+.chat-send.loading {
+    pointer-events: none;
+    background: var(--glass-bg-secondary);
+    border-color: rgba(91, 182, 248, 0.3);
+    box-shadow: 
+        0 1px 0 rgba(255, 255, 255, 0.3) inset,
+        0 2px 8px rgba(91, 182, 248, 0.1),
+        0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.chat-send.loading svg {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all var(--duration-normal) var(--ease-smooth);
 } 

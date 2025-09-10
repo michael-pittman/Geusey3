@@ -2,8 +2,11 @@ const CACHE_NAME = 'geuse-cache-v1';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
-    '/assets/index-BQzHcIFG.css',
-    '/assets/index-BOSOQitZ.js',
+    '/assets/index-CiHYBvAE.css',
+    '/assets/index-mjGSHMLo.js',
+    '/assets/chat-BkkZU96i.js',
+    '/assets/three-C0VEc2Vx.js',
+    '/assets/tween-l0sNRNKZ.js',
     '/favicon-16x16.png',
     '/favicon-32x32.png',
     '/apple-touch-icon.png',
@@ -20,7 +23,18 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                return cache.addAll(ASSETS_TO_CACHE);
+                // Cache assets individually to prevent one failure from breaking all caching
+                return Promise.allSettled(
+                    ASSETS_TO_CACHE.map(url => 
+                        cache.add(url).catch(err => {
+                            console.warn(`Failed to cache ${url}:`, err);
+                            return null; // Don't fail the entire cache operation
+                        })
+                    )
+                );
+            })
+            .catch(err => {
+                console.error('ServiceWorker cache installation failed:', err);
             })
     );
 });
@@ -42,6 +56,12 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fall back to network
 self.addEventListener('fetch', (event) => {
+    // Skip caching for webhook requests and API calls
+    if (event.request.url.includes('webhook') || event.request.url.includes('/api/')) {
+        event.respondWith(fetch(event.request));
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then((response) => {

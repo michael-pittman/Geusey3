@@ -1,14 +1,15 @@
-# Geuse Chat - 3D Chat Interface with n8n Integration
+# Geuse Chat - 3D Glassmorphic Chat Interface with n8n Integration
 
-A 3D chat interface built with Three.js that integrates with n8n workflows via webhooks.
+A modern 3D chat interface built with Three.js featuring ultra-transparent glassmorphic design that integrates with n8n workflows via webhooks.
 
 ## Features
 
-- 3D particle visualization with multiple scene types
-- Real-time chat interface
-- n8n webhook integration
-- AWS S3 deployment system
-- Configurable webhook URLs
+- **3D Particle Visualization**: Multiple scene types with interactive particle systems
+- **Glassmorphic Chat Interface**: Ultra-transparent liquid glass design with backdrop blur effects
+- **System Dark Mode**: Automatic dark/light mode detection based on device preferences
+- **n8n Webhook Integration**: Real-time workflow processing and responses
+- **AWS S3 Deployment**: Automated build and deployment system
+- **Configurable Webhook URLs**: Easy webhook management and updates
 
 ## Quick Start
 
@@ -24,7 +25,17 @@ npm install
 npm start
 ```
 
-3. Open http://localhost:3000 in your browser
+3. Open http://localhost:3000 in your browser (or http://localhost:3001 if port 3000 is in use)
+
+### Design Features
+
+The chat interface features a modern glassmorphic design with:
+
+- **Ultra-transparent glass panels** with backdrop blur effects
+- **Liquid glass styling** for message bubbles with subtle gradients
+- **System dark mode** that automatically adapts to device preferences
+- **Readable typography** with Space Grotesk font and optimized contrast
+- **Smooth animations** and micro-interactions for enhanced UX
 
 ### Configuration
 
@@ -84,7 +95,7 @@ Geusey3-1/
 │   ├── index.js           # Main 3D application
 │   ├── chat.js            # Chat interface component
 │   └── styles/
-│       └── chat.css       # Chat styles
+│       └── chat.css       # Glassmorphic chat styles with dark mode
 ├── scripts/
 │   └── update-webhook.js  # Webhook URL updater
 └── public/                # Static assets

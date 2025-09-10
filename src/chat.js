@@ -19,16 +19,27 @@ class Chat {
         this.container = document.createElement('div');
         this.container.className = 'chat-container';
         this.container.style.zIndex = '1001'; // Ensure chat appears above toggle
+        
+        // Section 508 compliance: ARIA landmarks and roles
+        this.container.setAttribute('role', 'dialog');
+        this.container.setAttribute('aria-label', 'Chat interface for service requests');
+        this.container.setAttribute('aria-modal', 'true');
         this.container.innerHTML = `
             <div class="chat-header">
-                <div class="header-dot" title="Close Chat"></div>
-                <a href="mailto:info@geuse.io?subject=Service Inquiry&body=Here is what I would like for you to build...">
+                <button class="header-dot" 
+                        title="Close Chat" 
+                        aria-label="Close Chat" 
+                        tabindex="0"
+                        type="button"></button>
+                <a href="mailto:info@geuse.io?subject=Service Inquiry&body=Here is what I would like for you to build..."
+                   aria-label="Send email to Geuse for service inquiry">
                   <span class="chat-header-title" data-text="geuse">geuse</span>
                 </a>
             </div>
-            <div class="chat-messages"></div>
+            <div class="chat-messages" role="log" aria-live="polite" aria-label="Chat conversation"></div>
             <div class="chat-input-container">
-                <input type="text" class="chat-input" placeholder="Request a service..." autocomplete="off" aria-label="Request a service" tabindex="0">
+                <input type="text" class="chat-input" placeholder="Request a service..." autocomplete="off" aria-label="Request a service" tabindex="0" aria-describedby="chat-help">
+                <div id="chat-help" class="visually-hidden">Type your message and press Enter or click Send to submit</div>
                 <button class="chat-send" aria-label="Send message" tabindex="0">
                   <span class="chat-send-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5bb6f8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
@@ -65,8 +76,10 @@ class Chat {
             this.sendMessage();
         });
 
-        // Handle keyboard visibility on mobile
+        // Enhanced keyboard visibility handling for mobile
         if ('virtualKeyboard' in navigator) {
+            navigator.virtualKeyboard.overlaysContent = true;
+            
             window.addEventListener('resize', () => {
                 if (this.isVisible) {
                     // Adjust chat container position when keyboard appears/disappears
@@ -77,6 +90,14 @@ class Chat {
                     if (chatHeight > viewportHeight * 0.8) {
                         chatContainer.style.height = `${viewportHeight * 0.8}px`;
                     }
+                    
+                    // Ensure messages container scrolls to bottom when keyboard appears
+                    requestAnimationFrame(() => {
+                        const messagesContainer = this.container.querySelector('.chat-messages');
+                        if (messagesContainer) {
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    });
                 }
             });
         }
@@ -299,8 +320,13 @@ class Chat {
 
     renderMessages() {
         const messagesContainer = this.container.querySelector('.chat-messages');
-        messagesContainer.innerHTML = this.messages.map(msg => `
-            <div class="message ${msg.sender}">${msg.text}</div>
+        messagesContainer.innerHTML = this.messages.map((msg, index) => `
+            <div class="message ${msg.sender}" 
+                 role="article" 
+                 aria-label="${msg.sender === 'user' ? 'Your message' : 'Assistant response'}"
+                 tabindex="0">
+                ${msg.text}
+            </div>
         `).join('');
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
