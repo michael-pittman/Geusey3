@@ -8,6 +8,11 @@ let camera, scene, renderer;
 let controls;
 let chat = null;
 
+// Store original camera settings for chat state management
+let originalCameraPosition = { x: 600, y: 400, z: 1500 };
+let originalMinDistance = 500;
+let originalMaxDistance = 6000;
+
 const particlesTotal = 512;
 const positions = [];
 const objects = [];
@@ -21,8 +26,44 @@ async function loadChat() {
     if (!chat) {
         const Chat = (await import('./chat.js')).default;
         chat = new Chat();
+        // Set up callback for camera adjustment
+        chat.onVisibilityChange = adjustCameraForChat;
     }
     return chat;
+}
+
+// Function to adjust camera distance based on chat visibility
+function adjustCameraForChat(isChatActive) {
+    if (!camera || !controls) return;
+    
+    if (isChatActive) {
+        // Move camera further away when chat is active
+        const newPosition = {
+            x: originalCameraPosition.x * 1.5,
+            y: originalCameraPosition.y * 1.2,
+            z: originalCameraPosition.z * 1.8
+        };
+        
+        // Smoothly animate camera to new position
+        new TWEEN.Tween(camera.position)
+            .to(newPosition, 1000)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .start();
+            
+        // Adjust controls to allow closer/further zoom
+        controls.minDistance = originalMinDistance * 0.8;
+        controls.maxDistance = originalMaxDistance * 1.5;
+    } else {
+        // Return camera to original position when chat is closed
+        new TWEEN.Tween(camera.position)
+            .to(originalCameraPosition, 1000)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .start();
+            
+        // Restore original control settings
+        controls.minDistance = originalMinDistance;
+        controls.maxDistance = originalMaxDistance;
+    }
 }
 
 function createChatIconSprite() {

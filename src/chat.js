@@ -10,6 +10,7 @@ class Chat {
         this.sessionId = this.generateSessionId();
         this.isLoading = false;
         this.chatIcon = document.querySelector('img[src*="glitch.gif"], img[src*="fire.gif"]');
+        this.onVisibilityChange = null; // Callback for visibility changes
         this.init();
     }
 
@@ -118,7 +119,22 @@ class Chat {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
+            // Check if response has content before trying to parse JSON
+            const responseText = await response.text();
+            if (!responseText.trim()) {
+                console.warn('Empty response from server for loadPreviousSession');
+                return;
+            }
+
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('Failed to parse JSON response:', parseError);
+                console.error('Response text:', responseText);
+                return;
+            }
+
             if (data.data) {
                 this.messages = data.data.map(msg => ({
                     text: msg.kwargs.content,
@@ -142,7 +158,18 @@ class Chat {
             this.container.offsetHeight;
             // Then add visible class for animation
             this.container.classList.add('visible');
-            this.container.querySelector('.chat-input').focus();
+            
+            // Focus input after animation completes - FIXED TIMING
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    const input = this.container.querySelector('.chat-input');
+                    if (input && this.isVisible) {
+                        input.focus();
+                        // Force keyboard to appear on mobile devices
+                        input.click();
+                    }
+                }, 100); // Small delay to ensure animation has started
+            });
             
             // Update container text when chat is visible
             const container = document.getElementById('container');
@@ -155,18 +182,23 @@ class Chat {
         } else {
             // Remove visible class first for animation
             this.container.classList.remove('visible');
-            // Wait for animation to complete before hiding
+            // HARMONIZED - Wait for CSS transition to complete (0.6s = 600ms)
             setTimeout(() => {
                 if (!this.isVisible) { // Check if still closed
                     this.container.style.display = 'none';
                 }
-            }, 300); // Match this with CSS transition duration
+            }, 600); // Matches CSS --duration-slow (0.6s)
             
             // Reset container text when chat is hidden
             const container = document.getElementById('container');
             if (container) {
                 container.textContent = '- G E U S E -';
             }
+        }
+        
+        // Call visibility change callback
+        if (this.onVisibilityChange) {
+            this.onVisibilityChange(this.isVisible);
         }
         
         return this.isVisible;
@@ -222,7 +254,23 @@ class Chat {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
+            // Check if response has content before trying to parse JSON
+            const responseText = await response.text();
+            if (!responseText.trim()) {
+                this.addMessage('I received your message but the server returned an empty response. Please try again.', 'bot');
+                return;
+            }
+
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('Failed to parse JSON response:', parseError);
+                console.error('Response text:', responseText);
+                this.addMessage('I received your message but got an invalid response from the server. Please try again.', 'bot');
+                return;
+            }
+
             const botResponse = data.output || data.text || '';
             
             if (botResponse) {
@@ -234,6 +282,8 @@ class Chat {
             console.error('Failed to send message:', error);
             if (error.name === 'TypeError' && error.message.includes('CORS')) {
                 this.addMessage('Connection error: Unable to reach the server. Please check your internet connection.', 'bot');
+            } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                this.addMessage('Network error: Unable to connect to the server. Please check your internet connection.', 'bot');
             } else {
                 this.addMessage('Sorry, there was an error sending your message. Please try again.', 'bot');
             }
