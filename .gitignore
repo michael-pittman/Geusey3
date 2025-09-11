@@ -46,4 +46,9 @@ coverage/
 
 # Temporary folders
 tmp/
-temp/ 
+temp/
+
+# Playwright files
+.playwright-mcp/
+playwright-report/
+test-results/ 
