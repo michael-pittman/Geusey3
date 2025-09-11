@@ -6,7 +6,10 @@ A modern 3D chat interface built with Three.js featuring ultra-transparent glass
 
 - **3D Particle Visualization**: Multiple scene types with interactive particle systems
 - **Glassmorphic Chat Interface**: Ultra-transparent liquid glass design with backdrop blur effects
-- **System Dark Mode**: Automatic dark/light mode detection based on device preferences
+- **Smart Dark Mode**: System preference detection with manual toggle override
+- **Enhanced UX**: First-run greeting, suggestion chips, discoverability hints
+- **Accessibility**: Focus trap, reduced motion support, keyboard navigation
+- **Haptic Feedback**: Tactile responses on supported devices
 - **n8n Webhook Integration**: Real-time workflow processing and responses
 - **AWS S3 Deployment**: Automated build and deployment system
 - **Configurable Webhook URLs**: Easy webhook management and updates
@@ -33,9 +36,13 @@ The chat interface features a modern glassmorphic design with:
 
 - **Ultra-transparent glass panels** with backdrop blur effects
 - **Liquid glass styling** for message bubbles with subtle gradients
-- **System dark mode** that automatically adapts to device preferences
+- **Smart dark mode** with system detection and manual toggle override
 - **Readable typography** with Space Grotesk font and optimized contrast
 - **Smooth animations** and micro-interactions for enhanced UX
+- **First-run experience** with greeting message and suggestion chips
+- **Discoverability hints** with one-time pill to guide users
+- **Responsive design** optimized for mobile, tablet, and desktop
+- **Accessibility features** including focus management and reduced motion support
 
 ### Configuration
 
@@ -92,10 +99,13 @@ Geusey3-1/
 ├── vite.config.js         # Vite configuration
 ├── package.json           # Dependencies and scripts
 ├── src/
-│   ├── index.js           # Main 3D application
-│   ├── chat.js            # Chat interface component
+│   ├── index.js           # Main 3D application with theme initialization
+│   ├── chat.js            # Chat interface with UX enhancements
 │   └── styles/
 │       └── chat.css       # Glassmorphic chat styles with dark mode
+├── tests/
+│   ├── theme.spec.ts      # Theme toggle and UX tests
+│   └── smoke.spec.ts      # Deployed site verification
 ├── scripts/
 │   └── update-webhook.js  # Webhook URL updater
 └── public/                # Static assets
@@ -109,6 +119,8 @@ Geusey3-1/
 - `npm run deploy` - Deploy to S3 (requires build first)
 - `npm run deploy:build` - Build and deploy in one command
 - `npm run update-webhook` - Update webhook URL
+- `npm test` - Run Playwright tests
+- `npm run test:ui` - Run Playwright tests with UI
 
 ## AWS S3 Configuration
 
@@ -118,6 +130,21 @@ The deployment targets the S3 bucket `www.geuse.io` in the `us-east-1` region. M
 - `s3:PutObject`
 - `s3:DeleteObject`
 - `s3:ListBucket`
+
+## Testing
+
+The project includes comprehensive Playwright tests for:
+
+- **Theme Toggle**: Dark/light mode switching and persistence
+- **UX Features**: First-run greeting, suggestions, focus trap
+- **Smoke Tests**: Deployed site verification and asset loading
+- **Responsive Design**: Mobile, tablet, and desktop viewport testing
+
+Run tests with:
+```bash
+npm test              # Run all tests
+npm run test:ui       # Run with Playwright UI
+```
 
 ## Troubleshooting
 
@@ -135,6 +162,11 @@ The deployment targets the S3 bucket `www.geuse.io` in the `us-east-1` region. M
 - Test the webhook URL manually before deployment
 - Check n8n workflow status and logs
 - Verify the webhook endpoint is accessible
+
+### Testing Issues
+- Ensure Playwright browsers are installed: `npx playwright install`
+- Check that the development server is running for local tests
+- Verify network connectivity for smoke tests against deployed site
 
 ## License
 
