@@ -325,10 +325,24 @@ class Chat {
                 const input = this.container.querySelector('.chat-input');
                 if (input) input.value = text;
                 this.sendMessage();
-                bar.hidden = true;
-                this.container.classList.remove('has-suggestions');
+                this.hideSuggestions();
             }
         });
+    }
+
+    hideSuggestions() {
+        const bar = this.container.querySelector('.chat-suggestions');
+        if (!bar || bar.hidden) return;
+        
+        // Add hiding class for slide-down animation
+        bar.classList.add('hiding');
+        
+        // After animation completes, hide the element
+        setTimeout(() => {
+            bar.hidden = true;
+            bar.classList.remove('hiding');
+            this.container.classList.remove('has-suggestions');
+        }, 300); // Match CSS transition duration
     }
 
     triggerHaptic() {
@@ -431,11 +445,7 @@ class Chat {
         this.messages.push({ text, sender });
         this.renderMessages();
         if (sender === 'user') {
-            const bar = this.container.querySelector('.chat-suggestions');
-            if (bar && !bar.hidden) {
-                bar.hidden = true;
-                this.container.classList.remove('has-suggestions');
-            }
+            this.hideSuggestions();
         }
     }
 

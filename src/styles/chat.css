@@ -87,8 +87,8 @@
     --bubble-text: rgba(48, 36, 36, 0.92);
     --bubble-text-shadow-1: rgba(255, 255, 255, 0.85);
     --bubble-text-shadow-2: rgba(255, 255, 255, 0.6);
-    --bubble-user-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.14) 100%);
-    --bubble-user-border: rgba(255, 255, 255, 0.28);
+    --bubble-user-bg: linear-gradient(135deg, rgba(91, 182, 248, 0.25) 0%, rgba(66, 133, 244, 0.18) 100%);
+    --bubble-user-border: rgba(91, 182, 248, 0.35);
     --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%);
     --bubble-bot-border: rgba(255, 255, 255, 0.24);
 }
@@ -138,8 +138,8 @@
         --bubble-text-shadow-1: rgba(0, 0, 0, 0.65);
         --bubble-text-shadow-2: rgba(0, 0, 0, 0.45);
 
-        --bubble-user-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.06) 100%);
-        --bubble-user-border: rgba(255, 255, 255, 0.16);
+        --bubble-user-bg: linear-gradient(135deg, rgba(91, 182, 248, 0.15) 0%, rgba(66, 133, 244, 0.10) 100%);
+        --bubble-user-border: rgba(91, 182, 248, 0.22);
         --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%);
         --bubble-bot-border: rgba(255, 255, 255, 0.14);
     }
@@ -316,8 +316,8 @@
     --bubble-text: rgba(48, 36, 36, 0.92);
     --bubble-text-shadow-1: rgba(255, 255, 255, 0.85);
     --bubble-text-shadow-2: rgba(255, 255, 255, 0.6);
-    --bubble-user-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.14) 100%);
-    --bubble-user-border: rgba(255, 255, 255, 0.28);
+    --bubble-user-bg: linear-gradient(135deg, rgba(91, 182, 248, 0.25) 0%, rgba(66, 133, 244, 0.18) 100%);
+    --bubble-user-border: rgba(91, 182, 248, 0.35);
     --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%);
     --bubble-bot-border: rgba(255, 255, 255, 0.24);
 }
@@ -938,36 +938,71 @@ body {
         0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-/* Suggestions bar */
+/* Suggestions bar - repositioned above chat-messages but still above input */
 .chat-suggestions {
     position: absolute;
     left: 12px;
     right: 12px;
-    bottom: 74px; /* sit above input bar */
+    bottom: 84px; /* positioned above input container but below chat-messages */
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
-    z-index: 3; /* above input container */
+    z-index: 4; /* higher z-index to ensure it's above chat-messages */
+    
+    /* Enhanced glass effect for better visibility */
+    background: var(--liquid-glass-secondary);
+    border: 1px solid var(--liquid-border-accent);
+    border-radius: 16px;
+    padding: 12px;
+    backdrop-filter: var(--liquid-backdrop-primary);
+    -webkit-backdrop-filter: var(--liquid-backdrop-primary);
+    box-shadow: var(--liquid-shadow-secondary);
+    
+    /* Slide down animation for disappearing */
+    transition: 
+        transform var(--duration-normal) var(--ease-smooth),
+        opacity var(--duration-normal) var(--ease-smooth);
+    transform: translateY(0);
+    opacity: 1;
 }
 
-.chat-suggestions[hidden] { display: none; }
+.chat-suggestions[hidden] { 
+    display: none;
+}
+
+/* Slide down animation when hiding suggestions */
+.chat-suggestions.hiding {
+    transform: translateY(60px); /* slide down towards input container */
+    opacity: 0;
+    pointer-events: none;
+}
 
 .chat-suggestions .chip {
     border: 1px solid var(--liquid-border-secondary);
     background: var(--liquid-glass-tertiary);
     color: var(--bubble-text);
-    padding: 6px 10px;
+    padding: 8px 12px;
     border-radius: 999px;
     font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: transform var(--duration-fast) var(--ease-smooth);
+    transition: 
+        transform var(--duration-fast) var(--ease-smooth),
+        background var(--duration-fast) var(--ease-smooth);
+    backdrop-filter: var(--liquid-backdrop-subtle);
+    -webkit-backdrop-filter: var(--liquid-backdrop-subtle);
 }
 
-.chat-suggestions .chip:hover { transform: translateY(-1px); }
+.chat-suggestions .chip:hover { 
+    transform: translateY(-2px) scale(1.02);
+    background: var(--liquid-glass-primary);
+}
 
-/* When suggestions are visible, leave extra room above the input bar */
-.chat-container.has-suggestions .chat-messages { margin-bottom: 136px; }
+/* Adjust chat-messages margin to accommodate repositioned suggestions */
+.chat-container.has-suggestions .chat-messages { 
+    margin-bottom: 156px; /* increased to make room for suggestions above input */
+}
 
 .message {
     /* Modern Message Layout */
@@ -1117,6 +1152,55 @@ body {
         0 1px 2px rgba(255, 255, 255, 0.6),
         0 0 1px rgba(255, 255, 255, 0.4);
     transition: opacity var(--duration-fast) var(--ease-smooth);
+}
+
+/* Dark mode improvements for chat input legibility */
+@media (prefers-color-scheme: dark) {
+    .chat-input {
+        /* Enhanced text color and contrast for dark mode */
+        color: rgba(245, 245, 248, 0.95) !important;
+        /* Stronger text shadow for better readability */
+        text-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.8),
+            0 0 1px rgba(0, 0, 0, 0.6);
+    }
+    
+    .chat-input::placeholder {
+        color: rgba(245, 245, 248, 0.65) !important;
+        text-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.7),
+            0 0 1px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Force dark mode for testing */
+:root[data-force-dark="true"] .chat-input {
+    color: rgba(245, 245, 248, 0.95) !important;
+    text-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.8),
+        0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+:root[data-force-dark="true"] .chat-input::placeholder {
+    color: rgba(245, 245, 248, 0.65) !important;
+    text-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.7),
+        0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Explicit theme overrides for dark mode input */
+:root[data-theme="dark"] .chat-input {
+    color: rgba(245, 245, 248, 0.95) !important;
+    text-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.8),
+        0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+:root[data-theme="dark"] .chat-input::placeholder {
+    color: rgba(245, 245, 248, 0.65) !important;
+    text-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.7),
+        0 0 1px rgba(0, 0, 0, 0.5);
 }
 
 .chat-input:focus::placeholder {
