@@ -35,8 +35,18 @@ class Chat {
                    aria-label="Send email to Geuse for service inquiry">
                   <span class="chat-header-title" data-text="geuse">geuse</span>
                 </a>
+                <button class="theme-toggle" 
+                        title="Toggle appearance"
+                        aria-label="Toggle dark mode"
+                        tabindex="0"
+                        type="button"></button>
             </div>
             <div class="chat-messages" role="log" aria-live="polite" aria-label="Chat conversation"></div>
+            <div class="chat-suggestions" role="toolbar" aria-label="Suggestions" hidden>
+                <button class="chip" type="button">Build a landing page</button>
+                <button class="chip" type="button">Automate a workflow</button>
+                <button class="chip" type="button">Set up analytics</button>
+            </div>
             <div class="chat-input-container">
                 <input type="text" class="chat-input" placeholder="Request a service..." autocomplete="off" aria-label="Request a service" tabindex="0" aria-describedby="chat-help">
                 <div id="chat-help" class="visually-hidden">Type your message and press Enter or click Send to submit</div>
@@ -55,6 +65,7 @@ class Chat {
 
         // Add event listeners
         this.container.querySelector('.header-dot').addEventListener('click', () => {
+            this.triggerHaptic();
             this.toggle();
             // Update chat icon image
             if (this.chatIcon) {
@@ -64,15 +75,61 @@ class Chat {
             }
         });
 
+        // Focus trap within chat dialog
+        this.setupFocusTrap();
+
+        // Suggestions behavior
+        this.setupSuggestions();
+
+        // Theme toggle inside header
+        const THEME_KEY = 'theme';
+        const THEME_COLORS = { light: '#edcfcf', dark: '#141416' };
+        const setMetaTheme = (theme) => {
+            const metaTheme = document.querySelector('meta[name="theme-color"]');
+            if (metaTheme) metaTheme.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.light);
+        };
+        const applyTheme = (theme, persist = true) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            if (persist) {
+                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+            }
+            setMetaTheme(theme);
+        };
+        const getCurrentTheme = () => {
+            const attr = document.documentElement.getAttribute('data-theme');
+            if (attr === 'light' || attr === 'dark') return attr;
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            return prefersDark ? 'dark' : 'light';
+        };
+        const themeBtn = this.container.querySelector('.theme-toggle');
+        const setIcon = (theme) => {
+            themeBtn.innerHTML = theme === 'dark'
+                ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f5f8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+                : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+            themeBtn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        };
+        const currentTheme = getCurrentTheme();
+        setIcon(currentTheme);
+        setMetaTheme(currentTheme);
+        themeBtn.addEventListener('click', () => {
+            this.triggerHaptic();
+            const now = getCurrentTheme();
+            const next = now === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            setIcon(next);
+        });
+
         const chatInput = this.container.querySelector('.chat-input');
         const sendButton = this.container.querySelector('.chat-send');
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
+                this.triggerHaptic();
                 this.sendMessage();
             }
         });
         sendButton.addEventListener('click', () => {
+            this.triggerHaptic();
             this.sendMessage();
         });
 
@@ -179,6 +236,13 @@ class Chat {
             this.container.offsetHeight;
             // Then add visible class for animation
             this.container.classList.add('visible');
+            // First-open greeting and show suggestions if no messages
+            const suggestions = this.container.querySelector('.chat-suggestions');
+            if (suggestions && this.messages.length === 0) {
+                suggestions.hidden = false;
+                this.container.classList.add('has-suggestions');
+                this.addMessage("Hi! Tell me what you'd like to build.", 'bot');
+            }
             
             // Focus input after animation completes - FIXED TIMING
             requestAnimationFrame(() => {
@@ -223,6 +287,56 @@ class Chat {
         }
         
         return this.isVisible;
+    }
+
+    setupFocusTrap() {
+        const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        const container = this.container;
+        container.addEventListener('keydown', (e) => {
+            if (e.key !== 'Tab') return;
+            const focusables = Array.from(container.querySelectorAll(focusableSelectors))
+                .filter(el => !el.hasAttribute('disabled') && el.tabIndex !== -1);
+            if (focusables.length === 0) return;
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else {
+                if (document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        });
+    }
+
+    setupSuggestions() {
+        const bar = this.container.querySelector('.chat-suggestions');
+        if (!bar) return;
+        bar.addEventListener('click', (e) => {
+            const target = e.target;
+            if (!(target instanceof HTMLElement)) return;
+            if (target.classList.contains('chip')) {
+                this.triggerHaptic();
+                const text = target.textContent || '';
+                const input = this.container.querySelector('.chat-input');
+                if (input) input.value = text;
+                this.sendMessage();
+                bar.hidden = true;
+                this.container.classList.remove('has-suggestions');
+            }
+        });
+    }
+
+    triggerHaptic() {
+        try {
+            if (navigator && typeof navigator.vibrate === 'function') {
+                navigator.vibrate(12);
+            }
+        } catch (_) {}
     }
 
     setLoading(isLoading) {
@@ -316,6 +430,13 @@ class Chat {
     addMessage(text, sender) {
         this.messages.push({ text, sender });
         this.renderMessages();
+        if (sender === 'user') {
+            const bar = this.container.querySelector('.chat-suggestions');
+            if (bar && !bar.hidden) {
+                bar.hidden = true;
+                this.container.classList.remove('has-suggestions');
+            }
+        }
     }
 
     renderMessages() {

@@ -11,7 +11,9 @@
     "deploy": "node deploy.js",
     "deploy:build": "npm run build && npm run deploy",
     "update-webhook": "node scripts/update-webhook.js",
-    "setup-aws": "node scripts/setup-aws.js"
+    "setup-aws": "node scripts/setup-aws.js",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
   },
   "dependencies": {
     "@playwright/test": "^1.55.0",

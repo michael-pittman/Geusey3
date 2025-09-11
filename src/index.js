@@ -8,6 +8,7 @@ let camera, scene, renderer;
 let controls;
 let chat = null;
 
+
 // Store original camera settings for chat state management
 let originalCameraPosition = { x: 600, y: 400, z: 1500 };
 let originalMinDistance = 500;
@@ -85,6 +86,19 @@ function createChatIconSprite() {
     img.style.height = '100%';
     img.loading = 'eager'; // Since this is above the fold
     div.appendChild(img);
+
+    // One-time discoverability hint
+    try {
+        if (!localStorage.getItem('hint_shown')) {
+            const pill = document.createElement('div');
+            pill.className = 'chat-hint-pill';
+            pill.textContent = 'Chat with us';
+            document.body.appendChild(pill);
+            setTimeout(() => { pill.style.opacity = '0'; }, 3000);
+            setTimeout(() => { pill.remove(); }, 3800);
+            localStorage.setItem('hint_shown', '1');
+        }
+    } catch (_) {}
 
     div.addEventListener('click', async () => {
         const chatInstance = await loadChat();
@@ -183,6 +197,19 @@ function setScene(sceneName) {
 
 function init() {
     try {
+        // Ensure theme attribute exists on first load based on preference/localStorage
+        (function ensureInitialTheme(){
+            const THEME_KEY = 'theme';
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            let theme = 'light';
+            try {
+                const saved = localStorage.getItem(THEME_KEY);
+                if (saved === 'light' || saved === 'dark') theme = saved; else theme = prefersDark ? 'dark' : 'light';
+            } catch (_) {
+                theme = prefersDark ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
         // Initialize with lower resolution for better initial load
         const pixelRatio = Math.min(window.devicePixelRatio, 2);
         
@@ -195,7 +222,10 @@ function init() {
         camera.lookAt(0, 0, 0);
         
         scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xedcfcf);
+        // Keep CSS3D transparent look; body color shows through.
+        // For completeness, set a color matching current theme (not visible with CSS3DRenderer but harmless)
+        const themeNow = document.documentElement.getAttribute('data-theme') || 'light';
+        scene.background = new THREE.Color(themeNow === 'dark' ? 0x141416 : 0xedcfcf);
         
         createChatIconSprite();
         generatePositions();
