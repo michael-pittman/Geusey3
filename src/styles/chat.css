@@ -89,8 +89,8 @@
     --bubble-text-shadow-2: rgba(255, 255, 255, 0.6);
     --bubble-user-bg: linear-gradient(135deg, rgba(91, 182, 248, 0.25) 0%, rgba(66, 133, 244, 0.18) 100%);
     --bubble-user-border: rgba(91, 182, 248, 0.35);
-    --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%);
-    --bubble-bot-border: rgba(255, 255, 255, 0.24);
+    --bubble-bot-bg: linear-gradient(135deg, rgba(80, 80, 80, 0.25) 0%, rgba(60, 60, 60, 0.18) 100%);
+    --bubble-bot-border: rgba(80, 80, 80, 0.35);
 }
 
 /* Dark mode (system-controlled). Optional [data-force-dark] attribute is ONLY for automated tests */
@@ -140,8 +140,8 @@
 
         --bubble-user-bg: linear-gradient(135deg, rgba(91, 182, 248, 0.15) 0%, rgba(66, 133, 244, 0.10) 100%);
         --bubble-user-border: rgba(91, 182, 248, 0.22);
-        --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%);
-        --bubble-bot-border: rgba(255, 255, 255, 0.14);
+        --bubble-bot-bg: linear-gradient(135deg, rgba(120, 120, 120, 0.15) 0%, rgba(100, 100, 100, 0.10) 100%);
+        --bubble-bot-border: rgba(120, 120, 120, 0.25);
     }
 
     body {
@@ -318,8 +318,8 @@
     --bubble-text-shadow-2: rgba(255, 255, 255, 0.6);
     --bubble-user-bg: linear-gradient(135deg, rgba(91, 182, 248, 0.25) 0%, rgba(66, 133, 244, 0.18) 100%);
     --bubble-user-border: rgba(91, 182, 248, 0.35);
-    --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%);
-    --bubble-bot-border: rgba(255, 255, 255, 0.24);
+    --bubble-bot-bg: linear-gradient(135deg, rgba(80, 80, 80, 0.25) 0%, rgba(60, 60, 60, 0.18) 100%);
+    --bubble-bot-border: rgba(80, 80, 80, 0.35);
 }
 
 :root[data-theme="light"] body { background: #edcfcf; color: var(--bubble-text); }
@@ -945,9 +945,9 @@ body {
     right: 12px;
     bottom: 84px; /* positioned above input container but below chat-messages */
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Don't wrap - keep on one line */
     gap: 8px;
-    justify-content: center;
+    justify-content: flex-start; /* Align to start for scrolling */
     z-index: 4; /* higher z-index to ensure it's above chat-messages */
     
     /* Enhanced glass effect for better visibility */
@@ -959,12 +959,25 @@ body {
     -webkit-backdrop-filter: var(--liquid-backdrop-primary);
     box-shadow: var(--liquid-shadow-secondary);
     
+    /* Horizontal scrolling */
+    overflow-x: auto;
+    overflow-y: hidden;
+    
+    /* Hide scrollbar but allow scrolling */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    
     /* Slide down animation for disappearing */
     transition: 
         transform var(--duration-normal) var(--ease-smooth),
         opacity var(--duration-normal) var(--ease-smooth);
     transform: translateY(0);
     opacity: 1;
+}
+
+/* Hide scrollbar for webkit browsers */
+.chat-suggestions::-webkit-scrollbar {
+    display: none;
 }
 
 .chat-suggestions[hidden] { 
@@ -992,6 +1005,11 @@ body {
         background var(--duration-fast) var(--ease-smooth);
     backdrop-filter: var(--liquid-backdrop-subtle);
     -webkit-backdrop-filter: var(--liquid-backdrop-subtle);
+    
+    /* Prevent shrinking and ensure minimum width for scrolling */
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-width: fit-content;
 }
 
 .chat-suggestions .chip:hover { 
@@ -1113,16 +1131,16 @@ body {
     background: var(--liquid-glass-tertiary);
     
     /* Typography Enhancement - Enhanced readability */
-    color: rgba(60, 40, 40, 0.95);
+    color: rgba(30, 20, 20, 0.95); /* Darker color for better contrast in light mode */
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 600; /* Increased font weight for better visibility */
     font-family: inherit;
     line-height: 1.4;
     
     /* Enhanced text shadow for better visibility */
     text-shadow: 
-        0 1px 2px rgba(255, 255, 255, 0.8),
-        0 0 1px rgba(255, 255, 255, 0.6);
+        0 1px 2px rgba(255, 255, 255, 0.9),
+        0 0 1px rgba(255, 255, 255, 0.7);
     
     /* Enhanced Glass Shadow */
     box-shadow: 
@@ -1146,11 +1164,11 @@ body {
 }
 
 .chat-input::placeholder {
-    color: rgba(60, 40, 40, 0.7);
-    font-weight: 400;
+    color: rgba(30, 20, 20, 0.75); /* Darker placeholder for better contrast */
+    font-weight: 500; /* Increased weight for better visibility */
     text-shadow: 
-        0 1px 2px rgba(255, 255, 255, 0.6),
-        0 0 1px rgba(255, 255, 255, 0.4);
+        0 1px 2px rgba(255, 255, 255, 0.8),
+        0 0 1px rgba(255, 255, 255, 0.6);
     transition: opacity var(--duration-fast) var(--ease-smooth);
 }
 
@@ -1241,7 +1259,7 @@ body {
     border-radius: 50%;
     
     /* FIX: Ensure button is clickable and not intercepted */
-    z-index: 1000;
+    z-index: 1001; /* Higher than input z-index (1000) */
     pointer-events: all;
     
     /* Ensure button stays above input field */
