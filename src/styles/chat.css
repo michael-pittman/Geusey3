@@ -1161,6 +1161,9 @@ body {
     
     /* Better Accessibility */
     caret-color: #5bb6f8;
+    
+    /* Ensure input doesn't interfere with submit button */
+    padding-right: 52px; /* More space for button */
 }
 
 .chat-input::placeholder {
@@ -1259,7 +1262,7 @@ body {
     border-radius: 50%;
     
     /* FIX: Ensure button is clickable and not intercepted */
-    z-index: 1001; /* Higher than input z-index (1000) */
+    z-index: 1002; /* Much higher than input z-index (1000) */
     pointer-events: all;
     
     /* Ensure button stays above input field */
