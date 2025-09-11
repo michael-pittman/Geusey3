@@ -87,10 +87,10 @@
     --bubble-text: rgba(48, 36, 36, 0.92);
     --bubble-text-shadow-1: rgba(255, 255, 255, 0.85);
     --bubble-text-shadow-2: rgba(255, 255, 255, 0.6);
-    --bubble-user-bg: linear-gradient(135deg, rgba(91, 182, 248, 0.25) 0%, rgba(66, 133, 244, 0.18) 100%);
-    --bubble-user-border: rgba(91, 182, 248, 0.35);
-    --bubble-bot-bg: linear-gradient(135deg, rgba(80, 80, 80, 0.25) 0%, rgba(60, 60, 60, 0.18) 100%);
-    --bubble-bot-border: rgba(80, 80, 80, 0.35);
+    --bubble-user-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.14) 100%);
+    --bubble-user-border: rgba(255, 255, 255, 0.28);
+    --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%);
+    --bubble-bot-border: rgba(255, 255, 255, 0.24);
 }
 
 /* Dark mode (system-controlled). Optional [data-force-dark] attribute is ONLY for automated tests */
@@ -138,10 +138,10 @@
         --bubble-text-shadow-1: rgba(0, 0, 0, 0.65);
         --bubble-text-shadow-2: rgba(0, 0, 0, 0.45);
 
-        --bubble-user-bg: linear-gradient(135deg, rgba(91, 182, 248, 0.15) 0%, rgba(66, 133, 244, 0.10) 100%);
-        --bubble-user-border: rgba(91, 182, 248, 0.22);
-        --bubble-bot-bg: linear-gradient(135deg, rgba(120, 120, 120, 0.15) 0%, rgba(100, 100, 100, 0.10) 100%);
-        --bubble-bot-border: rgba(120, 120, 120, 0.25);
+        --bubble-user-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.06) 100%);
+        --bubble-user-border: rgba(255, 255, 255, 0.16);
+        --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%);
+        --bubble-bot-border: rgba(255, 255, 255, 0.14);
     }
 
     body {
@@ -316,10 +316,10 @@
     --bubble-text: rgba(48, 36, 36, 0.92);
     --bubble-text-shadow-1: rgba(255, 255, 255, 0.85);
     --bubble-text-shadow-2: rgba(255, 255, 255, 0.6);
-    --bubble-user-bg: linear-gradient(135deg, rgba(91, 182, 248, 0.25) 0%, rgba(66, 133, 244, 0.18) 100%);
-    --bubble-user-border: rgba(91, 182, 248, 0.35);
-    --bubble-bot-bg: linear-gradient(135deg, rgba(80, 80, 80, 0.25) 0%, rgba(60, 60, 60, 0.18) 100%);
-    --bubble-bot-border: rgba(80, 80, 80, 0.35);
+    --bubble-user-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.14) 100%);
+    --bubble-user-border: rgba(255, 255, 255, 0.28);
+    --bubble-bot-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 100%);
+    --bubble-bot-border: rgba(255, 255, 255, 0.24);
 }
 
 :root[data-theme="light"] body { background: #edcfcf; color: var(--bubble-text); }
@@ -941,20 +941,20 @@ body {
 /* Suggestions bar - repositioned above chat-messages but still above input */
 .chat-suggestions {
     position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: 84px; /* positioned above input container but below chat-messages */
+    left: 16px;
+    right: 16px;
+    bottom: 88px; /* positioned above input container but below chat-messages */
     display: flex;
     flex-wrap: nowrap; /* Don't wrap - keep on one line */
-    gap: 8px;
+    gap: 6px;
     justify-content: flex-start; /* Align to start for scrolling */
     z-index: 4; /* higher z-index to ensure it's above chat-messages */
     
-    /* Enhanced glass effect for better visibility */
+    /* More compact glass effect */
     background: var(--liquid-glass-secondary);
     border: 1px solid var(--liquid-border-accent);
-    border-radius: 16px;
-    padding: 12px;
+    border-radius: 12px;
+    padding: 8px; /* Reduced padding for more compact appearance */
     backdrop-filter: var(--liquid-backdrop-primary);
     -webkit-backdrop-filter: var(--liquid-backdrop-primary);
     box-shadow: var(--liquid-shadow-secondary);
@@ -995,7 +995,7 @@ body {
     border: 1px solid var(--liquid-border-secondary);
     background: var(--liquid-glass-tertiary);
     color: var(--bubble-text);
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 999px;
     font-size: 0.9rem;
     font-weight: 500;
