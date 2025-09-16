@@ -1,4 +1,6 @@
 import { config } from '../config.js';
+import { setupThemeToggle } from './utils/themeManager.js';
+import { makeApiCall, getErrorMessage, API_ERROR_TYPES } from './utils/apiUtils.js';
 
 const WEBHOOK_URL = config.webhookUrl;
 
@@ -11,6 +13,16 @@ class Chat {
         this.isLoading = false;
         this.chatIcon = document.querySelector('img[src*="glitch.gif"], img[src*="fire.gif"]');
         this.onVisibilityChange = null; // Callback for visibility changes
+        // Performance tracking
+        this.renderingMetrics = {
+            totalRenders: 0,
+            incrementalRenders: 0,
+            averageRenderTime: 0,
+            lastRenderTime: 0
+        };
+        // DOM tracking for incremental rendering
+        this.renderedMessageCount = 0;
+        this.messagesContainer = null;
         this.init();
     }
 
@@ -18,7 +30,7 @@ class Chat {
         // Create chat container
         this.container = document.createElement('div');
         this.container.className = 'chat-container';
-        this.container.style.zIndex = '1001'; // Ensure chat appears above toggle
+        // z-index is now handled in CSS for proper stacking context
         
         // Section 508 compliance: ARIA landmarks and roles
         this.container.setAttribute('role', 'dialog');
@@ -43,9 +55,12 @@ class Chat {
             </div>
             <div class="chat-messages" role="log" aria-live="polite" aria-label="Chat conversation"></div>
             <div class="chat-suggestions" role="toolbar" aria-label="Suggestions" hidden>
-                <button class="chip" type="button">Build a landing page</button>
-                <button class="chip" type="button">Automate a workflow</button>
-                <button class="chip" type="button">Set up analytics</button>
+                <button class="chip" type="button">Build an AI chatbot</button>
+                <button class="chip" type="button">Create a SaaS MVP</button>
+                <button class="chip" type="button">Build a mobile app</button>
+                <button class="chip" type="button">Set up a web3 dApp</button>
+                <button class="chip" type="button">Create an API integration</button>
+                <button class="chip" type="button">Build a data dashboard</button>
             </div>
             <div class="chat-input-container">
                 <input type="text" class="chat-input" placeholder="Request a service..." autocomplete="off" aria-label="Request a service" tabindex="0" aria-describedby="chat-help">
@@ -62,6 +77,9 @@ class Chat {
         `;
 
         document.body.appendChild(this.container);
+
+        // Cache messages container reference for performance
+        this.messagesContainer = this.container.querySelector('.chat-messages');
 
         // Add event listeners
         this.container.querySelector('.header-dot').addEventListener('click', () => {
@@ -81,42 +99,13 @@ class Chat {
         // Suggestions behavior
         this.setupSuggestions();
 
-        // Theme toggle inside header
-        const THEME_KEY = 'theme';
-        const THEME_COLORS = { light: '#edcfcf', dark: '#141416' };
-        const setMetaTheme = (theme) => {
-            const metaTheme = document.querySelector('meta[name="theme-color"]');
-            if (metaTheme) metaTheme.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.light);
-        };
-        const applyTheme = (theme, persist = true) => {
-            document.documentElement.setAttribute('data-theme', theme);
-            if (persist) {
-                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
-            }
-            setMetaTheme(theme);
-        };
-        const getCurrentTheme = () => {
-            const attr = document.documentElement.getAttribute('data-theme');
-            if (attr === 'light' || attr === 'dark') return attr;
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            return prefersDark ? 'dark' : 'light';
-        };
+        // Theme toggle inside header - integrates with global theme system
         const themeBtn = this.container.querySelector('.theme-toggle');
-        const setIcon = (theme) => {
-            themeBtn.innerHTML = theme === 'dark'
-                ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f5f8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
-                : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1a1d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
-            themeBtn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-        };
-        const currentTheme = getCurrentTheme();
-        setIcon(currentTheme);
-        setMetaTheme(currentTheme);
+        const themeManager = setupThemeToggle(themeBtn);
+
         themeBtn.addEventListener('click', () => {
             this.triggerHaptic();
-            const now = getCurrentTheme();
-            const next = now === 'dark' ? 'light' : 'dark';
-            applyTheme(next);
-            setIcon(next);
+            themeManager.toggle();
         });
 
         const chatInput = this.container.querySelector('.chat-input');
@@ -180,47 +169,35 @@ class Chat {
 
     async loadPreviousSession() {
         try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
+            const data = await makeApiCall(
+                WEBHOOK_URL,
+                {
                     action: 'loadPreviousSession',
                     sessionId: this.sessionId
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            // Check if response has content before trying to parse JSON
-            const responseText = await response.text();
-            if (!responseText.trim()) {
-                console.warn('Empty response from server for loadPreviousSession');
-                return;
-            }
-
-            let data;
-            try {
-                data = JSON.parse(responseText);
-            } catch (parseError) {
-                console.error('Failed to parse JSON response:', parseError);
-                console.error('Response text:', responseText);
-                return;
-            }
+                },
+                'loading previous session'
+            );
 
             if (data.data) {
                 this.messages = data.data.map(msg => ({
                     text: msg.kwargs.content,
                     sender: msg.id.includes('HumanMessage') ? 'user' : 'bot'
                 }));
-                this.renderMessages();
+                this.renderAllMessages(); // Full render for session loading
             }
         } catch (error) {
+            // Handle empty response as expected behavior for new sessions
+            if (error.type === API_ERROR_TYPES.EMPTY_RESPONSE) {
+                console.warn('Empty response from server for loadPreviousSession - likely a new session');
+                return;
+            }
+
+            // Handle parse errors gracefully for session loading
+            if (error.type === API_ERROR_TYPES.PARSE) {
+                console.error('Parse error loading previous session:', error);
+                return;
+            }
+
             console.error('Failed to load previous session:', error);
             // Don't show error to user for loading previous session
         }
@@ -385,81 +362,242 @@ class Chat {
         this.setLoading(true);
 
         try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
+            const data = await makeApiCall(
+                WEBHOOK_URL,
+                {
                     action: 'sendMessage',
                     sessionId: this.sessionId,
                     chatInput: message
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            // Check if response has content before trying to parse JSON
-            const responseText = await response.text();
-            if (!responseText.trim()) {
-                this.addMessage('I received your message but the server returned an empty response. Please try again.', 'bot');
-                return;
-            }
-
-            let data;
-            try {
-                data = JSON.parse(responseText);
-            } catch (parseError) {
-                console.error('Failed to parse JSON response:', parseError);
-                console.error('Response text:', responseText);
-                this.addMessage('I received your message but got an invalid response from the server. Please try again.', 'bot');
-                return;
-            }
+                },
+                'sending message'
+            );
 
             const botResponse = data.output || data.text || '';
-            
+
             if (botResponse) {
                 this.addMessage(botResponse, 'bot');
             } else {
                 this.addMessage('I received your message but didn\'t get a response. Please try again.', 'bot');
             }
         } catch (error) {
-            console.error('Failed to send message:', error);
-            if (error.name === 'TypeError' && error.message.includes('CORS')) {
-                this.addMessage('Connection error: Unable to reach the server. Please check your internet connection.', 'bot');
-            } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                this.addMessage('Network error: Unable to connect to the server. Please check your internet connection.', 'bot');
-            } else {
-                this.addMessage('Sorry, there was an error sending your message. Please try again.', 'bot');
+            // Handle specific error types with appropriate user messages
+            if (error.type === API_ERROR_TYPES.EMPTY_RESPONSE) {
+                this.addMessage('I received your message but the server returned an empty response. Please try again.', 'bot');
+                return;
             }
+
+            if (error.type === API_ERROR_TYPES.PARSE) {
+                this.addMessage('I received your message but got an invalid response from the server. Please try again.', 'bot');
+                return;
+            }
+
+            // Use centralized error message generation
+            const errorMessage = getErrorMessage(error, 'sending message');
+            this.addMessage(errorMessage, 'bot');
         } finally {
             this.setLoading(false);
         }
     }
 
     addMessage(text, sender) {
+        // Performance monitoring start
+        const startTime = performance.now();
+
+        // Preserve scroll position and focus state
+        const wasScrolledToBottom = this.isScrolledToBottom();
+        const activeElement = document.activeElement;
+
         this.messages.push({ text, sender });
-        this.renderMessages();
+
+        // Use incremental rendering for single message addition
+        this.renderNewMessages();
+
         if (sender === 'user') {
             this.hideSuggestions();
         }
+
+        // Restore focus if it was on a chat element
+        if (activeElement && this.container.contains(activeElement)) {
+            activeElement.focus();
+        }
+
+        // Maintain scroll position or scroll to bottom if user was at bottom
+        if (wasScrolledToBottom) {
+            this.scrollToBottom();
+        }
+
+        // Performance monitoring end
+        const endTime = performance.now();
+        this.updateRenderingMetrics(endTime - startTime, true);
     }
 
-    renderMessages() {
-        const messagesContainer = this.container.querySelector('.chat-messages');
-        messagesContainer.innerHTML = this.messages.map((msg, index) => `
-            <div class="message ${msg.sender}" 
-                 role="article" 
-                 aria-label="${msg.sender === 'user' ? 'Your message' : 'Assistant response'}"
-                 tabindex="0">
-                ${msg.text}
-            </div>
-        `).join('');
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    /**
+     * Efficiently renders only new messages since last render
+     */
+    renderNewMessages() {
+        if (!this.messagesContainer) return;
+
+        const newMessagesCount = this.messages.length - this.renderedMessageCount;
+        if (newMessagesCount <= 0) return;
+
+        // Create document fragment for efficient batch DOM operations
+        const fragment = document.createDocumentFragment();
+
+        // Only create DOM elements for new messages
+        for (let i = this.renderedMessageCount; i < this.messages.length; i++) {
+            const msg = this.messages[i];
+            const messageElement = this.createMessageElement(msg, i);
+            fragment.appendChild(messageElement);
+        }
+
+        // Single DOM append operation
+        this.messagesContainer.appendChild(fragment);
+        this.renderedMessageCount = this.messages.length;
+    }
+
+    /**
+     * Creates a single message DOM element with proper accessibility attributes
+     */
+    createMessageElement(message, index) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${message.sender}`;
+        messageDiv.setAttribute('role', 'article');
+        messageDiv.setAttribute('aria-label',
+            message.sender === 'user' ? 'Your message' : 'Assistant response'
+        );
+        messageDiv.setAttribute('tabindex', '0');
+        messageDiv.setAttribute('data-message-index', index);
+
+        // Safely set text content to prevent XSS
+        messageDiv.textContent = message.text;
+
+        return messageDiv;
+    }
+
+    /**
+     * Full render for initial load or complete refresh scenarios
+     */
+    renderAllMessages() {
+        if (!this.messagesContainer) return;
+
+        // Performance monitoring start
+        const startTime = performance.now();
+
+        // Preserve scroll position and focus state
+        const wasScrolledToBottom = this.isScrolledToBottom();
+        const activeElement = document.activeElement;
+
+        // Clear existing messages
+        this.messagesContainer.innerHTML = '';
+        this.renderedMessageCount = 0;
+
+        if (this.messages.length === 0) {
+            const endTime = performance.now();
+            this.updateRenderingMetrics(endTime - startTime, false);
+            return;
+        }
+
+        // Use document fragment for efficient batch rendering
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < this.messages.length; i++) {
+            const messageElement = this.createMessageElement(this.messages[i], i);
+            fragment.appendChild(messageElement);
+        }
+
+        // Single DOM append operation
+        this.messagesContainer.appendChild(fragment);
+        this.renderedMessageCount = this.messages.length;
+
+        // Restore focus if it was on a chat element
+        if (activeElement && this.container.contains(activeElement)) {
+            activeElement.focus();
+        }
+
+        // Maintain scroll position or scroll to bottom if user was at bottom
+        if (wasScrolledToBottom || this.messages.length === 1) {
+            this.scrollToBottom();
+        }
+
+        // Performance monitoring end
+        const endTime = performance.now();
+        this.updateRenderingMetrics(endTime - startTime, false);
+    }
+
+    /**
+     * Utility functions for scroll and performance management
+     */
+    isScrolledToBottom() {
+        if (!this.messagesContainer) return true;
+        const threshold = 5; // 5px threshold for "close to bottom"
+        return (
+            this.messagesContainer.scrollHeight -
+            this.messagesContainer.scrollTop -
+            this.messagesContainer.clientHeight
+        ) <= threshold;
+    }
+
+    scrollToBottom() {
+        if (!this.messagesContainer) return;
+        // Use requestAnimationFrame for smooth scrolling
+        requestAnimationFrame(() => {
+            this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        });
+    }
+
+    updateRenderingMetrics(renderTime, isIncremental) {
+        this.renderingMetrics.totalRenders++;
+        if (isIncremental) {
+            this.renderingMetrics.incrementalRenders++;
+        }
+
+        // Calculate rolling average render time
+        const currentAvg = this.renderingMetrics.averageRenderTime;
+        const totalRenders = this.renderingMetrics.totalRenders;
+        this.renderingMetrics.averageRenderTime =
+            (currentAvg * (totalRenders - 1) + renderTime) / totalRenders;
+
+        this.renderingMetrics.lastRenderTime = renderTime;
+
+        // Log performance improvements in development
+        if (console && typeof console.debug === 'function') {
+            console.debug(`Chat render: ${renderTime.toFixed(2)}ms (${isIncremental ? 'incremental' : 'full'})`);
+        }
+    }
+
+    /**
+     * Get performance metrics for debugging
+     */
+    getRenderingMetrics() {
+        return { ...this.renderingMetrics };
+    }
+
+    /**
+     * Handle message updates or deletions (for future extensibility)
+     */
+    updateMessage(index, newText) {
+        if (index < 0 || index >= this.messages.length) return;
+
+        this.messages[index].text = newText;
+
+        // Find and update the specific message element
+        const messageElement = this.messagesContainer.querySelector(
+            `[data-message-index="${index}"]`
+        );
+
+        if (messageElement) {
+            messageElement.textContent = newText;
+        }
+    }
+
+    deleteMessage(index) {
+        if (index < 0 || index >= this.messages.length) return;
+
+        // Remove from messages array
+        this.messages.splice(index, 1);
+
+        // Full re-render needed to fix indices (could be optimized further if needed)
+        this.renderAllMessages();
     }
 }
 
