@@ -12,6 +12,12 @@ export const config = {
         profile: 'default' // AWS CLI profile to use
     },
     
+    // CloudFront distribution settings (optional)
+    // Uncomment and configure to enable CloudFront cache invalidation
+    // cloudfront: {
+    //     distributionId: 'YOUR_CLOUDFRONT_DISTRIBUTION_ID'
+    // },
+    
     // Build settings
     build: {
         outputDir: 'dist',

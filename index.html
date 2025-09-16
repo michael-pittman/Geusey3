@@ -2,9 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <meta name="description" content="- solutions for any ask -" >
-    <meta name="theme-color" content="#edcfcf">
+    <meta name="theme-color" content="#141416" id="theme-color-meta">
+    
+    <!-- Cache control meta tags for immediate updates -->
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Build version and timestamp for debugging -->
+    <meta name="build-version" content="__VERSION__">
+    <meta name="build-timestamp" content="__BUILD_TIME__">
+    <meta name="generator" content="Vite + Three.js">
+    
+    <!-- Cache busting parameters -->
+    <meta name="cache-buster" content="__BUILD_TIME__">
+    <meta name="asset-version" content="v__VERSION__-__BUILD_TIME__">
+    
+    <!-- Mobile web app meta tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="GEUSE">
+    <meta name="format-detection" content="telephone=no">
+    
     <title>G E U S E</title>
     
     <!-- Fonts -->
@@ -18,20 +40,65 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
     <link rel="manifest" href="/site.webmanifest">
     
-    <!-- Preload critical assets -->
-    <link rel="preload" href="https://www.geuse.io/media/sprite.png" as="image" type="image/png">
-    <link rel="preload" href="https://www.geuse.io/media/glitch.gif" as="image" type="image/gif">
+    <!-- Preload critical assets with cache busting -->
+    <link rel="preload" href="https://www.geuse.io/media/sprite.png?v=__BUILD_TIME__" as="image" type="image/png">
+    <link rel="preload" href="https://www.geuse.io/media/glitch.gif?v=__BUILD_TIME__" as="image" type="image/gif">
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://s3.us-east-1.amazonaws.com">
     <link rel="preconnect" href="https://www.geuse.io">
 
     <style>
+        /* Safe area and dynamic viewport support */
+        :root {
+            --safe-area-inset-top: env(safe-area-inset-top, 0px);
+            --safe-area-inset-right: env(safe-area-inset-right, 0px);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-area-inset-left: env(safe-area-inset-left, 0px);
+            
+            /* Dynamic viewport units fallback */
+            --vh: 1vh;
+            --vw: 1vw;
+            --dvh: 1dvh;
+            --dvw: 1dvw;
+            --svh: 1svh;
+            --svw: 1svw;
+            --lvh: 1lvh;
+            --lvw: 1lvw;
+        }
+        
+        /* Support for browsers without dynamic viewport units */
+        @supports not (height: 1dvh) {
+            :root {
+                --dvh: 1vh;
+                --dvw: 1vw;
+                --svh: 1vh;
+                --svw: 1vw;
+                --lvh: 1vh;
+                --lvw: 1vw;
+            }
+        }
+
         body {
             font-family: "Space Grotesk", sans-serif;
             font-optical-sizing: auto;
             font-weight: 400;
             font-style: normal;
+            
+            /* Ensure body takes full viewport for Three.js renderer background */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+        }
+        
+        /* Safe area support for content containers (not Three.js renderer) */
+        main, #container {
+            padding-top: var(--safe-area-inset-top);
+            padding-right: var(--safe-area-inset-right);
+            padding-bottom: var(--safe-area-inset-bottom);
+            padding-left: var(--safe-area-inset-left);
         }
         
         /* Section 508 compliance: Screen reader only content */
@@ -102,12 +169,44 @@
     
     <script type="module" src="/src/index.js"></script>
     <script>
-        // Register service worker
+        // Version and build information for debugging
+        window.GEUSE_VERSION = '__VERSION__';
+        window.GEUSE_BUILD_TIME = '__BUILD_TIME__';
+        console.info('🚀 GEUSE v' + window.GEUSE_VERSION + ' built at ' + window.GEUSE_BUILD_TIME);
+        
+        // Update theme color meta tag based on current theme
+        function updateThemeColor() {
+            const themeColorMeta = document.getElementById('theme-color-meta');
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 
+                                (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            
+            if (themeColorMeta) {
+                themeColorMeta.content = currentTheme === 'dark' ? '#141416' : '#edcfcf';
+            }
+        }
+        
+        // Update theme color on load and theme changes
+        document.addEventListener('DOMContentLoaded', updateThemeColor);
+        
+        // Listen for theme changes
+        const observer = new MutationObserver(updateThemeColor);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        
+        // Listen for system theme changes
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeColor);
+        }
+        
+        // Register service worker with cache busting
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('/sw.js?v=' + window.GEUSE_BUILD_TIME)
                     .then(registration => {
-                        console.log('ServiceWorker registration successful');
+                        console.log('ServiceWorker registration successful v' + window.GEUSE_VERSION);
+                        // Force update check for new builds
+                        if (registration.waiting) {
+                            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        }
                     })
                     .catch(err => {
                         console.log('ServiceWorker registration failed: ', err);
