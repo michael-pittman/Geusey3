@@ -82,6 +82,12 @@
             font-style: normal;
             font-variant-numeric: tabular-nums;
             font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+            /* Enhanced iOS font rendering */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-variant-ligatures: common-ligatures;
+            font-kerning: auto;
             
             /* Ensure body takes full viewport for Three.js renderer background */
             margin: 0;
