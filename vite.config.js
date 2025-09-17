@@ -7,6 +7,8 @@ export default defineConfig({
     outDir: config.build.outputDir,
     sourcemap: config.build.sourceMap,
     minify: config.build.minify,
+    // CSS optimization for better font rendering performance
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         // Ensure all assets get content hashes for cache busting
@@ -20,6 +22,9 @@ export default defineConfig({
           }
           if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(assetInfo.name)) {
             return `assets/[name]-[hash].${ext}`;
+          }
+          if (/\.(woff2?|eot|ttf|otf)$/.test(assetInfo.name)) {
+            return `assets/fonts/[name]-[hash].${ext}`;
           }
           return `assets/[name]-[hash].${ext}`;
         },
@@ -51,6 +56,13 @@ export default defineConfig({
       }
     }
   ],
+  css: {
+    // Enhanced CSS optimization for better font rendering
+    devSourcemap: true,
+    postcss: {
+      plugins: []
+    }
+  },
   server: {
     port: 3000,
     open: true

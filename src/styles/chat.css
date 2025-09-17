@@ -1,7 +1,17 @@
-/* Optimized Google Fonts loading with multiple weights and font-display: swap */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Special+Elite:wght@400&display=swap');
+/* Native OS Font System - No external dependencies for optimal performance */
 
-/* Comprehensive iOS and Safari font rendering optimizations */
+/* Universal font rendering optimizations for all platforms */
+* {
+    font-family: var(--font-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-variant-ligatures: common-ligatures;
+    font-kerning: auto;
+}
+
+/* Comprehensive cross-platform font rendering optimizations for native OS fonts */
 @supports (-webkit-touch-callout: none) {
     * {
         -webkit-font-smoothing: antialiased;
@@ -29,12 +39,12 @@
     }
 }
 
-/* Enhanced font fallback system for cross-platform consistency */
+/* Native OS font system with comprehensive cross-platform fallbacks */
 :root {
-    /* Primary font stack with robust fallbacks for iOS compatibility */
-    --font-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", "Arial", sans-serif;
-    --font-display: "Special Elite", "Courier New", "Monaco", "Menlo", monospace;
-    --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", "Arial", sans-serif;
+    /* Native OS font stacks for cross-platform consistency and performance */
+    --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Noto Sans", "Helvetica Neue", "Arial", "Liberation Sans", "DejaVu Sans", sans-serif;
+    --font-display: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Noto Mono", "Droid Sans Mono", "Courier New", "DejaVu Sans Mono", "Liberation Mono", monospace;
+    --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Noto Sans", "Helvetica Neue", "Arial", "Liberation Sans", "DejaVu Sans", sans-serif;
 
     /* Font weights for consistent rendering */
     --font-weight-light: 300;

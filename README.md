@@ -37,7 +37,7 @@ The chat interface features a modern glassmorphic design with:
 - **Ultra-transparent glass panels** with backdrop blur effects
 - **Liquid glass styling** for message bubbles with subtle gradients
 - **Smart dark mode** with system detection and manual toggle override
-- **Readable typography** with Space Grotesk font and optimized contrast
+- **Readable typography** with native OS fonts and optimized contrast
 - **Smooth animations** and micro-interactions for enhanced UX
 - **First-run experience** with greeting message and suggestion chips
 - **Discoverability hints** with one-time pill to guide users
