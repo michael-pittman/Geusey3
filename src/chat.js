@@ -299,9 +299,8 @@ class Chat {
             if (target.classList.contains('chip')) {
                 this.triggerHaptic();
                 const text = target.textContent || '';
-                const input = this.container.querySelector('.chat-input');
-                if (input) input.value = text;
-                this.sendMessage();
+                // Pass the suggestion text directly to sendMessage instead of relying on input field
+                this.sendMessage(text);
                 this.hideSuggestions();
             }
         });
@@ -351,14 +350,18 @@ class Chat {
         }
     }
 
-    async sendMessage() {
+    async sendMessage(suggestionText = null) {
         const input = this.container.querySelector('.chat-input');
-        const message = input.value.trim();
+        // Use suggestion text if provided, otherwise get from input field
+        const message = suggestionText ? suggestionText.trim() : input.value.trim();
         if (!message || this.isLoading) return;
 
         // Add user message
         this.addMessage(message, 'user');
-        input.value = '';
+        // Only clear input if we're using input field (not suggestion)
+        if (!suggestionText) {
+            input.value = '';
+        }
         this.setLoading(true);
 
         try {
