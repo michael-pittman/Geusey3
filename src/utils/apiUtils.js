@@ -84,39 +84,39 @@ export async function handleApiResponse(response) {
 export function getErrorMessage(error, context = 'operation') {
     // Handle network-related errors
     if (error.name === 'TypeError' && error.message.includes('CORS')) {
-        return 'Connection error: Unable to reach the server. Please check your internet connection.';
+        return '🌐 Can\'t reach server! Check internet? ✨';
     }
 
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        return 'Network error: Unable to connect to the server. Please check your internet connection.';
+        return '🚀 Spaceship offline! Check internet connection! 🛸';
     }
 
     // Handle specific API error types
     switch (error.type) {
         case API_ERROR_TYPES.EMPTY_RESPONSE:
             if (context === 'sending message') {
-                return 'I received your message but the server returned an empty response. Please try again.';
+                return '📭 Empty reply! Try again? 📮';
             }
-            return 'Server returned an empty response. Please try again.';
+            return '📦 Empty package! Shake and retry? 🎁';
 
         case API_ERROR_TYPES.PARSE:
             if (context === 'sending message') {
-                return 'I received your message but got an invalid response from the server. Please try again.';
+                return '🤔 Server speaks gibberish! Try again? 🗣️';
             }
-            return 'Received invalid response from server. Please try again.';
+            return '🔤 Server riddles! Decoding... try again! 🧩';
 
         case API_ERROR_TYPES.HTTP:
-            return `Server error (${error.status}). Please try again.`;
+            return `🤖 Robot hiccup (${error.status})! Gentle poke? 🔧`;
 
         case API_ERROR_TYPES.NETWORK:
         case API_ERROR_TYPES.CORS:
-            return 'Connection error: Unable to reach the server. Please check your internet connection.';
+            return '🌈 Wobbly bridge! Check internet connection! 🌉';
 
         default:
             if (context === 'sending message') {
-                return 'Sorry, there was an error sending your message. Please try again.';
+                return '😅 Oopsie! Message sending failed! Try again? 💌';
             }
-            return 'An error occurred. Please try again.';
+            return '🎪 Digital circus glitch! Try trick again? 🎭';
     }
 }
 

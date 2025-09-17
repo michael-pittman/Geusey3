@@ -380,21 +380,10 @@ class Chat {
             if (botResponse) {
                 this.addMessage(botResponse, 'bot');
             } else {
-                this.addMessage('I received your message but didn\'t get a response. Please try again.', 'bot');
+                this.addMessage('🤷‍♀️ Brain went blank! Try again? 🧠💭', 'bot');
             }
         } catch (error) {
-            // Handle specific error types with appropriate user messages
-            if (error.type === API_ERROR_TYPES.EMPTY_RESPONSE) {
-                this.addMessage('I received your message but the server returned an empty response. Please try again.', 'bot');
-                return;
-            }
-
-            if (error.type === API_ERROR_TYPES.PARSE) {
-                this.addMessage('I received your message but got an invalid response from the server. Please try again.', 'bot');
-                return;
-            }
-
-            // Use centralized error message generation
+            // Use centralized error message generation for all error types
             const errorMessage = getErrorMessage(error, 'sending message');
             this.addMessage(errorMessage, 'bot');
         } finally {
