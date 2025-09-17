@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Fix Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-container { max-width: 600px; margin: 0 auto; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #log { white-space: pre-wrap; background-color: #f8f9fa; padding: 10px; border-radius: 5px; max-height: 300px; overflow-y: auto; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Webhook 503 Error Fix Test</h1>
+
+        <div class="test-result info">
+            <strong>Testing:</strong> Verifying that Service Worker no longer intercepts webhook calls and returns 503 errors
+        </div>
+
+        <button onclick="testWebhookDirect()">Test Webhook (Direct)</button>
+        <button onclick="testWebhookViaServiceWorker()">Test Webhook (Via Service Worker)</button>
+        <button onclick="clearLog()">Clear Log</button>
+
+        <h3>Test Results:</h3>
+        <div id="log">Ready to test...\n</div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toISOString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = 'Log cleared...\n';
+        }
+
+        async function testWebhookDirect() {
+            log('=== DIRECT WEBHOOK TEST ===');
+            const webhookUrl = 'https://n8n.geuse.io/webhook/a1688d74-03ad-42fa-99b7-a6a4f2211030';
+
+            try {
+                log('Sending direct fetch request to webhook...');
+                const startTime = performance.now();
+
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'sendMessage',
+                        sessionId: 'test-' + Date.now(),
+                        chatInput: 'Testing webhook fix - direct request'
+                    })
+                });
+
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+
+                log(`Response status: ${response.status} ${response.statusText}`);
+                log(`Response time: ${duration.toFixed(2)}ms`);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`SUCCESS: Received response: ${JSON.stringify(data)}`);
+                } else {
+                    log(`ERROR: HTTP ${response.status} - ${response.statusText}`);
+                }
+
+            } catch (error) {
+                log(`ERROR: ${error.message}`);
+                log(`Error details: ${error.stack}`);
+            }
+        }
+
+        async function testWebhookViaServiceWorker() {
+            log('=== SERVICE WORKER WEBHOOK TEST ===');
+
+            // Check if service worker is active
+            if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration && registration.active) {
+                    log('Service Worker is active');
+                } else {
+                    log('No active Service Worker found');
+                }
+            } else {
+                log('Service Worker not supported');
+            }
+
+            const webhookUrl = 'https://n8n.geuse.io/webhook/a1688d74-03ad-42fa-99b7-a6a4f2211030';
+
+            try {
+                log('Sending request through Service Worker (if active)...');
+                const startTime = performance.now();
+
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'sendMessage',
+                        sessionId: 'test-sw-' + Date.now(),
+                        chatInput: 'Testing webhook fix - service worker request'
+                    })
+                });
+
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+
+                log(`Response status: ${response.status} ${response.statusText}`);
+                log(`Response time: ${duration.toFixed(2)}ms`);
+
+                // Check if response came from service worker
+                const fromServiceWorker = response.headers.get('cache-date') ? 'YES' : 'NO';
+                log(`From Service Worker cache: ${fromServiceWorker}`);
+
+                if (response.status === 503) {
+                    log('ERROR: Service Worker still returning 503 - fix not working!');
+                } else if (response.ok) {
+                    const data = await response.json();
+                    log(`SUCCESS: Service Worker bypass working - received: ${JSON.stringify(data)}`);
+                } else {
+                    log(`ERROR: HTTP ${response.status} - ${response.statusText}`);
+                }
+
+            } catch (error) {
+                log(`ERROR: ${error.message}`);
+                log(`Error details: ${error.stack}`);
+            }
+        }
+
+        // Auto-run tests when page loads
+        window.addEventListener('load', () => {
+            log('Page loaded - Service Worker fix test ready');
+            log('Click buttons above to test webhook functionality');
+        });
+    </script>
+</body>
+</html>

@@ -179,18 +179,10 @@ const getRequestType = (url) => {
 self.addEventListener('fetch', (event) => {
     const requestUrl = event.request.url;
     const requestType = getRequestType(requestUrl);
-    
-    // Skip caching for API calls and webhooks - always go to network
+
+    // COMPLETELY bypass Service Worker for webhook and API calls - let browser handle natively
     if (requestType === 'api') {
-        event.respondWith(
-            fetchWithTimeout(event.request).catch(err => {
-                console.warn(`API request failed: ${requestUrl}`, err);
-                return new Response('Network Error', { 
-                    status: 503, 
-                    statusText: 'Service Unavailable' 
-                });
-            })
-        );
+        // Don't intercept at all - let the browser handle the request normally
         return;
     }
 
