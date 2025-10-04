@@ -531,16 +531,16 @@ body {
     /* Fixed positioning anchored above chat icon */
     position: fixed !important;
     bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important; /* Positioned above 60px icon + 30px spacing */
-    left: 50% !important;
-    transform: translateX(-50%) translateZ(0) !important;
-    right: auto !important;
+    right: calc(20px + var(--safe-area-inset-right)) !important;
+    left: auto !important;
+    transform: translateZ(0) !important;
     
     /* CRITICAL: Ensure UI stays well above interactive 3D renderer */
     z-index: 1003 !important; /* Above chat icon which is z-index 1002, well above interactive renderer at z-index 1 */
     
     /* Responsive width with safe area handling */
-    width: min(380px, calc(100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right) - 40px)) !important;
-    height: min(600px, calc(100vh - 120px - var(--safe-area-inset-top) - var(--safe-area-inset-bottom))) !important;
+    width: clamp(320px, 28vw, 420px) !important;
+    height: clamp(480px, 70vh, 600px) !important;
     
     /* Prevent any transform or positioning conflicts */
     top: auto !important;
@@ -596,7 +596,7 @@ body {
     -webkit-backdrop-filter: var(--liquid-backdrop-ultra);
     
     letter-spacing: 0.01em;
-    margin: auto;
+    margin: 0;
     
     /* NO CONFLICTING ANIMATIONS - Removed to prevent choppiness */
     
@@ -866,17 +866,11 @@ body {
 /* Tablets (768px+) - Enhanced positioning */
 @media (min-width: 768px) {
     .chat-container {
-        width: min(450px, calc(100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right) - 60px)) !important;
-        height: min(600px, calc(100vh - 120px - var(--safe-area-inset-top) - var(--safe-area-inset-bottom))) !important;
-        border-radius: 32px;
-        /* Fixed positioning above chat icon for tablets and up */
-        position: fixed !important;
-        left: 50% !important;
-        transform: translateX(-50%) translateZ(0) !important;
-        right: auto !important;
-        bottom: calc(90px + var(--safe-area-inset-bottom)) !important;
-        top: auto !important;
-        margin: 0 !important;
+        width: clamp(360px, 30vw, 450px) !important;
+        height: clamp(480px, 68vh, 600px) !important;
+        left: auto !important;
+        right: calc(24px + var(--safe-area-inset-right)) !important;
+        transform: translateZ(0) !important;
     }
     
     .message {
@@ -901,16 +895,11 @@ body {
 /* Desktop (1024px+) - Enhanced positioning */
 @media (min-width: 1024px) {
     .chat-container {
-        width: 420px !important;
-        height: 600px !important;
-        /* Fixed positioning above chat icon for desktop */
-        position: fixed !important;
-        left: 50% !important;
-        transform: translateX(-50%) translateZ(0) !important;
-        right: auto !important;
-        bottom: calc(90px + var(--safe-area-inset-bottom)) !important;
-        top: auto !important;
-        margin: 0 !important;
+        width: clamp(380px, 26vw, 460px) !important;
+        height: clamp(500px, 65vh, 620px) !important;
+        right: calc(28px + var(--safe-area-inset-right)) !important;
+        left: auto !important;
+        transform: translateZ(0) !important;
     }
 }
 
