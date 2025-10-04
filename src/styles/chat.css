@@ -1153,39 +1153,46 @@ body {
         0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-/* Suggestions bar - repositioned above chat-messages but still above input */
+/* Suggestions bar - repositioned above chat-messages but still above input with enhanced neumorphic design */
 .chat-suggestions {
     position: absolute;
     left: 16px;
     right: 16px;
-    bottom: 100px; /* positioned above input container but below chat-messages */
+    bottom: 92px; /* positioned with proper spacing above input container */
     display: flex;
     flex-wrap: nowrap; /* Don't wrap - keep on one line */
     gap: 8px;
     justify-content: flex-start; /* Align to start for scrolling */
-    z-index: 4; /* higher z-index to ensure it's above chat-messages */
-    padding: 3px; /* 3px padding all around */
-    
-    /* More compact glass effect */
+    z-index: 5; /* higher z-index to ensure it's above chat-messages */
+    padding: 10px 12px; /* Increased padding for better neumorphic depth */
+
+    /* Enhanced neumorphic glass effect */
     background: var(--liquid-glass-secondary);
     border: 1px solid var(--liquid-border-accent);
-    border-radius: 12px;
-    backdrop-filter: var(--liquid-backdrop-primary);
-    -webkit-backdrop-filter: var(--liquid-backdrop-primary);
-    box-shadow: var(--liquid-shadow-secondary);
-    
+    border-radius: 20px; /* More rounded for neumorphic feel */
+    backdrop-filter: var(--liquid-backdrop-ultra);
+    -webkit-backdrop-filter: var(--liquid-backdrop-ultra);
+
+    /* Enhanced neumorphic shadow system */
+    box-shadow:
+        0 2px 8px rgba(31, 38, 135, 0.12),
+        0 8px 24px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+
     /* Horizontal scrolling */
     overflow-x: auto;
     overflow-y: hidden;
-    
+
     /* Hide scrollbar but allow scrolling */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
-    
-    /* Slide down animation for disappearing */
-    transition: 
+
+    /* Smooth animations */
+    transition:
         transform var(--duration-normal) var(--ease-smooth),
-        opacity var(--duration-normal) var(--ease-smooth);
+        opacity var(--duration-normal) var(--ease-smooth),
+        box-shadow var(--duration-normal) var(--ease-smooth);
     transform: translateY(0);
     opacity: 1;
 }
@@ -1207,25 +1214,34 @@ body {
 }
 
 .chat-suggestions .chip {
+    /* Enhanced neumorphic chip design */
     border: 1px solid var(--liquid-border-secondary);
     background: var(--liquid-glass-tertiary);
-    color: var(--bubble-text) !important; /* Ensure proper color inheritance in all themes */
+    color: var(--bubble-text) !important;
     font-family: var(--font-primary);
     font-weight: var(--font-weight-medium);
+    padding: 8px 16px; /* Better spacing for neumorphic feel */
 
     /* iOS-specific text rendering for chips */
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     border-radius: 999px;
     font-size: 0.9rem;
-    font-weight: var(--font-weight-medium);
-    font-family: var(--font-primary);
     cursor: pointer;
+
+    /* Enhanced neumorphic shadow for chips */
+    box-shadow:
+        0 2px 6px rgba(31, 38, 135, 0.1),
+        0 4px 12px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
     transition:
         transform var(--duration-fast) var(--ease-smooth),
-        background var(--duration-fast) var(--ease-smooth);
-    backdrop-filter: var(--liquid-backdrop-subtle);
-    -webkit-backdrop-filter: var(--liquid-backdrop-subtle);
+        background var(--duration-fast) var(--ease-smooth),
+        box-shadow var(--duration-fast) var(--ease-smooth);
+    backdrop-filter: var(--liquid-backdrop-enhanced);
+    -webkit-backdrop-filter: var(--liquid-backdrop-enhanced);
 
     /* Prevent shrinking and ensure minimum width for scrolling */
     flex-shrink: 0;
@@ -1233,19 +1249,36 @@ body {
     min-width: fit-content;
 }
 
-.chat-suggestions .chip:hover { 
+.chat-suggestions .chip:hover {
     transform: translateY(-2px) scale(1.02);
     background: var(--liquid-glass-primary);
+
+    /* Enhanced hover shadow for neumorphic depth */
+    box-shadow:
+        0 4px 12px rgba(31, 38, 135, 0.15),
+        0 8px 24px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.chat-suggestions .chip:active {
+    transform: translateY(0) scale(0.98);
+
+    /* Pressed neumorphic state */
+    box-shadow:
+        0 1px 3px rgba(31, 38, 135, 0.08),
+        0 2px 6px rgba(0, 0, 0, 0.04),
+        inset 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 /* Default chat-messages margin when suggestions are hidden */
-.chat-messages { 
+.chat-messages {
     margin-bottom: 95px; /* aligns bottom to chat-input top when suggestions hidden */
 }
 
-/* Adjust chat-messages margin to accommodate repositioned suggestions */
-.chat-container.has-suggestions .chat-messages { 
-    margin-bottom: 135px; /* increased to make room for suggestions above input */
+/* Adjust chat-messages margin to accommodate repositioned suggestions with proper spacing */
+.chat-container.has-suggestions .chat-messages {
+    margin-bottom: 155px; /* increased spacing: input (75px) + suggestions (48px) + gap (32px) */
 }
 
 .message {
@@ -1626,39 +1659,41 @@ body {
     background: rgba(255, 255, 255, 0.28);
 }
 
-/* Enhanced input container positioning for keyboard responsiveness */
+/* Enhanced input container positioning for keyboard responsiveness with neumorphic design */
 .chat-input-container {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    
+
     /* Ensure input container stays visible above keyboard */
     transform: translateZ(0);
     will-change: transform;
-    
+
     /* Create stacking context for proper z-index behavior */
     isolation: isolate;
-    
-    /* iOS 26 Liquid Glass Input Container Background */
+
+    /* Enhanced neumorphic glass background */
     background: var(--liquid-glass-secondary);
-    
-    /* iOS 26 Liquid Glass Input Container Border */
+
+    /* Neumorphic border with subtle accent */
     border-top: 1px solid var(--liquid-border-accent);
-    
-    /* iOS 26 Liquid Glass Input Container Shadow */
-    box-shadow: var(--liquid-shadow-secondary);
-    
+
+    /* Enhanced neumorphic shadow system */
+    box-shadow:
+        0 -2px 12px rgba(31, 38, 135, 0.1),
+        0 -4px 24px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8px 4px;
-    
-    /* iOS 26 Advanced Liquid Glass Input Container Backdrop Filter */
-    backdrop-filter: var(--liquid-backdrop-enhanced);
-    -webkit-backdrop-filter: var(--liquid-backdrop-enhanced);
-    
-    /* HARMONIZED - No conflicting animations */
+    padding: 12px 16px; /* Increased padding for better neumorphic depth */
+
+    /* Enhanced backdrop filter for neumorphic effect */
+    backdrop-filter: var(--liquid-backdrop-ultra);
+    -webkit-backdrop-filter: var(--liquid-backdrop-ultra);
 }
 
 /* Enhanced Visual Viewport API support with safe area handling */
