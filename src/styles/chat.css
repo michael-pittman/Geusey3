@@ -1269,7 +1269,8 @@ body {
     position: absolute;
     left: 16px;
     right: 16px;
-    bottom: 70px; /* positioned with proper spacing above input container (~64px input + 6px gap) */
+    /* Dynamic positioning based on actual input container height + 6px gap */
+    bottom: calc(var(--chat-input-height, 64px) + 6px);
     display: flex;
     flex-wrap: nowrap; /* Don't wrap - keep on one line */
     gap: 8px;
@@ -1403,12 +1404,14 @@ body {
 
 /* Default chat-messages margin when suggestions are hidden */
 .chat-messages {
-    margin-bottom: 85px; /* aligns bottom to chat-input top when suggestions hidden (~64px input + ~21px gap) */
+    /* Dynamic margin based on actual input container height + 21px gap */
+    margin-bottom: calc(var(--chat-input-height, 64px) + 21px);
 }
 
 /* Adjust chat-messages margin to accommodate repositioned suggestions with proper spacing */
 .chat-container.has-suggestions .chat-messages {
-    margin-bottom: 142px; /* accurate spacing: input container (~64px) + suggestions (~63px) + gap (~15px) */
+    /* Dynamic margin: input container height + suggestions container (~63px) + gap (~15px) */
+    margin-bottom: calc(var(--chat-input-height, 64px) + 63px + 15px);
 }
 
 .message {

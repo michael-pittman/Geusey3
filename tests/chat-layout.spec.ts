@@ -35,7 +35,18 @@ test.describe('Chat Container Layout', () => {
     // Verify chat messages area has proper spacing
     const chatMessages = page.locator('.chat-messages');
     await expect(chatMessages).toBeVisible();
-    
+
+    // Get the dynamic --chat-input-height CSS variable value
+    const inputHeightInfo = await page.evaluate(() => {
+      const inputHeight = getComputedStyle(document.documentElement).getPropertyValue('--chat-input-height');
+      return {
+        inputHeight,
+        inputHeightNum: parseFloat(inputHeight) || 64
+      };
+    });
+
+    console.log('Dynamic input height:', inputHeightInfo);
+
     // Check that chat messages has the correct margin
     const messagesMargin = await chatMessages.evaluate((el) => {
       const style = getComputedStyle(el);
@@ -43,33 +54,47 @@ test.describe('Chat Container Layout', () => {
         marginTop: style.marginTop,
         marginBottom: style.marginBottom,
         marginLeft: style.marginLeft,
-        marginRight: style.marginRight
+        marginRight: style.marginRight,
+        marginBottomNum: parseFloat(style.marginBottom)
       };
     });
-    
-    // Verify the margin values match our updated CSS
-    // When suggestions are visible, margin-bottom should be 135px due to .has-suggestions rule
-    expect(messagesMargin.marginBottom).toBe('135px');
+
+    // Verify the margin values are dynamically calculated
+    // When suggestions are visible, margin-bottom should be: inputHeight + 63px (suggestions) + 15px (gap)
+    const expectedMarginBottom = inputHeightInfo.inputHeightNum + 63 + 15;
+
+    // Allow small rounding variations (±2px)
+    expect(messagesMargin.marginBottomNum).toBeGreaterThanOrEqual(expectedMarginBottom - 2);
+    expect(messagesMargin.marginBottomNum).toBeLessThanOrEqual(expectedMarginBottom + 2);
+
     expect(messagesMargin.marginLeft).toBe('12px');
     expect(messagesMargin.marginRight).toBe('12px');
     
     // Verify suggestions are positioned correctly
     const suggestions = page.locator('.chat-suggestions');
     await expect(suggestions).toBeVisible();
-    
+
     // Check suggestions positioning
     const suggestionsPosition = await suggestions.evaluate((el) => {
       const style = getComputedStyle(el);
       return {
         position: style.position,
         bottom: style.bottom,
+        bottomNum: parseFloat(style.bottom),
         left: style.left,
         right: style.right
       };
     });
-    
+
     expect(suggestionsPosition.position).toBe('absolute');
-    expect(suggestionsPosition.bottom).toBe('100px');
+
+    // Verify dynamic bottom positioning: inputHeight + 6px gap
+    const expectedSuggestionsBottom = inputHeightInfo.inputHeightNum + 6;
+
+    // Allow small rounding variations (±2px)
+    expect(suggestionsPosition.bottomNum).toBeGreaterThanOrEqual(expectedSuggestionsBottom - 2);
+    expect(suggestionsPosition.bottomNum).toBeLessThanOrEqual(expectedSuggestionsBottom + 2);
+
     expect(suggestionsPosition.left).toBe('16px');
     expect(suggestionsPosition.right).toBe('16px');
     
@@ -142,10 +167,21 @@ test.describe('Chat Container Layout', () => {
     // Wait for any animations to complete
     await page.waitForTimeout(1000);
     
+    // Get the dynamic --chat-input-height CSS variable value
+    const inputHeightInfo = await page.evaluate(() => {
+      const inputHeight = getComputedStyle(document.documentElement).getPropertyValue('--chat-input-height');
+      return {
+        inputHeight,
+        inputHeightNum: parseFloat(inputHeight) || 64
+      };
+    });
+
+    console.log('Dynamic input height (suggestions hidden):', inputHeightInfo);
+
     // Verify chat messages area has proper spacing when suggestions are hidden
     const chatMessages = page.locator('.chat-messages');
     await expect(chatMessages).toBeVisible();
-    
+
     // Check that chat messages has the correct margin when suggestions are hidden
     const messagesMargin = await chatMessages.evaluate((el) => {
       const style = getComputedStyle(el);
@@ -153,12 +189,18 @@ test.describe('Chat Container Layout', () => {
         marginTop: style.marginTop,
         marginBottom: style.marginBottom,
         marginLeft: style.marginLeft,
-        marginRight: style.marginRight
+        marginRight: style.marginRight,
+        marginBottomNum: parseFloat(style.marginBottom)
       };
     });
-    
-    // When suggestions are hidden, margin-bottom should be 95px (default state)
-    expect(messagesMargin.marginBottom).toBe('95px');
+
+    // When suggestions are hidden, margin-bottom should be: inputHeight + 21px gap
+    const expectedMarginBottom = inputHeightInfo.inputHeightNum + 21;
+
+    // Allow small rounding variations (±2px)
+    expect(messagesMargin.marginBottomNum).toBeGreaterThanOrEqual(expectedMarginBottom - 2);
+    expect(messagesMargin.marginBottomNum).toBeLessThanOrEqual(expectedMarginBottom + 2);
+
     expect(messagesMargin.marginLeft).toBe('12px');
     expect(messagesMargin.marginRight).toBe('12px');
     

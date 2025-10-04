@@ -31,23 +31,23 @@ class Chat {
         this.container = document.createElement('div');
         this.container.className = 'chat-container';
         // z-index is now handled in CSS for proper stacking context
-        
+
         // Section 508 compliance: ARIA landmarks and roles
         this.container.setAttribute('role', 'dialog');
         this.container.setAttribute('aria-label', 'Chat interface for service requests');
         this.container.setAttribute('aria-modal', 'true');
         this.container.innerHTML = `
             <div class="chat-header">
-                <button class="header-dot" 
-                        title="Close Chat" 
-                        aria-label="Close Chat" 
+                <button class="header-dot"
+                        title="Close Chat"
+                        aria-label="Close Chat"
                         tabindex="0"
                         type="button"></button>
                 <a href="mailto:info@geuse.io?subject=Service Inquiry&body=Here is what I would like for you to build..."
                    aria-label="Send email to Geuse for service inquiry">
                   <span class="chat-header-title" data-text="geuse">geuse</span>
                 </a>
-                <button class="theme-toggle" 
+                <button class="theme-toggle"
                         title="Toggle appearance"
                         aria-label="Toggle dark mode"
                         tabindex="0"
@@ -80,6 +80,9 @@ class Chat {
 
         // Cache messages container reference for performance
         this.messagesContainer = this.container.querySelector('.chat-messages');
+
+        // Initialize dynamic input height measurement system
+        this.setupInputHeightMeasurement();
 
         // Add event listeners
         this.container.querySelector('.header-dot').addEventListener('click', () => {
@@ -157,6 +160,95 @@ class Chat {
 
         // Load previous session if available
         this.loadPreviousSession();
+    }
+
+    /**
+     * Sets up dynamic input height measurement system
+     * Measures the actual rendered height of .chat-input-container and exposes it as --chat-input-height CSS variable
+     * This enables responsive spacing for .chat-suggestions and .chat-messages that adapts to Dynamic Type changes
+     */
+    setupInputHeightMeasurement() {
+        const inputContainer = this.container.querySelector('.chat-input-container');
+        if (!inputContainer) return;
+
+        // Measure and update the CSS variable
+        const measureAndUpdate = () => {
+            // Use requestAnimationFrame to ensure measurement happens after layout
+            requestAnimationFrame(() => {
+                const computedStyle = getComputedStyle(inputContainer);
+                const height = inputContainer.offsetHeight;
+                const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+                const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+
+                // Total height including padding
+                const totalHeight = height;
+
+                // Set CSS custom property on document root for global access
+                document.documentElement.style.setProperty('--chat-input-height', `${totalHeight}px`);
+            });
+        };
+
+        // Initial measurement after DOM is ready
+        // Use setTimeout to ensure all styles are applied
+        setTimeout(measureAndUpdate, 0);
+
+        // Create ResizeObserver to track input container size changes
+        // This handles Dynamic Type changes, viewport changes, and any CSS modifications
+        if (typeof ResizeObserver !== 'undefined') {
+            this.inputResizeObserver = new ResizeObserver(() => {
+                measureAndUpdate();
+            });
+
+            this.inputResizeObserver.observe(inputContainer);
+        }
+
+        // Integrate with existing Visual Viewport API handler for keyboard appearance
+        // Re-measure when keyboard appears/disappears as this can affect layout
+        if ('visualViewport' in window && window.visualViewport) {
+            const handleViewportResize = () => {
+                measureAndUpdate();
+            };
+
+            window.visualViewport.addEventListener('resize', handleViewportResize);
+
+            // Store reference for cleanup
+            this.viewportResizeHandler = handleViewportResize;
+        }
+
+        // Also re-measure when window resizes (orientation changes, browser resize)
+        const handleWindowResize = () => {
+            measureAndUpdate();
+        };
+
+        window.addEventListener('resize', handleWindowResize);
+        this.windowResizeHandler = handleWindowResize;
+    }
+
+    /**
+     * Cleanup method for dynamic height measurement system
+     * Should be called when chat is destroyed
+     */
+    cleanupInputHeightMeasurement() {
+        // Disconnect ResizeObserver
+        if (this.inputResizeObserver) {
+            this.inputResizeObserver.disconnect();
+            this.inputResizeObserver = null;
+        }
+
+        // Remove Visual Viewport listener
+        if (this.viewportResizeHandler && 'visualViewport' in window && window.visualViewport) {
+            window.visualViewport.removeEventListener('resize', this.viewportResizeHandler);
+            this.viewportResizeHandler = null;
+        }
+
+        // Remove window resize listener
+        if (this.windowResizeHandler) {
+            window.removeEventListener('resize', this.windowResizeHandler);
+            this.windowResizeHandler = null;
+        }
+
+        // Clear CSS variable
+        document.documentElement.style.removeProperty('--chat-input-height');
     }
 
     generateSessionId() {
