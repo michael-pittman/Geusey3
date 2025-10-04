@@ -188,17 +188,14 @@ class Chat {
         } catch (error) {
             // Handle empty response as expected behavior for new sessions
             if (error.type === API_ERROR_TYPES.EMPTY_RESPONSE) {
-                console.warn('Empty response from server for loadPreviousSession - likely a new session');
                 return;
             }
 
             // Handle parse errors gracefully for session loading
             if (error.type === API_ERROR_TYPES.PARSE) {
-                console.error('Parse error loading previous session:', error);
                 return;
             }
 
-            console.error('Failed to load previous session:', error);
             // Don't show error to user for loading previous session
         }
     }
@@ -551,10 +548,7 @@ class Chat {
 
         this.renderingMetrics.lastRenderTime = renderTime;
 
-        // Log performance improvements in development
-        if (console && typeof console.debug === 'function') {
-            console.debug(`Chat render: ${renderTime.toFixed(2)}ms (${isIncremental ? 'incremental' : 'full'})`);
-        }
+        // Performance tracking: render time and type
     }
 
     /**

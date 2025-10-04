@@ -62,9 +62,6 @@ export async function handleApiResponse(response) {
     try {
         data = JSON.parse(responseText);
     } catch (parseError) {
-        console.error('Failed to parse JSON response:', parseError);
-        console.error('Response text:', responseText);
-
         const error = new Error('Failed to parse JSON response');
         error.type = API_ERROR_TYPES.PARSE;
         error.originalError = parseError;
@@ -134,9 +131,6 @@ export async function makeApiCall(url, requestBody, context = 'operation') {
         const data = await handleApiResponse(response);
         return data;
     } catch (error) {
-        // Log error details for debugging
-        console.error(`Failed to ${context}:`, error);
-
         // Re-throw with context for caller to handle
         error.context = context;
         throw error;

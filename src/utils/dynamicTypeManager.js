@@ -199,7 +199,7 @@ class DynamicTypeManager {
             try {
                 callback(event, data);
             } catch (error) {
-                console.warn('DynamicTypeManager observer error:', error);
+                // Silent error handling for observer errors
             }
         });
     }

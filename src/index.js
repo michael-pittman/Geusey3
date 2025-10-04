@@ -23,7 +23,6 @@ let originalMaxDistance = 6000;
 const particlesTotal = 512;
 const positions = [];
 const objects = [];
-let current = 0;
 const sceneNames = ['plane', 'cube', 'sphere', 'random', 'spiral', 'fibonacci'];
 let currentScene = 'plane';
 let isTransitioning = false;
@@ -143,7 +142,7 @@ function setupThemeObserver() {
             if (mutation.type === 'attributes' &&
                 mutation.attributeName === 'data-theme' &&
                 mutation.target === document.documentElement) {
-                updateSceneBackground().catch(console.error);
+                updateSceneBackground().catch(() => {});
             }
         });
     });
@@ -240,9 +239,6 @@ function init() {
     try {
         // Initialize theme using shared theme manager
         initializeTheme();
-        // Initialize with lower resolution for better initial load
-        const pixelRatio = Math.min(window.devicePixelRatio, 2);
-        
         // Get viewport dimensions using dynamic viewport units for better mobile support
         // CRITICAL: Calculate extended viewport dimensions including safe areas
         let viewportWidth = window.innerWidth;
@@ -270,7 +266,7 @@ function init() {
         
         scene = new THREE.Scene();
         // Set initial background color based on current theme
-        updateSceneBackground().catch(console.error);
+        updateSceneBackground().catch(() => {});
 
         // Setup theme change observer to automatically update background
         setupThemeObserver();
@@ -639,7 +635,7 @@ function init() {
         // Start animation loop
         animate();
     } catch (error) {
-        console.error('Error initializing Three.js:', error);
+        // Silent error handling - initialization failure
     }
 }
 
@@ -788,7 +784,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
     setInterval(() => {
         const currentTime = performance.now();
         const fps = Math.round(frameCount * 1000 / (currentTime - lastTime));
-        console.log(`3D Performance: ${fps}fps | Objects: ${objects.length} | Scene: ${currentScene}`);
+        // Performance tracking: fps, objects, scene
         frameCount = 0;
         lastTime = currentTime;
     }, 1000);
