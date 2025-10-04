@@ -221,6 +221,75 @@
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.45);
     }
     .chat-send svg { stroke: #8ec7ff; }
+
+    /* DRAMATIC DARK MODE NEUMORPHIC */
+    .chat-container {
+        /* Rich dark frosted glass */
+        background: linear-gradient(145deg,
+            rgba(30, 30, 35, 0.7) 0%,
+            rgba(22, 22, 27, 0.6) 50%,
+            rgba(26, 26, 31, 0.65) 100%
+        );
+
+        /* Strong dark border */
+        border: 2px solid rgba(255, 255, 255, 0.15);
+
+        /* DRAMATIC dark shadows with blue glow */
+        box-shadow:
+            /* Deep outer shadow */
+            0 16px 48px rgba(0, 0, 0, 0.8),
+            0 32px 96px rgba(0, 0, 0, 0.6),
+            /* Inner light for depth */
+            inset 0 4px 8px rgba(255, 255, 255, 0.1),
+            /* Inner dark recess */
+            inset 0 -4px 12px rgba(0, 0, 0, 0.5),
+            /* Strong blue ambient glow */
+            0 8px 40px rgba(91, 182, 248, 0.2);
+
+        /* Dark mode frosted blur */
+        backdrop-filter: blur(35px) saturate(160%) brightness(85%) contrast(115%);
+        -webkit-backdrop-filter: blur(35px) saturate(160%) brightness(85%) contrast(115%);
+    }
+
+    .chat-container.visible {
+        /* Maximum dark elevation */
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.9),
+            0 40px 120px rgba(0, 0, 0, 0.7),
+            inset 0 6px 12px rgba(255, 255, 255, 0.15),
+            inset 0 -6px 16px rgba(0, 0, 0, 0.6),
+            0 10px 50px rgba(91, 182, 248, 0.3);
+
+        /* Enhanced dark frosted glass */
+        backdrop-filter: blur(40px) saturate(170%) brightness(88%) contrast(118%);
+        -webkit-backdrop-filter: blur(40px) saturate(170%) brightness(88%) contrast(118%);
+    }
+
+    /* Dark mode border glow adjustment */
+    .chat-container::before {
+        background: linear-gradient(145deg,
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(255, 255, 255, 0.06) 20%,
+            rgba(255, 255, 255, 0.02) 40%,
+            rgba(0, 0, 0, 0.05) 60%,
+            rgba(0, 0, 0, 0.15) 80%,
+            rgba(0, 0, 0, 0.25) 100%
+        );
+        opacity: 0.7;
+    }
+
+    /* Dark mode inner highlight */
+    .chat-container::after {
+        background: linear-gradient(165deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(255, 255, 255, 0.03) 15%,
+            transparent 30%,
+            transparent 70%,
+            rgba(0, 0, 0, 0.1) 85%,
+            rgba(0, 0, 0, 0.2) 100%
+        );
+        opacity: 0.6;
+    }
 }
 
 /* Light Mode Explicit Override */
@@ -534,41 +603,55 @@ body {
     right: calc(20px + var(--safe-area-inset-right)) !important;
     left: auto !important;
     transform: translateZ(0) !important;
-    
+
     /* CRITICAL: Ensure UI stays well above interactive 3D renderer */
     z-index: 1003 !important; /* Above chat icon which is z-index 1002, well above interactive renderer at z-index 1 */
-    
+
     /* Responsive width with safe area handling */
     width: clamp(320px, 28vw, 420px) !important;
     height: clamp(480px, 70vh, 600px) !important;
-    
+
     /* Prevent any transform or positioning conflicts */
     top: auto !important;
     margin: 0 !important;
-    
+
     /* Ensure chat container interaction */
     pointer-events: auto !important;
-    
-    /* iOS 26 Liquid Glass Primary Material */
-    background: var(--liquid-glass-primary);
-    
-    /* Liquid Glass Border Radius - Organic, flowing curves */
-    border-radius: 32px;
-    
-    /* Advanced Liquid Glass Border System */
-    border: 1px solid var(--liquid-border-primary);
+
+    /* DRAMATIC NEUMORPHIC + GLASSMORPHIC DESIGN */
+    /* Rich frosted glass with pronounced depth */
+    background: linear-gradient(145deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.2) 100%
+    );
+
+    /* Pronounced neumorphic border radius */
+    border-radius: 40px;
+
+    /* Strong neumorphic border for maximum depth */
+    border: 2px solid rgba(255, 255, 255, 0.35);
     background-clip: padding-box;
     position: relative;
-    
-    /* iOS 26 Liquid Glass Shadow System */
-    box-shadow: var(--liquid-shadow-primary);
-    
+
+    /* DRAMATIC neumorphic shadow system - pronounced 3D elevation */
+    box-shadow:
+        /* Strong outer lift shadow */
+        0 16px 48px rgba(31, 38, 135, 0.3),
+        0 32px 96px rgba(0, 0, 0, 0.25),
+        /* Bright inner top highlight */
+        inset 0 4px 8px rgba(255, 255, 255, 0.5),
+        /* Deep inner bottom shadow */
+        inset 0 -4px 12px rgba(0, 0, 0, 0.15),
+        /* Strong ambient glow */
+        0 8px 32px rgba(0, 0, 0, 0.2);
+
     /* Flexbox Layout with Modern Properties */
     display: flex;
     flex-direction: column;
     overflow: hidden;
     z-index: 1003;
-    
+
     /* Typography Enhancement with robust fallbacks */
     font-family: var(--font-primary);
     font-weight: var(--font-weight-normal);
@@ -576,30 +659,29 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    
+
     /* Initial State for Entrance Animation */
     opacity: 0;
     filter: blur(8px);
-    
+
     /* HARMONIZED - Clean Single Transition */
-    transition: 
+    transition:
         opacity var(--duration-slow) var(--ease-smooth),
-        filter var(--duration-slow) var(--ease-smooth);
+        filter var(--duration-slow) var(--ease-smooth),
+        box-shadow 0.5s var(--ease-smooth);
     display: none;
-    
+
     /* Force positioning context */
     transform: translateZ(0);
     will-change: transform, opacity;
-    
-    /* iOS 26 Liquid Glass Backdrop Filter - Ultra-premium */
-    backdrop-filter: var(--liquid-backdrop-ultra);
-    -webkit-backdrop-filter: var(--liquid-backdrop-ultra);
-    
+
+    /* DRAMATIC backdrop filter - heavy blur for pronounced frosted glass */
+    backdrop-filter: blur(40px) saturate(180%) brightness(110%) contrast(115%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(110%) contrast(115%);
+
     letter-spacing: 0.01em;
     margin: 0;
-    
-    /* NO CONFLICTING ANIMATIONS - Removed to prevent choppiness */
-    
+
     /* Modern Container Query Support */
     container-type: inline-size;
 }
@@ -652,30 +734,43 @@ body {
     100% { transform: translateY(50%) scale(1.05); }
 }
 
-/* iOS 26 Liquid Glass Advanced Border Effect */
+/* Enhanced Neumorphic Border Glow - Premium Light Source Effect */
 .chat-container::before {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 32px;
-    padding: 1.5px;
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.15) 0%,
-        rgba(255, 255, 255, 0.08) 15%,
-        rgba(255, 255, 255, 0.04) 35%,
-        rgba(255, 255, 255, 0.06) 50%,
-        rgba(255, 255, 255, 0.04) 65%,
-        rgba(255, 255, 255, 0.08) 85%,
-        rgba(255, 255, 255, 0.15) 100%
+    border-radius: 36px;
+    padding: 2px;
+    /* Neumorphic light source from top-left with soft gradient */
+    background: linear-gradient(145deg,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0.15) 20%,
+        rgba(255, 255, 255, 0.05) 40%,
+        rgba(0, 0, 0, 0.02) 60%,
+        rgba(0, 0, 0, 0.08) 80%,
+        rgba(0, 0, 0, 0.15) 100%
     );
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: xor;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     pointer-events: none;
-    
-    /* Liquid Glass Dynamic Border Animation */
-    animation: liquidGlassBorderFlow 8s ease-in-out infinite;
+    opacity: 0.8;
+
+    /* Subtle breathing animation for organic feel */
+    animation: neumorphicBorderBreathe 6s ease-in-out infinite;
+}
+
+/* Neumorphic breathing animation - subtle organic movement */
+@keyframes neumorphicBorderBreathe {
+    0%, 100% {
+        opacity: 0.8;
+        filter: blur(0px);
+    }
+    50% {
+        opacity: 0.9;
+        filter: blur(0.5px);
+    }
 }
 
 /* iOS 26 Liquid Glass Border Flow Animation */
@@ -726,28 +821,50 @@ body {
     }
 }
 
-/* iOS 26 Liquid Glass Refraction Layer */
+/* Enhanced Neumorphic Inner Highlight - Soft Depth Perception */
 .chat-container::after {
     content: '';
     position: absolute;
-    inset: 3px;
-    border-radius: 29px;
-    background: linear-gradient(125deg, 
-        rgba(255, 255, 255, 0.12) 0%,
-        rgba(255, 255, 255, 0.04) 15%,
-        transparent 25%,
-        transparent 40%,
-        rgba(255, 255, 255, 0.06) 50%,
-        transparent 60%,
-        transparent 75%,
-        rgba(255, 255, 255, 0.04) 85%,
-        rgba(255, 255, 255, 0.12) 100%
+    inset: 4px;
+    border-radius: 33px;
+    /* Neumorphic inner light reflection from top */
+    background: linear-gradient(165deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.08) 15%,
+        transparent 30%,
+        transparent 70%,
+        rgba(0, 0, 0, 0.03) 85%,
+        rgba(0, 0, 0, 0.06) 100%
     );
     pointer-events: none;
-    opacity: 0.8;
-    
-    /* Subtle liquid refraction animation */
-    animation: liquidRefractionFlow 12s ease-in-out infinite;
+    opacity: 0.7;
+
+    /* Subtle shift for organic depth feel */
+    animation: neumorphicInnerShift 8s ease-in-out infinite;
+}
+
+/* Neumorphic inner highlight shift - creates depth perception */
+@keyframes neumorphicInnerShift {
+    0%, 100% {
+        background: linear-gradient(165deg,
+            rgba(255, 255, 255, 0.2) 0%,
+            rgba(255, 255, 255, 0.08) 15%,
+            transparent 30%,
+            transparent 70%,
+            rgba(0, 0, 0, 0.03) 85%,
+            rgba(0, 0, 0, 0.06) 100%
+        );
+    }
+    50% {
+        background: linear-gradient(175deg,
+            rgba(255, 255, 255, 0.18) 0%,
+            rgba(255, 255, 255, 0.1) 18%,
+            transparent 35%,
+            transparent 65%,
+            rgba(0, 0, 0, 0.04) 82%,
+            rgba(0, 0, 0, 0.08) 100%
+        );
+    }
 }
 
 /* iOS 26 Liquid Glass Refraction Animation */
@@ -797,16 +914,23 @@ body {
     opacity: 1;
     filter: blur(0);
     display: flex;
-    
-    /* NO CONFLICTING ANIMATIONS - Clean state only */
-    
-    /* iOS 26 Liquid Glass Enhanced Active Shadow */
-    box-shadow: var(--liquid-shadow-primary);
-    
+
+    /* DRAMATIC active shadow - maximum elevation */
+    box-shadow:
+        /* Strong outer glow */
+        0 20px 60px rgba(31, 38, 135, 0.35),
+        0 40px 120px rgba(0, 0, 0, 0.3),
+        /* Very bright inner highlight */
+        inset 0 6px 12px rgba(255, 255, 255, 0.6),
+        /* Deep inner shadow */
+        inset 0 -6px 16px rgba(0, 0, 0, 0.2),
+        /* Strong ambient glow */
+        0 10px 40px rgba(0, 0, 0, 0.25);
+
     /* Enhanced backdrop filter for active state */
-    backdrop-filter: var(--liquid-backdrop-ultra);
-    -webkit-backdrop-filter: var(--liquid-backdrop-ultra);
-    
+    backdrop-filter: blur(45px) saturate(190%) brightness(112%) contrast(118%);
+    -webkit-backdrop-filter: blur(45px) saturate(190%) brightness(112%) contrast(118%);
+
     /* CRITICAL: Ensure positioning is maintained when visible */
     position: fixed !important;
     bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important; /* Above chat icon */
@@ -814,7 +938,7 @@ body {
     transform: translateX(-50%) translateZ(0) !important;
     right: auto !important;
     z-index: 1003 !important;
-    
+
     /* Prevent any positioning conflicts */
     top: auto !important;
     margin: 0 !important;
@@ -852,14 +976,14 @@ body {
     }
     
     .chat-input {
-        padding: 10px 44px 10px 14px;
+        padding: 10px 50px 10px 14px;
         font-size: 0.95rem;
     }
-    
+
     .chat-send {
         width: 36px;
         height: 36px;
-        right: 6px;
+        right: 8px;
     }
 }
 
@@ -965,14 +1089,14 @@ body {
     }
     
     .chat-input {
-        padding: 6px 35px 6px 8px;
+        padding: 6px 40px 6px 8px;
         font-size: 0.95rem;
     }
-    
+
     .chat-send {
         width: 28px;
         height: 28px;
-        right: 5px;
+        right: 6px;
     }
     
     .message {
@@ -1214,61 +1338,80 @@ body {
 }
 
 .chat-suggestions .chip {
-    /* Enhanced neumorphic chip design */
-    border: 1px solid var(--liquid-border-secondary);
-    background: var(--liquid-glass-tertiary);
+    /* DRAMATIC NEUMORPHIC Chip Design */
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    background: linear-gradient(145deg,
+        rgba(255, 255, 255, 0.35) 0%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0.3) 100%
+    );
     color: var(--bubble-text) !important;
     font-family: var(--font-primary);
-    font-weight: var(--font-weight-medium);
-    padding: 8px 16px; /* Better spacing for neumorphic feel */
+    font-weight: var(--font-weight-semibold);
+    padding: 10px 18px;
 
-    /* iOS-specific text rendering for chips */
+    /* iOS-specific text rendering */
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     border-radius: 999px;
     font-size: 0.9rem;
     cursor: pointer;
 
-    /* Enhanced neumorphic shadow for chips */
+    /* DRAMATIC neumorphic shadow - soft 3D buttons */
     box-shadow:
-        0 2px 6px rgba(31, 38, 135, 0.1),
-        0 4px 12px rgba(0, 0, 0, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+        /* Outer lift */
+        0 4px 10px rgba(31, 38, 135, 0.15),
+        0 8px 20px rgba(0, 0, 0, 0.1),
+        /* Inner top highlight */
+        inset 0 2px 4px rgba(255, 255, 255, 0.4),
+        /* Inner bottom shadow */
+        inset 0 -2px 6px rgba(0, 0, 0, 0.1);
 
     transition:
         transform var(--duration-fast) var(--ease-smooth),
         background var(--duration-fast) var(--ease-smooth),
         box-shadow var(--duration-fast) var(--ease-smooth);
-    backdrop-filter: var(--liquid-backdrop-enhanced);
-    -webkit-backdrop-filter: var(--liquid-backdrop-enhanced);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
 
-    /* Prevent shrinking and ensure minimum width for scrolling */
+    /* Prevent shrinking */
     flex-shrink: 0;
     white-space: nowrap;
     min-width: fit-content;
 }
 
 .chat-suggestions .chip:hover {
-    transform: translateY(-2px) scale(1.02);
-    background: var(--liquid-glass-primary);
+    transform: translateY(-3px) scale(1.05);
+    background: linear-gradient(145deg,
+        rgba(255, 255, 255, 0.45) 0%,
+        rgba(255, 255, 255, 0.35) 50%,
+        rgba(255, 255, 255, 0.4) 100%
+    );
 
-    /* Enhanced hover shadow for neumorphic depth */
+    /* DRAMATIC hover shadow - maximum lift */
     box-shadow:
-        0 4px 12px rgba(31, 38, 135, 0.15),
-        0 8px 24px rgba(0, 0, 0, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+        /* Strong lift */
+        0 8px 16px rgba(31, 38, 135, 0.2),
+        0 12px 32px rgba(0, 0, 0, 0.15),
+        /* Bright highlight */
+        inset 0 3px 6px rgba(255, 255, 255, 0.5),
+        /* Deep shadow */
+        inset 0 -3px 8px rgba(0, 0, 0, 0.15),
+        /* Subtle glow */
+        0 0 20px rgba(91, 182, 248, 0.1);
 }
 
 .chat-suggestions .chip:active {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(0) scale(0.96);
 
-    /* Pressed neumorphic state */
+    /* DRAMATIC pressed state - deep inset */
     box-shadow:
-        0 1px 3px rgba(31, 38, 135, 0.08),
-        0 2px 6px rgba(0, 0, 0, 0.04),
-        inset 0 2px 4px rgba(0, 0, 0, 0.08);
+        /* Minimal outer */
+        0 2px 4px rgba(31, 38, 135, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.08),
+        /* Deep inset */
+        inset 0 3px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 /* Default chat-messages margin when suggestions are hidden */
@@ -1375,44 +1518,50 @@ body {
 /* REMOVED - Unused conflicting animation */
 
 .chat-input {
-    /* Modern Input Layout */
+    /* DRAMATIC NEUMORPHIC Input Field */
     flex: 1 1 auto;
     width: 100%;
     max-width: none;
-    padding: 14px 56px 14px 18px; /* Enhanced padding for neumorphic depth */
-    border-radius: 28px; /* More pronounced roundness */
+    padding: 16px 60px 16px 20px;
+    border-radius: 30px;
 
-    /* Enhanced neumorphic border */
-    border: 1px solid var(--liquid-border-accent);
+    /* Strong inset border */
+    border: 2px solid rgba(0, 0, 0, 0.08);
 
-    /* Enhanced neumorphic background */
-    background: var(--liquid-glass-tertiary);
+    /* Subtle recessed background */
+    background: linear-gradient(145deg,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.25) 100%
+    );
 
-    /* Typography Enhancement - Enhanced readability */
+    /* Typography Enhancement */
     color: rgba(25, 15, 15, 0.95);
     font-size: 1rem;
     font-weight: var(--font-weight-medium);
     font-family: var(--font-primary);
     line-height: 1.4;
 
-    /* Reduced text shadow for better readability in light mode */
-    text-shadow:
-        0 1px 1px rgba(255, 255, 255, 0.6);
+    /* Subtle text shadow */
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 
-    /* Enhanced neumorphic shadow system for input */
+    /* DRAMATIC inset shadow - recessed appearance */
     box-shadow:
-        0 2px 8px rgba(31, 38, 135, 0.08),
-        0 4px 16px rgba(0, 0, 0, 0.05),
-        inset 0 2px 4px rgba(0, 0, 0, 0.06),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        /* Deep inset top shadow */
+        inset 0 3px 8px rgba(0, 0, 0, 0.15),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1),
+        /* Subtle outer shadow for depth */
+        0 2px 6px rgba(0, 0, 0, 0.08),
+        /* Inner bottom highlight */
+        inset 0 -2px 4px rgba(255, 255, 255, 0.3);
 
     position: relative;
 
-    /* Enhanced backdrop filter for neumorphic depth */
-    backdrop-filter: var(--liquid-backdrop-enhanced);
-    -webkit-backdrop-filter: var(--liquid-backdrop-enhanced);
+    /* Soft blur for depth */
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
 
-    /* Smooth Transitions */
+    /* Smooth transitions */
     transition:
         all var(--duration-normal) var(--ease-smooth),
         box-shadow var(--duration-normal) var(--ease-smooth),
@@ -1421,8 +1570,8 @@ body {
     /* Better Accessibility */
     caret-color: #5bb6f8;
 
-    /* Ensure input doesn't interfere with submit button */
-    padding-right: 56px;
+    /* Space for send button */
+    padding-right: 60px;
 }
 
 .chat-input::placeholder {
@@ -1527,14 +1676,14 @@ body {
 }
 
 .chat-send {
-    /* Modern Send Button Layout */
+    /* DRAMATIC NEUMORPHIC Send Button */
     position: absolute;
-    right: 10px;
+    right: 8px;
     bottom: 50%;
     transform: translateY(50%);
     margin-left: 0;
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     padding: 0;
     border-radius: 50%;
 
@@ -1543,28 +1692,37 @@ body {
     pointer-events: all;
     isolation: isolate;
 
-    /* Enhanced neumorphic border */
-    border: 1px solid var(--liquid-border-accent);
+    /* Strong neumorphic border with gradient effect */
+    border: 2px solid rgba(91, 182, 248, 0.3);
 
-    /* Enhanced neumorphic background */
-    background: var(--liquid-glass-secondary);
+    /* Rich gradient background for depth */
+    background: linear-gradient(145deg,
+        rgba(91, 182, 248, 0.25) 0%,
+        rgba(91, 182, 248, 0.15) 50%,
+        rgba(91, 182, 248, 0.2) 100%
+    );
 
     color: #5bb6f8;
 
-    /* Enhanced neumorphic shadow system for send button */
+    /* DRAMATIC neumorphic shadow - pronounced 3D button */
     box-shadow:
-        0 3px 10px rgba(91, 182, 248, 0.15),
-        0 6px 20px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.08);
+        /* Strong outer lift */
+        0 6px 16px rgba(91, 182, 248, 0.3),
+        0 12px 32px rgba(0, 0, 0, 0.15),
+        /* Bright top highlight */
+        inset 0 3px 6px rgba(255, 255, 255, 0.4),
+        /* Deep bottom shadow */
+        inset 0 -3px 8px rgba(0, 0, 0, 0.15),
+        /* Blue glow */
+        0 0 20px rgba(91, 182, 248, 0.2);
 
     cursor: pointer;
 
-    /* Enhanced backdrop filter for neumorphic depth */
-    backdrop-filter: var(--liquid-backdrop-enhanced);
-    -webkit-backdrop-filter: var(--liquid-backdrop-enhanced);
+    /* Enhanced backdrop blur */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
 
-    /* Smooth Transitions with Spring Physics */
+    /* Smooth spring transitions */
     transition:
         all var(--duration-normal) var(--ease-smooth),
         transform var(--duration-fast) var(--ease-bounce),
@@ -1584,51 +1742,71 @@ body {
 }
 
 .chat-send svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     stroke: #5bb6f8;
+    stroke-width: 2.5;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 .chat-send:hover {
     border-color: rgba(91, 182, 248, 0.5);
-    background: var(--liquid-glass-primary);
+    background: linear-gradient(145deg,
+        rgba(91, 182, 248, 0.35) 0%,
+        rgba(91, 182, 248, 0.25) 50%,
+        rgba(91, 182, 248, 0.3) 100%
+    );
 
-    /* Enhanced neumorphic hover shadow */
+    /* DRAMATIC hover shadow - maximum elevation */
     box-shadow:
-        0 4px 16px rgba(91, 182, 248, 0.2),
-        0 8px 32px rgba(0, 0, 0, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.1),
-        0 0 0 3px rgba(91, 182, 248, 0.15);
+        /* Strong lift */
+        0 10px 24px rgba(91, 182, 248, 0.4),
+        0 16px 48px rgba(0, 0, 0, 0.2),
+        /* Bright highlight */
+        inset 0 4px 8px rgba(255, 255, 255, 0.5),
+        /* Deep shadow */
+        inset 0 -4px 10px rgba(0, 0, 0, 0.2),
+        /* Strong blue glow */
+        0 0 30px rgba(91, 182, 248, 0.35),
+        /* Focus ring */
+        0 0 0 4px rgba(91, 182, 248, 0.15);
 
-    /* Enhanced Backdrop Filter on Hover */
-    backdrop-filter: var(--liquid-backdrop-ultra);
-    -webkit-backdrop-filter: var(--liquid-backdrop-ultra);
+    /* Enhanced blur on hover */
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
 
-    /* Neumorphic lift on hover */
-    transform: translateY(calc(50% - 2px)) scale(1.05);
+    /* Pronounced lift */
+    transform: translateY(calc(50% - 4px)) scale(1.08);
 
     color: #4a9eff;
 }
 
 .chat-send:active {
-    /* Neumorphic pressed state */
-    background: var(--liquid-glass-tertiary);
+    /* DRAMATIC pressed state - deep inset */
+    background: linear-gradient(145deg,
+        rgba(91, 182, 248, 0.15) 0%,
+        rgba(91, 182, 248, 0.1) 50%,
+        rgba(91, 182, 248, 0.12) 100%
+    );
     border-color: rgba(91, 182, 248, 0.6);
 
-    /* Neumorphic pressed shadow - inset dominant */
+    /* Deep pressed shadow - fully recessed */
     box-shadow:
-        0 1px 4px rgba(91, 182, 248, 0.15),
-        0 2px 8px rgba(0, 0, 0, 0.08),
-        inset 0 3px 8px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        /* Minimal outer shadow */
+        0 2px 6px rgba(91, 182, 248, 0.2),
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        /* Deep inset shadows */
+        inset 0 4px 12px rgba(0, 0, 0, 0.3),
+        inset 0 2px 6px rgba(0, 0, 0, 0.2),
+        /* Subtle inner glow */
+        inset 0 -1px 2px rgba(255, 255, 255, 0.1);
 
-    /* Enhanced Active Backdrop Filter */
-    backdrop-filter: var(--liquid-backdrop-enhanced);
-    -webkit-backdrop-filter: var(--liquid-backdrop-enhanced);
+    /* Reduced blur when pressed */
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
 
-    /* Button press effect */
-    transform: translateY(calc(50% + 1px)) scale(0.98);
+    /* Pronounced press effect */
+    transform: translateY(calc(50% + 2px)) scale(0.95);
 
     color: #2196f3;
 }
