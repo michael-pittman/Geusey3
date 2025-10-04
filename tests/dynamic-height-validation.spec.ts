@@ -33,9 +33,9 @@ test.describe('Dynamic Chat Input Height System', () => {
     expect(cssVariableInfo.isSet).toBe(true);
     expect(cssVariableInfo.numericValue).toBeGreaterThan(0);
 
-    // Verify it's within a reasonable range (40px - 100px for normal cases)
+    // Verify it's within a reasonable range (40px - 120px for normal cases)
     expect(cssVariableInfo.numericValue).toBeGreaterThanOrEqual(40);
-    expect(cssVariableInfo.numericValue).toBeLessThanOrEqual(100);
+    expect(cssVariableInfo.numericValue).toBeLessThanOrEqual(120);
 
     // Get actual input container height
     const actualInputHeight = await page.locator('.chat-input-container').evaluate((el) => {
@@ -131,7 +131,7 @@ test.describe('Dynamic Chat Input Height System', () => {
     // Height should still be set and reasonable
     expect(heightAfterResize).toBeGreaterThan(0);
     expect(heightAfterResize).toBeGreaterThanOrEqual(40);
-    expect(heightAfterResize).toBeLessThanOrEqual(100);
+    expect(heightAfterResize).toBeLessThanOrEqual(120);
 
     // Change to mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
@@ -146,7 +146,7 @@ test.describe('Dynamic Chat Input Height System', () => {
     // Height should still be reasonable on mobile
     expect(heightAfterMobileResize).toBeGreaterThan(0);
     expect(heightAfterMobileResize).toBeGreaterThanOrEqual(40);
-    expect(heightAfterMobileResize).toBeLessThanOrEqual(100);
+    expect(heightAfterMobileResize).toBeLessThanOrEqual(120);
   });
 
   test('validates cleanup on chat close', async ({ page }) => {

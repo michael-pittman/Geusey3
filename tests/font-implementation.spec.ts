@@ -85,7 +85,7 @@ test.describe('Font Implementation Validation', () => {
     await page.goto('/');
 
     // Open chat interface
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+        await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
 
     // Test header title font
@@ -158,7 +158,7 @@ test.describe('Font Implementation Validation', () => {
     await page.goto('/');
 
     // Open chat to access theme toggle
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+        await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
 
     // Get initial theme and font properties
@@ -256,7 +256,7 @@ test.describe('Font Implementation Validation', () => {
     await page.goto('/');
 
     // Open chat
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+        await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
 
     // Test input field font size meets iOS requirements
@@ -292,7 +292,7 @@ test.describe('Font Implementation Validation', () => {
     await page.goto('/');
 
     // Open chat interface
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+        await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
 
     // Test advanced typography features
@@ -419,7 +419,7 @@ test.describe('Font Implementation Validation', () => {
     await page.waitForLoadState('networkidle');
 
     // Open chat interface
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+        await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
 
     // Test font readability in high contrast mode

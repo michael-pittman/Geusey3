@@ -5,7 +5,7 @@ test.describe('Theme toggle and persistence', () => {
     await page.goto('/');
 
     // Open chat to reveal header toggle
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+    await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
 
     // Locate the toggle button via aria-label inside chat header
@@ -77,7 +77,7 @@ test.describe('UX enhancements', () => {
 
   test('first-open greeting and suggestions, and focus trap works', async ({ page }) => {
     await page.goto('/');
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+    await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
     // Greeting bubble appears
     await expect(page.locator('.message.bot', { hasText: 'Hi! Tell me what' })).toBeVisible();
@@ -90,7 +90,7 @@ test.describe('UX enhancements', () => {
     // Re-open chat should not show suggestions again because user has messages
     await page.getByRole('button', { name: /close chat/i }).click();
     await page.locator('.chat-container').waitFor({ state: 'hidden' });
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+    await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
     await expect(page.locator('.chat-suggestions')).toBeHidden();
     // Focus trap: Tab from theme toggle cycles within dialog

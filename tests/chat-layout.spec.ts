@@ -4,8 +4,8 @@ test.describe('Chat Container Layout', () => {
   test('chat container layout matches screenshot with proper spacing', async ({ page }) => {
     await page.goto('/');
     
-    // Open chat to reveal the interface
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+    // Open chat to reveal the interface - click the div wrapper instead of the img
+    await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
     
     // Wait for suggestions to appear
@@ -98,7 +98,7 @@ test.describe('Chat Container Layout', () => {
     expect(suggestionsPosition.left).toBe('16px');
     expect(suggestionsPosition.right).toBe('16px');
     
-    // Verify suggestions have no padding (removed as requested)
+    // Verify suggestions have proper padding for neumorphic design
     const suggestionsPadding = await suggestions.evaluate((el) => {
       const style = getComputedStyle(el);
       return {
@@ -108,11 +108,11 @@ test.describe('Chat Container Layout', () => {
         paddingRight: style.paddingRight
       };
     });
-    
-    expect(suggestionsPadding.paddingTop).toBe('0px');
-    expect(suggestionsPadding.paddingBottom).toBe('0px');
-    expect(suggestionsPadding.paddingLeft).toBe('0px');
-    expect(suggestionsPadding.paddingRight).toBe('0px');
+
+    expect(suggestionsPadding.paddingTop).toBe('10px');
+    expect(suggestionsPadding.paddingBottom).toBe('10px');
+    expect(suggestionsPadding.paddingLeft).toBe('12px');
+    expect(suggestionsPadding.paddingRight).toBe('12px');
     
     // Verify suggestions gap
     const suggestionsGap = await suggestions.evaluate((el) => {
@@ -142,8 +142,8 @@ test.describe('Chat Container Layout', () => {
   test('chat messages margin when suggestions are hidden', async ({ page }) => {
     await page.goto('/');
     
-    // Open chat to reveal the interface
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+    // Open chat to reveal the interface - click the div wrapper instead of the img
+    await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
     
     // Wait for suggestions to appear initially

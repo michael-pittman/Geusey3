@@ -7,12 +7,12 @@ test.describe('Chat Incremental Rendering Performance', () => {
         await page.waitForLoadState('domcontentloaded');
 
         // Wait for the chat system to be ready
-        await page.waitForSelector('img[src*="glitch.gif"], img[src*="fire.gif"]', { timeout: 10000 });
+        await page.waitForSelector('#chat-icon', { timeout: 10000 });
     });
 
     test('should efficiently render messages incrementally', async ({ page }) => {
         // Open chat interface
-        const chatIcon = page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]');
+        const chatIcon = page.locator('#chat-icon');
         await chatIcon.click();
         await page.waitForSelector('.chat-container.visible', { timeout: 5000 });
 
@@ -96,7 +96,7 @@ test.describe('Chat Incremental Rendering Performance', () => {
 
     test('should preserve scroll position and focus during incremental rendering', async ({ page }) => {
         // Open chat
-        const chatIcon = page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]');
+        const chatIcon = page.locator('#chat-icon');
         await chatIcon.click();
         await page.waitForSelector('.chat-container.visible');
 
@@ -153,7 +153,7 @@ test.describe('Chat Incremental Rendering Performance', () => {
 
     test('should maintain accessibility attributes with incremental rendering', async ({ page }) => {
         // Open chat
-        const chatIcon = page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]');
+        const chatIcon = page.locator('#chat-icon');
         await chatIcon.click();
         await page.waitForSelector('.chat-container.visible');
 
@@ -184,7 +184,7 @@ test.describe('Chat Incremental Rendering Performance', () => {
 
     test('should handle performance metrics correctly', async ({ page }) => {
         // Open chat
-        const chatIcon = page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]');
+        const chatIcon = page.locator('#chat-icon');
         await chatIcon.click();
         await page.waitForSelector('.chat-container.visible');
 
@@ -220,7 +220,7 @@ test.describe('Chat Incremental Rendering Performance', () => {
 
     test('should handle edge cases gracefully', async ({ page }) => {
         // Open chat
-        const chatIcon = page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]');
+        const chatIcon = page.locator('#chat-icon');
         await chatIcon.click();
         await page.waitForSelector('.chat-container.visible');
 

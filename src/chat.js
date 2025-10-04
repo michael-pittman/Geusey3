@@ -63,16 +63,18 @@ class Chat {
                 <button class="chip" type="button">Build a data dashboard</button>
             </div>
             <div class="chat-input-container">
-                <input type="text" class="chat-input" placeholder="Request a service..." autocomplete="off" aria-label="Request a service" tabindex="0" aria-describedby="chat-help">
-                <div id="chat-help" class="visually-hidden">Type your message and press Enter or click Send to submit</div>
-                <button class="chat-send" aria-label="Send message" tabindex="0">
-                  <span class="chat-send-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5bb6f8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
-                  </span>
-                  <span class="chat-send-loader" style="display:none">
-                    <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
-                  </span>
-                </button>
+                <div class="chat-input-shell">
+                    <input type="text" class="chat-input" placeholder="Request a service..." autocomplete="off" aria-label="Request a service" tabindex="0" aria-describedby="chat-help">
+                    <div id="chat-help" class="visually-hidden">Type your message and press Enter or click Send to submit</div>
+                    <button class="chat-send" aria-label="Send message" tabindex="0">
+                      <span class="chat-send-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5bb6f8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                      </span>
+                      <span class="chat-send-loader" style="display:none">
+                        <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+                      </span>
+                    </button>
+                </div>
             </div>
         `;
 

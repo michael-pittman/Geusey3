@@ -11,7 +11,7 @@ test.describe('Font Accessibility Compliance Audit', () => {
     await page.setViewportSize({ width: 375, height: 667 });
 
     // Wait for chat elements to be available
-    await page.click('img[src*="glitch.gif"]');
+    await page.click('#chat-icon');
     await page.waitForSelector('.chat-container.visible', { timeout: 5000 });
 
     // Test chat input font size (critical for iOS zoom prevention)
@@ -55,7 +55,7 @@ test.describe('Font Accessibility Compliance Audit', () => {
   });
 
   test('Font contrast ratios meet WCAG AA standards', async ({ page }) => {
-    await page.click('img[src*="glitch.gif"]');
+    await page.click('#chat-icon');
     await page.waitForSelector('.chat-container.visible');
 
     // Test light mode contrast
@@ -162,7 +162,7 @@ test.describe('Font Accessibility Compliance Audit', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1');
 
-    await page.click('img[src*="glitch.gif"]');
+    await page.click('#chat-icon');
     await page.waitForSelector('.chat-container.visible');
 
     // Test font scaling with CSS zoom simulation
@@ -206,7 +206,7 @@ test.describe('Font Accessibility Compliance Audit', () => {
   });
 
   test('Native font stack loading and consistency', async ({ page }) => {
-    await page.click('img[src*="glitch.gif"]');
+    await page.click('#chat-icon');
     await page.waitForSelector('.chat-container.visible');
 
     // Test font family consistency across components
@@ -254,7 +254,7 @@ test.describe('Font Accessibility Compliance Audit', () => {
   });
 
   test('Font rendering optimization across iOS browsers', async ({ page, browserName }) => {
-    await page.click('img[src*="glitch.gif"]');
+    await page.click('#chat-icon');
     await page.waitForSelector('.chat-container.visible');
 
     // Test font smoothing and rendering properties
@@ -284,7 +284,7 @@ test.describe('Font Accessibility Compliance Audit', () => {
   });
 
   test('Screen reader compatibility with font properties', async ({ page }) => {
-    await page.click('img[src*="glitch.gif"]');
+    await page.click('#chat-icon');
     await page.waitForSelector('.chat-container.visible');
 
     // Test ARIA integration with font rendering
@@ -319,7 +319,7 @@ test.describe('Font Accessibility Compliance Audit', () => {
 
   test('Touch target sizes meet accessibility requirements', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.click('img[src*="glitch.gif"]');
+    await page.click('#chat-icon');
     await page.waitForSelector('.chat-container.visible');
 
     // Test touch target sizes (WCAG AA requires 44x44px minimum)
@@ -355,7 +355,7 @@ test.describe('Font Accessibility Compliance Audit', () => {
     // Enable reduced motion preference
     await page.emulateMedia({ reducedMotion: 'reduce' });
 
-    await page.click('img[src*="glitch.gif"]');
+    await page.click('#chat-icon');
     await page.waitForSelector('.chat-container.visible');
 
     // Verify fonts remain accessible with reduced motion
@@ -399,7 +399,7 @@ test.describe('Font Accessibility Compliance Audit', () => {
       `
     });
 
-    await page.click('img[src*="glitch.gif"]');
+    await page.click('#chat-icon');
     await page.waitForSelector('.chat-container.visible');
 
     // Test font readability in high contrast

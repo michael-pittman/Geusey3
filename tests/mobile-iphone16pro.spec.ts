@@ -26,7 +26,7 @@ test.describe('iPhone 16 Pro Mobile Responsiveness - Critical Issues Verificatio
     console.log('Initial theme-color:', initialThemeColor);
     
     // Open chat to access theme toggle
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+    await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
     
     // Take screenshot of initial state
@@ -186,7 +186,7 @@ test.describe('iPhone 16 Pro Mobile Responsiveness - Critical Issues Verificatio
 
   test('Theme toggle functionality on mobile', async ({ page }) => {
     // Open chat
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').click();
+    await page.locator('#chat-icon').click();
     await page.locator('.chat-container.visible').waitFor();
     
     // Test theme toggle with touch interaction
@@ -217,7 +217,7 @@ test.describe('iPhone 16 Pro Mobile Responsiveness - Critical Issues Verificatio
 
   test('Mobile touch interactions work properly', async ({ page }) => {
     // Test chat icon tap
-    const chatIcon = page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]');
+    const chatIcon = page.locator('#chat-icon');
     await chatIcon.tap();
     await page.locator('.chat-container.visible').waitFor();
     
@@ -261,7 +261,7 @@ test.describe('iPhone 16 Pro Mobile Responsiveness - Critical Issues Verificatio
     console.log('Safe area info:', safeAreaInfo);
     
     // Verify chat container respects safe areas
-    await page.locator('img[src*="glitch.gif"], img[src*="fire.gif"]').tap();
+    await page.locator('#chat-icon').tap();
     await page.locator('.chat-container.visible').waitFor();
     
     const chatContainerPosition = await page.locator('.chat-container').evaluate((el) => {

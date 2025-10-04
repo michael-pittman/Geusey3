@@ -26,7 +26,7 @@ test.describe('Font Accessibility Audit - Core Requirements', () => {
     console.log(`✓ Body font size: ${bodyFontSize.fontSize} (${bodySize}px)`);
 
     // Open chat to test interactive elements
-    await page.locator('img[src*="glitch.gif"]').click();
+    await page.locator('#chat-icon').click();
     await page.waitForSelector('.chat-container', { timeout: 5000 });
 
     // Test chat input font size (critical for iOS)
@@ -196,7 +196,7 @@ test.describe('Font Accessibility Audit - Core Requirements', () => {
     await page.reload();
     await page.waitForSelector('#container');
 
-    await page.locator('img[src*="glitch.gif"]').click();
+    await page.locator('#chat-icon').click();
     await page.waitForSelector('.chat-container');
 
     // Test iOS-specific CSS properties
