@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <meta name="description" content="- solutions for any ask -" >
-    <meta name="theme-color" content="#141416" id="theme-color-meta">
+    <meta name="theme-color" content="#edcfcf" id="theme-color-meta" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#141416" id="theme-color-meta-dark" media="(prefers-color-scheme: dark)">
     
     <!-- Cache control meta tags for immediate updates -->
     <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
@@ -23,7 +24,7 @@
     <!-- Mobile web app meta tags -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GEUSE">
     <meta name="format-detection" content="telephone=no">
     
@@ -180,12 +181,17 @@
         
         // Update theme color meta tag based on current theme
         function updateThemeColor() {
-            const themeColorMeta = document.getElementById('theme-color-meta');
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 
+            const themeColorMetaLight = document.getElementById('theme-color-meta');
+            const themeColorMetaDark = document.getElementById('theme-color-meta-dark');
+            const currentTheme = document.documentElement.getAttribute('data-theme') ||
                                 (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            
-            if (themeColorMeta) {
-                themeColorMeta.content = currentTheme === 'dark' ? '#141416' : '#edcfcf';
+
+            // Update both meta tags to ensure Safari iOS picks up the change
+            if (themeColorMetaLight) {
+                themeColorMetaLight.content = currentTheme === 'dark' ? '#141416' : '#edcfcf';
+            }
+            if (themeColorMetaDark) {
+                themeColorMetaDark.content = currentTheme === 'dark' ? '#141416' : '#edcfcf';
             }
         }
         

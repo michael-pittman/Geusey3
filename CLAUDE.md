@@ -80,7 +80,8 @@ The application implements a sophisticated 3-tier caching system for optimal per
 - **Content-based hashing**: All assets get unique hashes for cache busting
 - **Manual chunking**: Three.js and TWEEN.js separated for optimal loading
 - **Asset categorization**: Smart file naming based on type (JS, CSS, media)
-- **Build-time injection**: Version and webhook URL embedded at compile time
+- **Build-time injection**: Version (`__VERSION__`), build timestamp (`__BUILD_TIME__`), and webhook URL (`__WEBHOOK_URL__`) embedded at compile time
+- **Automated service worker generation**: Vite plugin runs generate-sw.js after build completes
 
 **CloudFront Integration:**
 To enable CloudFront cache invalidation, add to `config.js`:
@@ -92,8 +93,10 @@ cloudfront: {
 
 **Testing:**
 ```bash
-npm test               # Run Playwright tests
-npm run test:ui        # Run Playwright tests with UI
+npm test                              # Run all Playwright tests
+npm run test:ui                       # Run Playwright tests with UI
+npx playwright test <test-file>       # Run specific test file
+npx playwright test --grep "<pattern>" # Run tests matching pattern
 ```
 
 **Configuration management:**
@@ -127,7 +130,9 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 - Performance metrics tracking: render times, incremental vs full renders
 - Email fallback: mailto link in header when chat offline
 
-**Styling (src/styles/chat.css):**
+**Styling:**
+- **[src/styles/chat.css](src/styles/chat.css)**: Main glassmorphic styling with CSS custom properties system
+- **[src/styles/chat-enhanced.css](src/styles/chat-enhanced.css)**: Additional enhancements (if being developed)
 - Consolidated 70% CSS reduction with computed liquid glass materials
 - CSS custom properties system with base values and computed derivatives
 - Theme-aware CSS variables for dark/light mode

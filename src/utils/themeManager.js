@@ -34,15 +34,35 @@ const safeStorage = {
 /**
  * Update meta theme-color for mobile status bar
  * Uses multiple fallback strategies for reliability
+ * Updates both light and dark theme-color meta tags for iOS Safari compatibility
  */
 const updateMetaThemeColor = (theme) => {
-    const metaTheme = document.getElementById('theme-color-meta') ||
-                     document.querySelector('meta[name="theme-color"]');
-    if (metaTheme) {
-        metaTheme.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.light);
-        return true;
+    const metaThemeLight = document.getElementById('theme-color-meta');
+    const metaThemeDark = document.getElementById('theme-color-meta-dark');
+    const color = THEME_COLORS[theme] || THEME_COLORS.light;
+
+    let updated = false;
+
+    // Update both meta tags to ensure iOS Safari status bar/tab bar updates
+    if (metaThemeLight) {
+        metaThemeLight.setAttribute('content', color);
+        updated = true;
     }
-    return false;
+    if (metaThemeDark) {
+        metaThemeDark.setAttribute('content', color);
+        updated = true;
+    }
+
+    // Fallback: try to find any theme-color meta tag if IDs not found
+    if (!updated) {
+        const fallbackMeta = document.querySelector('meta[name="theme-color"]');
+        if (fallbackMeta) {
+            fallbackMeta.setAttribute('content', color);
+            updated = true;
+        }
+    }
+
+    return updated;
 };
 
 /**
