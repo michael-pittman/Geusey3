@@ -13,6 +13,7 @@ class Chat {
         this.isLoading = false;
         this.chatIcon = document.querySelector('img[src*="glitch.gif"], img[src*="fire.gif"]');
         this.onVisibilityChange = null; // Callback for visibility changes
+        this.gestureHandler = null; // GestureHandler instance for swipe support
         // Performance tracking
         this.renderingMetrics = {
             totalRenders: 0,
@@ -296,7 +297,7 @@ class Chat {
 
     toggle() {
         this.isVisible = !this.isVisible;
-        
+
         if (this.isVisible) {
             // Show container first
             this.container.style.display = 'flex';
@@ -311,7 +312,7 @@ class Chat {
                 this.container.classList.add('has-suggestions');
                 this.addMessage("Hi! Tell me what you'd like to build.", 'bot');
             }
-            
+
             // Focus input after animation completes - FIXED TIMING
             requestAnimationFrame(() => {
                 setTimeout(() => {
@@ -323,7 +324,7 @@ class Chat {
                     }
                 }, 100); // Small delay to ensure animation has started
             });
-            
+
             // Update container text when chat is visible
             const container = document.getElementById('container');
             if (container) {
@@ -341,19 +342,19 @@ class Chat {
                     this.container.style.display = 'none';
                 }
             }, 600); // Matches CSS --duration-slow (0.6s)
-            
+
             // Reset container text when chat is hidden
             const container = document.getElementById('container');
             if (container) {
                 container.textContent = '- G E U S E -';
             }
         }
-        
+
         // Call visibility change callback
         if (this.onVisibilityChange) {
             this.onVisibilityChange(this.isVisible);
         }
-        
+
         return this.isVisible;
     }
 
@@ -650,6 +651,13 @@ class Chat {
      */
     getRenderingMetrics() {
         return { ...this.renderingMetrics };
+    }
+
+    /**
+     * Set gesture handler for swipe gesture integration
+     */
+    setGestureHandler(gestureHandler) {
+        this.gestureHandler = gestureHandler;
     }
 
     /**

@@ -1,24 +1,36 @@
 import * as THREE from 'three';
 import { CSS3DRenderer, CSS3DSprite } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
 import TWEEN from 'three/addons/libs/tween.module.js';
 import { initializeTheme, getCurrentTheme } from './utils/themeManager.js';
 import { generateAllScenes } from './utils/sceneGenerators.js';
+import { eventHandler } from './core/EventHandler.js';
+import GestureHandler from './core/GestureHandler.js';
+import CameraManager from './modules/cameraManager.js';
+import { CanvasEventHandlers, InteractionHandlers } from './modules/eventHandlers.js';
+import MobileOptimizer from './utils/mobile/mobileOptimizer.js';
 import './styles/chat.css';
 
 let camera, scene, renderer;
-let controls;
+let cameraManager;
+let canvasEventHandlers;
+let gestureHandler;
+let interactionHandlers;
+let mobileOptimizer;
 let chat = null;
 
 // Expose scene variables globally for testing and debugging
 if (typeof window !== 'undefined') {
-    window.getThreeJSScene = () => ({ camera, scene, renderer, controls });
+    window.getThreeJSScene = () => ({
+        camera,
+        scene,
+        renderer,
+        controls: cameraManager?.controls,
+        cameraManager,
+        gestureHandler,
+        eventHandler,
+        mobileOptimizer
+    });
 }
-
-// Store original camera settings for chat state management
-let originalCameraPosition = { x: 600, y: 400, z: 1500 };
-let originalMinDistance = 500;
-let originalMaxDistance = 6000;
 
 const particlesTotal = 512;
 const positions = [];
@@ -35,44 +47,22 @@ async function loadChat() {
     if (!chat) {
         const Chat = (await import('./chat.js')).default;
         chat = new Chat();
-        // Set up callback for camera adjustment
-        chat.onVisibilityChange = adjustCameraForChat;
+        // Set up callback for camera adjustment via CameraManager
+        chat.onVisibilityChange = (isChatActive) => {
+            if (cameraManager) {
+                cameraManager.adjustForChat(isChatActive);
+            }
+            // Update canvas event handlers chat visibility state
+            if (canvasEventHandlers) {
+                canvasEventHandlers.setChatVisible(isChatActive);
+            }
+        };
+        // Pass gesture handler to chat for swipe integration
+        if (chat.setGestureHandler && gestureHandler) {
+            chat.setGestureHandler(gestureHandler);
+        }
     }
     return chat;
-}
-
-// Function to adjust camera distance based on chat visibility
-function adjustCameraForChat(isChatActive) {
-    if (!camera || !controls) return;
-
-    if (isChatActive) {
-        // Move camera further away when chat is active
-        const newPosition = {
-            x: originalCameraPosition.x * 1.5,
-            y: originalCameraPosition.y * 1.2,
-            z: originalCameraPosition.z * 1.8
-        };
-
-        // Smoothly animate camera to new position
-        new TWEEN.Tween(camera.position)
-            .to(newPosition, 1000)
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .start();
-
-        // Adjust controls to allow closer/further zoom
-        controls.minDistance = originalMinDistance * 0.8;
-        controls.maxDistance = originalMaxDistance * 1.5;
-    } else {
-        // Return camera to original position when chat is closed
-        new TWEEN.Tween(camera.position)
-            .to(originalCameraPosition, 1000)
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .start();
-
-        // Restore original control settings
-        controls.minDistance = originalMinDistance;
-        controls.maxDistance = originalMaxDistance;
-    }
 }
 
 // Function to update scene background based on current theme with smooth transitions
@@ -535,42 +525,77 @@ function init() {
             existingChatIcon.style.setProperty('pointer-events', 'auto', 'important');
         }
         
-        // Configure TrackballControls with proper touch support
-        controls = new TrackballControls(camera, renderer.domElement);
-        controls.minDistance = 500;
-        controls.maxDistance = 6000;
-        
-        // Enhanced touch and interaction settings - optimized for mobile
-        controls.rotateSpeed = 1.5;  // Increased for better mobile responsiveness
-        controls.zoomSpeed = 1.8;    // Increased for better pinch-to-zoom feel
-        controls.panSpeed = 1.0;     // Balanced for touch panning
-        controls.noZoom = false;
-        controls.noPan = false;
-        controls.staticMoving = false; // Allow momentum for better mobile feel
-        controls.dynamicDampingFactor = 0.15; // Smoother damping for touch
-        
-        // Enable all interaction types
-        controls.enabled = true;
-        
-        // Touch-specific optimizations
-        controls.keys = [ 65, 83, 68 ]; // A, S, D for keyboard interaction
-        
-        // Mobile-specific touch handling
-        controls.touchMode = 'rotate'; // Default touch mode
-        
-        // Ensure canvas can receive focus for keyboard controls
-        canvas.tabIndex = 0;
-        canvas.setAttribute('role', 'application');
-        canvas.setAttribute('aria-label', '3D particle scene - use mouse or touch to navigate, pinch to zoom');
-        
-        // Add focus indicators for accessibility
-        canvas.addEventListener('focus', () => {
-            canvas.style.outline = '2px solid rgba(91, 182, 248, 0.5)';
-            canvas.style.outlineOffset = '2px';
+        // Initialize CameraManager with TrackballControls
+        cameraManager = new CameraManager(camera, renderer);
+        cameraManager.setPosition(600, 400, 1500);
+        cameraManager.setDistanceLimits(500, 6000);
+        cameraManager.init();
+
+        // Initialize EventHandler for centralized event management
+        eventHandler.init();
+
+        // Initialize MobileOptimizer
+        mobileOptimizer = new MobileOptimizer({
+            targetFPS: 60,
+            fpsThreshold: 45,
+            enableHaptics: true,
+            autoReduceFilters: true
         });
-        
-        canvas.addEventListener('blur', () => {
-            canvas.style.outline = 'none';
+        mobileOptimizer.init(eventHandler);
+
+        // Initialize GestureHandler for touch gestures
+        gestureHandler = new GestureHandler({
+            tapThreshold: 10,
+            tapTimeout: 300,
+            longTapThreshold: 500,
+            swipeThreshold: 50,
+            hapticEnabled: true
+        });
+        gestureHandler.init(document.body);
+
+        // Initialize CanvasEventHandlers for canvas-specific interactions
+        canvasEventHandlers = new CanvasEventHandlers(canvas, {
+            preventScroll: true,
+            enableKeyboard: true,
+            enableWheel: true
+        });
+        canvasEventHandlers.init();
+
+        // Initialize InteractionHandlers for scene cycling and gestures
+        interactionHandlers = new InteractionHandlers({
+            sceneCyclingEnabled: true,
+            swipeEnabled: true,
+            longTapEnabled: true
+        });
+        interactionHandlers.init(gestureHandler, canvasEventHandlers);
+
+        // Setup interaction callbacks
+        interactionHandlers.onSceneChange((sceneName) => {
+            if (!isTransitioning) {
+                setScene(sceneName);
+            }
+        });
+
+        interactionHandlers.onSwipeLeft(() => {
+            // Hide chat on swipe left
+            if (chat && chat.isVisible) {
+                chat.toggle();
+            }
+        });
+
+        interactionHandlers.onSwipeRight(() => {
+            // Show suggestions on swipe right
+            if (chat && chat.isVisible) {
+                const suggestions = chat.container.querySelector('.chat-suggestions');
+                if (suggestions && suggestions.hidden) {
+                    suggestions.hidden = false;
+                    chat.container.classList.add('has-suggestions');
+                }
+            }
+        });
+
+        interactionHandlers.onLongTap((data) => {
+            console.log('Long-tap detected:', data);
         });
         
         // OPTIMIZED: Enhanced resize handling for full viewport coverage
@@ -741,9 +766,14 @@ function animate() {
     // Update TWEEN animations
     TWEEN.update();
 
-    // Update camera controls
-    if (controls) {
-        controls.update();
+    // Update camera controls via CameraManager
+    if (cameraManager) {
+        cameraManager.update();
+    }
+
+    // Count frame for FPS monitoring
+    if (mobileOptimizer) {
+        mobileOptimizer.countFrame();
     }
 
     // Simple, clean animation loop - based on Three.js CSS3D sprite reference pattern

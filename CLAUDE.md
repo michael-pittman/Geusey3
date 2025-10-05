@@ -9,13 +9,21 @@ Geusey3/
 ├── src/                           # Source code
 │   ├── index.js                   # Main Three.js application (34KB)
 │   ├── chat.js                    # Chat interface component (22KB)
+│   ├── core/                      # Core event and interaction architecture
+│   │   ├── EventHandler.js       # Window/viewport/keyboard event management
+│   │   └── GestureHandler.js     # Touch gesture recognition (tap/longtap/swipe)
+│   ├── modules/                   # Application modules
+│   │   ├── cameraManager.js      # Camera state & TrackballControls management
+│   │   └── eventHandlers.js      # Canvas-specific interaction handlers
 │   ├── styles/
 │   │   └── chat.css              # Glassmorphic styling with CSS custom properties
 │   └── utils/
 │       ├── apiUtils.js           # Centralized API calls & error handling
 │       ├── themeManager.js       # Theme detection & persistence
 │       ├── sceneGenerators.js    # Three.js scene position generators
-│       └── dynamicTypeManager.js # iOS Dynamic Type accessibility support
+│       ├── dynamicTypeManager.js # iOS Dynamic Type accessibility support
+│       └── mobile/
+│           └── mobileOptimizer.js # Mobile performance & FPS monitoring
 ├── public/                        # Static assets
 │   ├── sw.js                     # Service Worker template
 │   ├── media/                    # Images: sprite.png, glitch.gif, fire.gif
@@ -115,8 +123,10 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 - Three.js CSS3DRenderer for particle visualization with 6 modes: plane, cube, sphere, random, spiral, fibonacci
 - Theme-responsive background color system (proper CSS3D handling)
 - Dynamic animation speed based on theme (40% slower in dark mode)
-- Camera adjustment system for chat visibility states
-- TrackballControls for 3D navigation
+- Integrated event architecture with EventHandler, GestureHandler, and CameraManager
+- Chunked particle creation (50 per frame) to prevent UI blocking
+- FPS monitoring and performance tracking
+- Modular interaction system with scene cycling, swipe gestures, and touch optimization
 
 **Chat Interface (src/chat.js):**
 - High-performance incremental message rendering system
@@ -142,9 +152,11 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 
 **Performance Optimizations:**
 - **Chat Rendering**: Incremental DOM updates, document fragments, performance metrics tracking
-- **3D Scene**: Optimized animation loops, theme-based speed adjustment, efficient object scaling
+- **3D Scene**: Optimized animation loops, theme-based speed adjustment, chunked particle creation (50/frame)
+- **Mobile Performance**: Real-time FPS monitoring with automatic CSS filter reduction below 45 FPS
 - **Service Worker**: Build-time asset discovery, intelligent cache strategies, automatic cleanup
 - **CSS**: Computed properties system reducing redundancy by 70%
+- **Interaction**: Hit testing to prevent gesture conflicts, debounced event handlers, efficient event delegation
 
 ### Key Architecture Patterns
 
@@ -177,13 +189,44 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 - User-friendly error messages with context-aware messaging
 - CORS, network, HTTP, parse, and empty response error types
 
+**Event Architecture (src/core/):**
+- **EventHandler.js**: Centralized window/viewport/keyboard event management with capability detection
+- **GestureHandler.js**: Touch gesture recognition (tap, long-tap, swipe) with hit testing to distinguish canvas vs chat interactions
+- Event delegation pattern with proper cleanup and memory management
+- Custom event system for cross-module communication
+
+**Interaction System (src/modules/):**
+- **cameraManager.js**: Camera state management with chat-aware positioning and smooth TWEEN transitions
+- **eventHandlers.js**: Canvas-specific interactions including scene cycling, mouse wheel routing, and keyboard shortcuts
+- Mouse wheel routing: canvas zoom vs suggestions horizontal scroll with hit testing
+- Keyboard shortcuts: Space key cycles scenes when chat is hidden
+- Touch optimization with pinch-to-zoom and swipe gesture support
+
+**Mobile Optimization (src/utils/mobile/):**
+- **mobileOptimizer.js**: FPS monitoring (60 target, 45 threshold) with automatic CSS filter reduction
+- Viewport unit management (dvh, svh) with fallbacks for older browsers
+- Keyboard detection and dynamic padding using Visual Viewport API
+- Haptic feedback utilities with intensity levels (light, medium, heavy)
+- iOS/Android capability detection and feature gating
+
 **Mobile & Accessibility:**
 - iOS Dynamic Type support via dynamicTypeManager.js
-- Visual Viewport API integration for keyboard handling
+- Visual Viewport API integration for keyboard handling and viewport management
 - Safe area support for notched devices (env(safe-area-inset-*))
 - Focus management and ARIA compliance (Section 508)
-- Touch interaction optimizations with haptic feedback
-- Reduced motion preferences respected
+- Touch interaction optimizations with haptic feedback (tap, long-tap, swipe)
+- Reduced motion preferences respected (@media prefers-reduced-motion)
+
+**User Interaction Features:**
+- **Tap on canvas**: Cycles through 6 3D formations (plane → cube → sphere → random → spiral → fibonacci)
+- **Long-tap on canvas**: Triggers haptic feedback (ready for future context menu features)
+- **Swipe left on chat**: Hides chat dialog with smooth animation
+- **Swipe right on chat**: Shows suggestion chips for quick actions
+- **Mouse wheel on canvas**: Zooms in/out on 3D scene (TrackballControls)
+- **Mouse wheel on suggestions**: Horizontal scroll through suggestion chips
+- **Space key**: Cycles scenes when chat is hidden (keyboard accessibility)
+- **Pinch gesture**: Zoom on 3D scene (mobile touch optimization)
+- All gestures use hit testing to distinguish canvas vs chat interactions
 
 **Testing Strategy:**
 - Playwright test suite with 14 test files
@@ -192,6 +235,7 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 - Font accessibility audits and iOS-specific tests
 - Mobile responsive testing (iPhone 16 Pro viewport)
 - Incremental rendering performance tests
+- Gesture and interaction testing (tap, swipe, long-tap)
 - 30-second timeout, retain-on-failure traces
 
 ## Development Notes
@@ -272,11 +316,20 @@ When working with n8n workflows for this project, follow this structured approac
 - [src/chat.js](src/chat.js) - Chat UI with incremental rendering, webhook integration, accessibility
 - [src/styles/chat.css](src/styles/chat.css) - Glassmorphic design with CSS custom properties system
 
+**Core Architecture:**
+- [src/core/EventHandler.js](src/core/EventHandler.js) - Window/viewport/keyboard event management, capability detection
+- [src/core/GestureHandler.js](src/core/GestureHandler.js) - Touch gesture recognition (tap/longtap/swipe) with hit testing
+
+**Application Modules:**
+- [src/modules/cameraManager.js](src/modules/cameraManager.js) - Camera state management, TrackballControls, chat-aware positioning
+- [src/modules/eventHandlers.js](src/modules/eventHandlers.js) - Canvas interactions, scene cycling, mouse wheel routing, keyboard shortcuts
+
 **Utility Modules:**
 - [src/utils/apiUtils.js](src/utils/apiUtils.js) - API error handling, typed errors, user-friendly messages
 - [src/utils/themeManager.js](src/utils/themeManager.js) - Theme detection, persistence, meta tag updates
 - [src/utils/sceneGenerators.js](src/utils/sceneGenerators.js) - Six geometric position generators
 - [src/utils/dynamicTypeManager.js](src/utils/dynamicTypeManager.js) - iOS accessibility font scaling
+- [src/utils/mobile/mobileOptimizer.js](src/utils/mobile/mobileOptimizer.js) - FPS monitoring, filter reduction, haptic feedback
 
 **Configuration & Build:**
 - [config.js](config.js) - Webhook URL, S3 bucket, CloudFront, build settings
