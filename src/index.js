@@ -444,80 +444,6 @@ function init() {
         
         rendererContainer.appendChild(canvas);
         
-        // Enhanced touch event handlers to prevent unwanted page scrolling
-        let isInteracting = false;
-        let touchCount = 0;
-        
-        const handleTouchStart = (e) => {
-            if (e.target === canvas || e.target === rendererContainer) {
-                isInteracting = true;
-                touchCount = e.touches.length;
-                
-                // Allow single touch for rotation, multi-touch for zoom/pan
-                if (touchCount >= 1) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }
-        };
-        
-        const handleTouchMove = (e) => {
-            if (isInteracting && (e.target === canvas || e.target === rendererContainer)) {
-                // Always prevent scrolling during 3D interaction
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        };
-        
-        const handleTouchEnd = (e) => {
-            if (e.target === canvas || e.target === rendererContainer) {
-                touchCount = e.touches.length;
-                if (touchCount === 0) {
-                    isInteracting = false;
-                }
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        };
-        
-        const handleMouseInteraction = (e) => {
-            if (e.target === canvas || e.target === rendererContainer) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        };
-        
-        const handleWheel = (e) => {
-            if (e.target === canvas || e.target === rendererContainer) {
-                // Prevent page zoom, allow 3D scene zoom
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        };
-        
-        // Add enhanced touch event listeners
-        canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-        canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-        canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
-        canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
-        
-        // Add mouse event listeners for desktop consistency
-        canvas.addEventListener('mousedown', handleMouseInteraction);
-        canvas.addEventListener('mousemove', (e) => {
-            // Only prevent mouse move if actively dragging
-            if (e.buttons > 0) {
-                handleMouseInteraction(e);
-            }
-        });
-        canvas.addEventListener('mouseup', handleMouseInteraction);
-        canvas.addEventListener('wheel', handleWheel, { passive: false });
-        
-        // Prevent context menu on long press (mobile) or right click
-        canvas.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-        
         // Ensure UI elements stay above the interactive canvas
         const existingChatIcon = document.getElementById('chat-icon');
         if (existingChatIcon) {
@@ -542,6 +468,13 @@ function init() {
             autoReduceFilters: true
         });
         mobileOptimizer.init(eventHandler);
+        
+        const syncViewportWithRenderer = (viewport) => {
+            onWindowResize(viewport);
+        };
+        eventHandler.listen('resize', syncViewportWithRenderer);
+        eventHandler.listen('orientationchange', syncViewportWithRenderer);
+        eventHandler.listen('viewportchange', syncViewportWithRenderer);
 
         // Initialize GestureHandler for touch gestures
         gestureHandler = new GestureHandler({
@@ -598,64 +531,7 @@ function init() {
             console.log('Long-tap detected:', data);
         });
         
-        // OPTIMIZED: Enhanced resize handling for full viewport coverage
-        let resizeTimeout;
-        const optimizedResize = () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                onWindowResize();
-                // Force renderer reposition after resize with iOS safe area support
-                const container = document.getElementById('threejs-renderer-container');
-                if (container) {
-                    container.style.setProperty('top', 'var(--threejs-top, 0)', 'important');
-                    container.style.setProperty('left', 'var(--threejs-left, 0)', 'important');
-                    container.style.setProperty('width', 'var(--threejs-width, 100vw)', 'important');
-                    container.style.setProperty('height', 'var(--threejs-height, 100vh)', 'important');
-                    if (CSS.supports('width: 100dvw')) {
-                        container.style.setProperty('width', 'var(--full-viewport-width, 100dvw)', 'important');
-                        container.style.setProperty('height', 'var(--full-viewport-height, 100dvh)', 'important');
-                    }
-                }
-            }, 100);
-        };
-        
-        window.addEventListener('resize', optimizedResize);
-        window.addEventListener('orientationchange', () => {
-            // Handle orientation changes with delay for viewport stabilization
-            setTimeout(optimizedResize, 300);
-        });
-        
-        // iOS-specific viewport handling for safe area changes
-        if (window.navigator.userAgent.includes('iPhone') || window.navigator.userAgent.includes('iPad')) {
-            // Handle iOS viewport changes and safe area updates
-            const handleIOSViewportChange = () => {
-                // Force CSS custom property recalculation
-                document.documentElement.style.setProperty('--force-recalc', Math.random().toString());
-                
-                // Update renderer after iOS viewport stabilization
-                setTimeout(() => {
-                    optimizedResize();
-                    // Force safe area recalculation
-                    const container = document.getElementById('threejs-renderer-container');
-                    if (container) {
-                        container.style.setProperty('top', 'var(--threejs-top, 0)', 'important');
-                        container.style.setProperty('left', 'var(--threejs-left, 0)', 'important');
-                        container.style.setProperty('width', 'var(--full-viewport-width, 100dvw)', 'important');
-                        container.style.setProperty('height', 'var(--full-viewport-height, 100dvh)', 'important');
-                    }
-                }, 500);
-            };
-            
-            // Visual Viewport API for iOS keyboard and UI changes
-            if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', handleIOSViewportChange);
-                window.visualViewport.addEventListener('scroll', handleIOSViewportChange);
-            }
-            
-            // iOS-specific events
-            window.addEventListener('pageshow', handleIOSViewportChange);
-            window.addEventListener('pagehide', handleIOSViewportChange);
-        }
+        onWindowResize(eventHandler.viewport);
 
         // Start animation loop
         animate();
@@ -664,46 +540,30 @@ function init() {
     }
 }
 
-function onWindowResize() {
-    // CRITICAL: Calculate extended viewport dimensions for resize handling
-    let viewportWidth = window.innerWidth;
-    let viewportHeight = window.innerHeight;
-    
-    // Extend dimensions to cover safe areas if supported
-    if (CSS.supports('top: env(safe-area-inset-top)')) {
-        // Get safe area insets - these will be 0 if not supported
-        const safeAreaTop = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-top')) || 0;
-        const safeAreaBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom')) || 0;
-        const safeAreaLeft = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-left')) || 0;
-        const safeAreaRight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-right')) || 0;
-        
-        viewportWidth += safeAreaLeft + safeAreaRight;
-        viewportHeight += safeAreaTop + safeAreaBottom;
+function onWindowResize(viewportData) {
+    if (!camera || !renderer) return;
+
+    const viewport = viewportData || eventHandler?.viewport || {};
+    const baseWidth = viewport.visualWidth || viewport.width || window.innerWidth;
+    const baseHeight = viewport.visualHeight || viewport.height || window.innerHeight;
+
+    let adjustedWidth = baseWidth;
+    let adjustedHeight = baseHeight;
+
+    if (mobileOptimizer?.getState) {
+        const insets = mobileOptimizer.getState().safeAreaInsets || {};
+        const additionalWidth = (insets.left || 0) + (insets.right || 0);
+        const additionalHeight = (insets.top || 0) + (insets.bottom || 0);
+        adjustedWidth += additionalWidth;
+        adjustedHeight += additionalHeight;
     }
-    
-    // Update dynamic viewport units for mobile browsers
-    document.documentElement.style.setProperty('--vh', `${viewportHeight * 0.01}px`);
-    document.documentElement.style.setProperty('--vw', `${viewportWidth * 0.01}px`);
-    
-    // Update renderer container dimensions for full viewport coverage with iOS safe area support
-    const rendererContainer = document.getElementById('threejs-renderer-container');
-    if (rendererContainer) {
-        // Ensure full viewport coverage on resize with safe area extension
-        rendererContainer.style.setProperty('top', 'var(--threejs-top, 0)', 'important');
-        rendererContainer.style.setProperty('left', 'var(--threejs-left, 0)', 'important');
-        rendererContainer.style.setProperty('width', 'var(--threejs-width, 100vw)', 'important');
-        rendererContainer.style.setProperty('height', 'var(--threejs-height, 100vh)', 'important');
-        
-        // Use dynamic viewport units with safe area extension if supported
-        if (CSS.supports('width: 100dvw')) {
-            rendererContainer.style.setProperty('width', 'var(--full-viewport-width, 100dvw)', 'important');
-            rendererContainer.style.setProperty('height', 'var(--full-viewport-height, 100dvh)', 'important');
-        }
-    }
-    
-    camera.aspect = viewportWidth / viewportHeight;
+
+    const width = Math.max(adjustedWidth, 1);
+    const height = Math.max(adjustedHeight, 1);
+
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(viewportWidth, viewportHeight);
+    renderer.setSize(width, height);
 }
 
 function transition() {

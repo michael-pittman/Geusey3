@@ -13,14 +13,7 @@ class Chat {
         this.isLoading = false;
         this.chatIcon = document.querySelector('img[src*="glitch.gif"], img[src*="fire.gif"]');
         this.onVisibilityChange = null; // Callback for visibility changes
-        this.gestureHandler = null; // GestureHandler instance for swipe support
-        // Performance tracking
-        this.renderingMetrics = {
-            totalRenders: 0,
-            incrementalRenders: 0,
-            averageRenderTime: 0,
-            lastRenderTime: 0
-        };
+       this.gestureHandler = null; // GestureHandler instance for swipe support
         // DOM tracking for incremental rendering
         this.renderedMessageCount = 0;
         this.messagesContainer = null;
@@ -225,33 +218,6 @@ class Chat {
 
         window.addEventListener('resize', handleWindowResize);
         this.windowResizeHandler = handleWindowResize;
-    }
-
-    /**
-     * Cleanup method for dynamic height measurement system
-     * Should be called when chat is destroyed
-     */
-    cleanupInputHeightMeasurement() {
-        // Disconnect ResizeObserver
-        if (this.inputResizeObserver) {
-            this.inputResizeObserver.disconnect();
-            this.inputResizeObserver = null;
-        }
-
-        // Remove Visual Viewport listener
-        if (this.viewportResizeHandler && 'visualViewport' in window && window.visualViewport) {
-            window.visualViewport.removeEventListener('resize', this.viewportResizeHandler);
-            this.viewportResizeHandler = null;
-        }
-
-        // Remove window resize listener
-        if (this.windowResizeHandler) {
-            window.removeEventListener('resize', this.windowResizeHandler);
-            this.windowResizeHandler = null;
-        }
-
-        // Clear CSS variable
-        document.documentElement.style.removeProperty('--chat-input-height');
     }
 
     generateSessionId() {
@@ -484,9 +450,6 @@ class Chat {
     }
 
     addMessage(text, sender) {
-        // Performance monitoring start
-        const startTime = performance.now();
-
         // Preserve scroll position and focus state
         const wasScrolledToBottom = this.isScrolledToBottom();
         const activeElement = document.activeElement;
@@ -509,10 +472,6 @@ class Chat {
         if (wasScrolledToBottom) {
             this.scrollToBottom();
         }
-
-        // Performance monitoring end
-        const endTime = performance.now();
-        this.updateRenderingMetrics(endTime - startTime, true);
     }
 
     /**
@@ -564,9 +523,6 @@ class Chat {
     renderAllMessages() {
         if (!this.messagesContainer) return;
 
-        // Performance monitoring start
-        const startTime = performance.now();
-
         // Preserve scroll position and focus state
         const wasScrolledToBottom = this.isScrolledToBottom();
         const activeElement = document.activeElement;
@@ -576,8 +532,6 @@ class Chat {
         this.renderedMessageCount = 0;
 
         if (this.messages.length === 0) {
-            const endTime = performance.now();
-            this.updateRenderingMetrics(endTime - startTime, false);
             return;
         }
 
@@ -602,14 +556,10 @@ class Chat {
         if (wasScrolledToBottom || this.messages.length === 1) {
             this.scrollToBottom();
         }
-
-        // Performance monitoring end
-        const endTime = performance.now();
-        this.updateRenderingMetrics(endTime - startTime, false);
     }
 
     /**
-     * Utility functions for scroll and performance management
+     * Utility functions for scroll management
      */
     isScrolledToBottom() {
         if (!this.messagesContainer) return true;
@@ -629,30 +579,6 @@ class Chat {
         });
     }
 
-    updateRenderingMetrics(renderTime, isIncremental) {
-        this.renderingMetrics.totalRenders++;
-        if (isIncremental) {
-            this.renderingMetrics.incrementalRenders++;
-        }
-
-        // Calculate rolling average render time
-        const currentAvg = this.renderingMetrics.averageRenderTime;
-        const totalRenders = this.renderingMetrics.totalRenders;
-        this.renderingMetrics.averageRenderTime =
-            (currentAvg * (totalRenders - 1) + renderTime) / totalRenders;
-
-        this.renderingMetrics.lastRenderTime = renderTime;
-
-        // Performance tracking: render time and type
-    }
-
-    /**
-     * Get performance metrics for debugging
-     */
-    getRenderingMetrics() {
-        return { ...this.renderingMetrics };
-    }
-
     /**
      * Set gesture handler for swipe gesture integration
      */
@@ -660,33 +586,6 @@ class Chat {
         this.gestureHandler = gestureHandler;
     }
 
-    /**
-     * Handle message updates or deletions (for future extensibility)
-     */
-    updateMessage(index, newText) {
-        if (index < 0 || index >= this.messages.length) return;
-
-        this.messages[index].text = newText;
-
-        // Find and update the specific message element
-        const messageElement = this.messagesContainer.querySelector(
-            `[data-message-index="${index}"]`
-        );
-
-        if (messageElement) {
-            messageElement.textContent = newText;
-        }
-    }
-
-    deleteMessage(index) {
-        if (index < 0 || index >= this.messages.length) return;
-
-        // Remove from messages array
-        this.messages.splice(index, 1);
-
-        // Full re-render needed to fix indices (could be optimized further if needed)
-        this.renderAllMessages();
-    }
 }
 
 export default Chat; 

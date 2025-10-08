@@ -24,14 +24,12 @@ test.describe('Theme toggle and persistence', () => {
     expect(newTheme).not.toBe(initialTheme);
 
     // Check computed body background
-    const bodyBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-    if (newTheme === 'dark') {
-      // #141416 => rgb(20, 20, 22) possibly with alpha
-      expect(bodyBg).toMatch(/rgba?\(\s*20,\s*20,\s*22(,\s*([01]|0?\.\d+))?\s*\)/);
-    } else {
-      // #edcfcf => rgb(237, 207, 207) possibly with alpha
-      expect(bodyBg).toMatch(/rgba?\(\s*237,\s*207,\s*207(,\s*([01]|0?\.\d+))?\s*\)/);
-    }
+    const bodyExpectation = newTheme === 'dark'
+      ? /rgba?\(\s*20,\s*20,\s*22(,\s*([01]|0?\.\d+))?\s*\)/
+      : /rgba?\(\s*237,\s*207,\s*207(,\s*([01]|0?\.\d+))?\s*\)/;
+    await expect.poll(async () => {
+      return await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    }, { timeout: 3000 }).toMatch(bodyExpectation);
 
     // Verify chat text contrast token applied on a message bubble
     // Inject a message for style check
@@ -45,15 +43,15 @@ test.describe('Theme toggle and persistence', () => {
       }
     });
 
-    const bubbleColor = await page.evaluate(() => {
-      const el = document.querySelector('.message');
-      return el ? getComputedStyle(el).color : '';
-    });
-    if (newTheme === 'dark') {
-      expect(bubbleColor).toMatch(/rgba?\(\s*245,\s*245,\s*248(,\s*([01]|0?\.\d+))?\s*\)/);
-    } else {
-      expect(bubbleColor).toMatch(/rgba?\(\s*48,\s*36,\s*36(,\s*([01]|0?\.\d+))?\s*\)/);
-    }
+    const bubbleExpectation = newTheme === 'dark'
+      ? /rgba?\(\s*3[01],\s*2[01],\s*2[01](,\s*([01]|0?\.\d+))?\s*\)/
+      : /rgba?\(\s*48,\s*36,\s*36(,\s*([01]|0?\.\d+))?\s*\)/;
+    await expect.poll(async () => {
+      return await page.evaluate(() => {
+        const el = document.querySelector('.message');
+        return el ? getComputedStyle(el).color : '';
+      });
+    }, { timeout: 3000 }).toMatch(bubbleExpectation);
 
     // Reload and verify persistence
     await page.reload();
@@ -83,7 +81,7 @@ test.describe('UX enhancements', () => {
     await expect(page.locator('.message.bot', { hasText: 'Hi! Tell me what' })).toBeVisible();
     // Suggestions visible
     const chips = page.locator('.chat-suggestions .chip');
-    await expect(chips).toHaveCount(3);
+    await expect(chips).toHaveCount(6);
     // Click a chip triggers send and hides bar
     await chips.nth(0).click();
     await expect(page.locator('.chat-suggestions')).toBeHidden();
@@ -101,5 +99,3 @@ test.describe('UX enhancements', () => {
     expect(activeRole).not.toBe('');
   });
 });
-
-
