@@ -244,6 +244,31 @@ test.describe('iPhone 16 Pro Mobile Responsiveness - Critical Issues Verificatio
     });
   });
 
+  test('Chat icon resets after swipe dismiss', async ({ page }) => {
+    const chatIcon = page.locator('#chat-icon');
+    await chatIcon.click();
+    await page.locator('.chat-container.visible').waitFor();
+
+    // Ensure icon switched to active state
+    await expect(page.locator('#chat-icon img[src*="fire.gif"]')).toBeVisible();
+
+    await page.evaluate(() => {
+      window.dispatchEvent(new CustomEvent('gesture:swipeleft', {
+        detail: {
+          target: 'chat',
+          deltaX: -120,
+          deltaY: 0,
+          distance: 120
+        }
+      }));
+    });
+
+    await page.locator('.chat-container.visible').waitFor({ state: 'detached' });
+
+    const iconSrc = await page.locator('#chat-icon img').getAttribute('src');
+    expect(iconSrc).toContain('glitch.gif');
+  });
+
   test('Safe area considerations for iPhone 16 Pro', async ({ page }) => {
     // Check CSS custom properties for safe areas
     const safeAreaInfo = await page.evaluate(() => {

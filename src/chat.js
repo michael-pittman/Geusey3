@@ -84,12 +84,6 @@ class Chat {
         this.container.querySelector('.header-dot').addEventListener('click', () => {
             this.triggerHaptic();
             this.toggle();
-            // Update chat icon image
-            if (this.chatIcon) {
-                this.chatIcon.src = this.isVisible ? 
-                    'https://www.geuse.io/media/fire.gif' : 
-                    'https://www.geuse.io/media/glitch.gif';
-            }
         });
 
         // Focus trap within chat dialog
@@ -321,7 +315,26 @@ class Chat {
             this.onVisibilityChange(this.isVisible);
         }
 
+        this.updateChatIcon();
         return this.isVisible;
+    }
+
+    updateChatIcon() {
+        if (!this.chatIcon || !document.body.contains(this.chatIcon)) {
+            this.chatIcon = document.querySelector('img[src*="glitch.gif"], img[src*="fire.gif"]');
+        }
+
+        if (!this.chatIcon) {
+            return;
+        }
+
+        const targetSrc = this.isVisible
+            ? 'https://www.geuse.io/media/fire.gif'
+            : 'https://www.geuse.io/media/glitch.gif';
+
+        if (this.chatIcon.src !== targetSrc) {
+            this.chatIcon.src = targetSrc;
+        }
     }
 
     setupFocusTrap() {
