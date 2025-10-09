@@ -269,6 +269,31 @@ test.describe('iPhone 16 Pro Mobile Responsiveness - Critical Issues Verificatio
     expect(iconSrc).toContain('glitch.gif');
   });
 
+  test('Interacting with suggestions does not dismiss chat', async ({ page }) => {
+    const chatIcon = page.locator('#chat-icon');
+    await chatIcon.click();
+    await page.locator('.chat-container.visible').waitFor();
+
+    const suggestionsVisible = page.locator('.chat-suggestions:not([hidden]) .chip').first();
+    await expect(suggestionsVisible).toBeVisible();
+
+    await page.evaluate(() => {
+      const suggestion = document.querySelector('.chat-suggestions:not([hidden]) .chip');
+      window.dispatchEvent(new CustomEvent('gesture:swipeleft', {
+        detail: {
+          target: 'chat',
+          deltaX: -160,
+          deltaY: 120,
+          distance: 200,
+          element: suggestion
+        }
+      }));
+    });
+
+    await expect(page.locator('.chat-container.visible')).toHaveCount(1);
+    await expect(page.locator('#chat-icon img[src*="fire.gif"]')).toBeVisible();
+  });
+
   test('Safe area considerations for iPhone 16 Pro', async ({ page }) => {
     // Check CSS custom properties for safe areas
     const safeAreaInfo = await page.evaluate(() => {

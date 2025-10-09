@@ -331,6 +331,11 @@ export class InteractionHandlers {
 
         this.gestureHandler.on('swipeleft', (data) => {
             if (data.target === 'chat') {
+                const interactedWithSuggestions = data.element?.closest?.('.chat-suggestions');
+                if (interactedWithSuggestions) {
+                    return;
+                }
+
                 const slope = data.slope ?? (Math.abs(data.deltaY) / (Math.abs(data.deltaX) || 1));
                 const hasDownwardBias = data.deltaY >= 0 && slope >= this.options.chatSwipeDownwardBias;
                 if (!hasDownwardBias) {
