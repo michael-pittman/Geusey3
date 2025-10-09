@@ -1,7 +1,14 @@
 // Dynamic cache versioning using build-time variables
+// __BUILD_ASSETS_DECLARATION__
 const VERSION = typeof __VERSION__ !== 'undefined' ? __VERSION__ : '1.0.0';
 const BUILD_TIME = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : new Date().toISOString();
 const CACHE_VERSION = `${VERSION}-${BUILD_TIME.replace(/[:.]/g, '-')}`;
+
+const BUILD_ASSETS = typeof __BUILD_ASSETS__ !== 'undefined'
+    ? __BUILD_ASSETS__
+    : { static: [], html: [], chunks: [], media: [] };
+
+const dedupe = (items) => [...new Set(items)];
 
 // Cache names for different strategies
 const STATIC_CACHE = `geuse-static-${CACHE_VERSION}`;
@@ -9,7 +16,13 @@ const DYNAMIC_CACHE = `geuse-dynamic-${CACHE_VERSION}`;
 const HTML_CACHE = `geuse-html-${CACHE_VERSION}`;
 
 // Assets for different caching strategies
-const STATIC_ASSETS = [
+const JS_CSS_ASSETS = dedupe([
+    ...BUILD_ASSETS.chunks
+]);
+
+const STATIC_ASSETS = dedupe([
+    ...BUILD_ASSETS.static,
+    ...BUILD_ASSETS.media,
     '/favicon-16x16.png',
     '/favicon-32x32.png',
     '/apple-touch-icon.png',
@@ -19,12 +32,13 @@ const STATIC_ASSETS = [
     'https://www.geuse.io/media/sprite.png',
     'https://www.geuse.io/media/glitch.gif',
     'https://www.geuse.io/media/fire.gif'
-];
+]);
 
-const HTML_ASSETS = [
+const HTML_ASSETS = dedupe([
+    ...BUILD_ASSETS.html,
     '/',
     '/index.html'
-];
+]);
 
 // Cache configuration
 const CACHE_CONFIG = {
@@ -80,11 +94,16 @@ self.addEventListener('install', (event) => {
         Promise.all([
             // Cache static assets
             caches.open(STATIC_CACHE).then(async (cache) => {
+                const criticalAssets = dedupe([
+                    ...JS_CSS_ASSETS,
+                    ...STATIC_ASSETS
+                ]);
+
                 const results = await Promise.allSettled(
-                    STATIC_ASSETS.map(url => addToCache(cache, url))
+                    criticalAssets.map(url => addToCache(cache, url))
                 );
                 const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
-                console.log(`Cached ${successful}/${STATIC_ASSETS.length} static assets`);
+                console.log(`Cached ${successful}/${criticalAssets.length} static assets`);
                 return results;
             }),
             

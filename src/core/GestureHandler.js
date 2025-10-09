@@ -17,6 +17,7 @@ export class GestureHandler {
             longTapThreshold: 500, // Min duration in ms for long-tap
             swipeThreshold: 50, // Min distance in pixels for swipe
             swipeTimeout: 500, // Max duration in ms for swipe
+            horizontalSwipeTolerance: 0.4, // Allow diagonal bias when identifying horizontal swipes
             hapticEnabled: true,
             ...options
         };
@@ -297,9 +298,14 @@ export class GestureHandler {
     handleSwipe(deltaX, deltaY, e) {
         const absX = Math.abs(deltaX);
         const absY = Math.abs(deltaY);
+        const tolerance = this.options.horizontalSwipeTolerance ?? 1;
+        const isHorizontal = absX >= absY * tolerance;
+        const slope = absX === 0 ? Infinity : absY / absX;
+        const angle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
+        const normalizedAngle = (angle + 360) % 360;
 
         let direction;
-        if (absX > absY) {
+        if (isHorizontal) {
             direction = deltaX > 0 ? 'right' : 'left';
         } else {
             direction = deltaY > 0 ? 'down' : 'up';
@@ -311,6 +317,8 @@ export class GestureHandler {
             deltaX,
             deltaY,
             distance: this.getDistance(),
+            angle: normalizedAngle,
+            slope,
             target: this.state.target,
             element: e.target
         });
@@ -320,6 +328,8 @@ export class GestureHandler {
             deltaX,
             deltaY,
             distance: this.getDistance(),
+            angle: normalizedAngle,
+            slope,
             target: this.state.target,
             element: e.target
         });

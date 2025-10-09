@@ -257,8 +257,8 @@ test.describe('iPhone 16 Pro Mobile Responsiveness - Critical Issues Verificatio
         detail: {
           target: 'chat',
           deltaX: -120,
-          deltaY: 0,
-          distance: 120
+          deltaY: 160,
+          distance: 200
         }
       }));
     });

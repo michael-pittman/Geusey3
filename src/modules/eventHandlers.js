@@ -279,6 +279,7 @@ export class InteractionHandlers {
             sceneCyclingEnabled: true,
             swipeEnabled: true,
             longTapEnabled: true,
+            chatSwipeDownwardBias: 0.25,
             ...options
         };
 
@@ -330,6 +331,12 @@ export class InteractionHandlers {
 
         this.gestureHandler.on('swipeleft', (data) => {
             if (data.target === 'chat') {
+                const slope = data.slope ?? (Math.abs(data.deltaY) / (Math.abs(data.deltaX) || 1));
+                const hasDownwardBias = data.deltaY >= 0 && slope >= this.options.chatSwipeDownwardBias;
+                if (!hasDownwardBias) {
+                    return;
+                }
+
                 this.emit('swipeleft');
                 if (this.callbacks.onSwipeLeft) {
                     this.callbacks.onSwipeLeft();
