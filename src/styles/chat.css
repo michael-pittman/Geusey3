@@ -2072,9 +2072,9 @@ body {
 :root {
     --nb-header-height: 54px;
     --nb-ink: #111111;
-    --nb-shadow: rgba(17, 17, 17, 0.88);
-    --nb-hard-shadow: rgba(0, 0, 0, 0.75);
-    --nb-hard-shadow-hover: rgba(0, 0, 0, 0.8);
+    --nb-shadow: rgba(8, 16, 28, 0.5);
+    --nb-hard-shadow: rgba(8, 18, 32, 0.5);
+    --nb-hard-shadow-hover: rgba(8, 18, 32, 0.62);
     --nb-glass: rgba(248, 252, 255, 0.2);
     --nb-glass-strong: rgba(248, 252, 255, 0.32);
     --nb-glass-soft: rgba(248, 252, 255, 0.12);
@@ -2084,7 +2084,7 @@ body {
     --nb-control-bg: rgba(255, 255, 255, 0.28);
     --nb-control-accent-bg: rgba(91, 182, 248, 0.34);
     --nb-panel-bg: rgba(255, 255, 255, 0.03);
-    --nb-suggestions-bg: rgba(255, 255, 255, 0.18);
+    --nb-suggestions-bg: transparent;
     --nb-message-bg: rgba(255, 255, 255, 0.22);
     --nb-message-user-bg: rgba(255, 239, 228, 0.38);
     --nb-message-bot-bg: rgba(226, 243, 255, 0.35);
@@ -2106,9 +2106,9 @@ body {
 :root[data-theme="light"] {
     --nb-header-height: 54px;
     --nb-ink: #111111;
-    --nb-shadow: rgba(17, 17, 17, 0.88);
-    --nb-hard-shadow: rgba(0, 0, 0, 0.75);
-    --nb-hard-shadow-hover: rgba(0, 0, 0, 0.8);
+    --nb-shadow: rgba(8, 16, 28, 0.5);
+    --nb-hard-shadow: rgba(8, 18, 32, 0.5);
+    --nb-hard-shadow-hover: rgba(8, 18, 32, 0.62);
     --nb-glass: rgba(248, 252, 255, 0.2);
     --nb-glass-strong: rgba(248, 252, 255, 0.32);
     --nb-glass-soft: rgba(248, 252, 255, 0.12);
@@ -2118,7 +2118,7 @@ body {
     --nb-control-bg: rgba(255, 255, 255, 0.28);
     --nb-control-accent-bg: rgba(91, 182, 248, 0.34);
     --nb-panel-bg: rgba(255, 255, 255, 0.03);
-    --nb-suggestions-bg: rgba(255, 255, 255, 0.18);
+    --nb-suggestions-bg: transparent;
     --nb-message-bg: rgba(255, 255, 255, 0.22);
     --nb-message-user-bg: rgba(255, 239, 228, 0.38);
     --nb-message-bot-bg: rgba(226, 243, 255, 0.35);
@@ -2153,7 +2153,7 @@ body {
     --nb-control-bg: rgba(220, 236, 255, 0.18);
     --nb-control-accent-bg: rgba(102, 183, 255, 0.28);
     --nb-panel-bg: rgba(210, 230, 250, 0.04);
-    --nb-suggestions-bg: rgba(212, 233, 255, 0.14);
+    --nb-suggestions-bg: transparent;
     --nb-message-bg: rgba(219, 236, 255, 0.16);
     --nb-message-user-bg: rgba(255, 230, 210, 0.2);
     --nb-message-bot-bg: rgba(188, 224, 255, 0.2);
@@ -2188,7 +2188,7 @@ body {
         --nb-control-bg: rgba(220, 236, 255, 0.18);
         --nb-control-accent-bg: rgba(102, 183, 255, 0.28);
         --nb-panel-bg: rgba(210, 230, 250, 0.04);
-        --nb-suggestions-bg: rgba(212, 233, 255, 0.14);
+        --nb-suggestions-bg: transparent;
         --nb-message-bg: rgba(219, 236, 255, 0.16);
         --nb-message-user-bg: rgba(255, 230, 210, 0.2);
         --nb-message-bot-bg: rgba(188, 224, 255, 0.2);
@@ -2331,7 +2331,7 @@ body {
     margin: var(--nb-header-height) 0 calc(var(--chat-input-height, 64px) + 2px) 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    padding: 16px !important;
+    padding: 16px 16px 72px 16px !important;
     gap: 14px !important;
     border: none !important;
     border-radius: 0 !important;
@@ -2342,7 +2342,8 @@ body {
 }
 
 .chat-container.has-suggestions .chat-messages {
-    margin-bottom: calc(var(--chat-input-height, 64px) + 84px) !important;
+    margin-bottom: calc(var(--chat-input-height, 64px) + 2px) !important;
+    padding-bottom: 156px !important;
 }
 
 .chat-suggestions {
@@ -2351,12 +2352,73 @@ body {
     bottom: calc(var(--chat-input-height, 64px) + 10px) !important;
     z-index: 12 !important;
     padding: 8px 10px !important;
-    border: 3px solid var(--nb-ink) !important;
+    border: none !important;
     border-radius: 10px !important;
-    background: var(--nb-suggestions-bg) !important;
-    box-shadow: 5px 5px 0 0 var(--nb-shadow) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.chat-suggestions-toggle {
+    position: absolute !important;
+    left: 50% !important;
+    bottom: calc(var(--chat-input-height, 64px) + 10px) !important;
+    transform: translateX(-50%) !important;
+    width: 52px !important;
+    height: 34px !important;
+    border: 3px solid var(--nb-ink) !important;
+    border-radius: 999px !important;
+    background: var(--nb-control-bg) !important;
+    color: var(--nb-text) !important;
+    box-shadow: 4px 4px 0 0 var(--nb-shadow) !important;
     backdrop-filter: blur(13px) saturate(130%) !important;
     -webkit-backdrop-filter: blur(13px) saturate(130%) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    z-index: 13 !important;
+    cursor: pointer !important;
+    transition:
+        transform var(--duration-fast) ease,
+        box-shadow var(--duration-fast) ease,
+        bottom var(--duration-normal) var(--ease-smooth) !important;
+}
+
+.chat-container.has-suggestions .chat-suggestions-toggle {
+    bottom: calc(var(--chat-input-height, 64px) + 88px) !important;
+}
+
+.chat-suggestions-toggle:hover {
+    transform: translateX(-50%) translate(-1px, -1px) !important;
+    box-shadow: 6px 6px 0 0 var(--nb-shadow) !important;
+}
+
+.chat-suggestions-toggle:active {
+    transform: translateX(-50%) translate(1px, 1px) !important;
+    box-shadow: 2px 2px 0 0 var(--nb-shadow) !important;
+}
+
+.chat-suggestions-toggle:focus-visible {
+    outline: 2px solid var(--nb-accent) !important;
+    outline-offset: 2px !important;
+}
+
+.chat-suggestions-toggle-chevron {
+    font-size: 0.9rem !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+}
+
+.chat-suggestions-toggle-mark {
+    font-size: 0.92rem !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+}
+
+.chat-suggestions-toggle.expanded .chat-suggestions-toggle-chevron {
+    transform: rotate(180deg);
 }
 
 .chat-suggestions .chip {
@@ -2477,8 +2539,13 @@ body {
 
     .chat-messages {
         margin: 50px 0 calc(var(--chat-input-height, 64px) + 2px) 0 !important;
-        padding: 12px !important;
+        padding: 12px 12px 68px 12px !important;
         gap: 12px !important;
+    }
+
+    .chat-container.has-suggestions .chat-messages {
+        margin-bottom: calc(var(--chat-input-height, 64px) + 2px) !important;
+        padding-bottom: 148px !important;
     }
 
     .chat-suggestions {

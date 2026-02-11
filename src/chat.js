@@ -11,6 +11,7 @@ class Chat {
         this.isVisible = false;
         this.sessionId = this.generateSessionId();
         this.isLoading = false;
+        this.suggestionsHideTimer = null;
         this.chatIcon = document.querySelector('img[src*="glitch.gif"], img[src*="fire.gif"]');
         this.onVisibilityChange = null; // Callback for visibility changes
        this.gestureHandler = null; // GestureHandler instance for swipe support
@@ -56,6 +57,14 @@ class Chat {
                 <button class="chip" type="button">Create an API integration</button>
                 <button class="chip" type="button">Build a data dashboard</button>
             </div>
+            <button class="chat-suggestions-toggle"
+                    type="button"
+                    title="Show suggestions"
+                    aria-label="Show suggestions"
+                    aria-expanded="false">
+                <span class="chat-suggestions-toggle-chevron" aria-hidden="true">⌃</span>
+                <span class="chat-suggestions-toggle-mark" aria-hidden="true">?</span>
+            </button>
             <div class="chat-input-container">
                 <div class="chat-input-shell">
                     <input type="text" class="chat-input" placeholder="Request a service..." autocomplete="off" aria-label="Request a service" tabindex="0" aria-describedby="chat-help">
@@ -265,11 +274,12 @@ class Chat {
             this.container.offsetHeight;
             // Then add visible class for animation
             this.container.classList.add('visible');
-            // First-open greeting and show suggestions if no messages
+            // Suggestions are user-triggered via toggle control, not auto-shown
+            this.hideSuggestions({ animate: false });
+
+            // First-open greeting
             const suggestions = this.container.querySelector('.chat-suggestions');
             if (suggestions && this.messages.length === 0) {
-                suggestions.hidden = false;
-                this.container.classList.add('has-suggestions');
                 this.addMessage("Hi! Tell me what you'd like to build.", 'bot');
             }
 
@@ -363,7 +373,131 @@ class Chat {
 
     setupSuggestions() {
         const bar = this.container.querySelector('.chat-suggestions');
-        if (!bar) return;
+        const toggleButton = this.container.querySelector('.chat-suggestions-toggle');
+        if (!bar || !toggleButton) return;
+
+        const updateToggleState = (expanded) => {
+            toggleButton.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            toggleButton.setAttribute('aria-label', expanded ? 'Hide suggestions' : 'Show suggestions');
+            toggleButton.title = expanded ? 'Hide suggestions' : 'Show suggestions';
+            toggleButton.classList.toggle('expanded', expanded);
+        };
+
+        const showSuggestions = () => {
+            if (this.suggestionsHideTimer) {
+                clearTimeout(this.suggestionsHideTimer);
+                this.suggestionsHideTimer = null;
+            }
+            bar.classList.remove('hiding');
+            bar.hidden = false;
+            this.container.classList.add('has-suggestions');
+            updateToggleState(true);
+        };
+
+        const hideSuggestions = (animate = true) => {
+            if (this.suggestionsHideTimer) {
+                clearTimeout(this.suggestionsHideTimer);
+                this.suggestionsHideTimer = null;
+            }
+
+            updateToggleState(false);
+
+            if (!animate || bar.hidden) {
+                bar.hidden = true;
+                bar.classList.remove('hiding');
+                this.container.classList.remove('has-suggestions');
+                return;
+            }
+
+            bar.classList.add('hiding');
+            this.suggestionsHideTimer = setTimeout(() => {
+                bar.hidden = true;
+                bar.classList.remove('hiding');
+                this.container.classList.remove('has-suggestions');
+                this.suggestionsHideTimer = null;
+            }, 300); // Match CSS transition duration
+        };
+
+        const toggleSuggestions = () => {
+            if (bar.hidden) {
+                showSuggestions();
+            } else {
+                hideSuggestions(true);
+            }
+        };
+
+        // Expose methods for reuse in other chat flows
+        this.showSuggestions = showSuggestions;
+        this.hideSuggestions = ({ animate = true } = {}) => hideSuggestions(animate);
+        this.toggleSuggestions = toggleSuggestions;
+
+        // Toggle suggestions by tapping the chevron button
+        toggleButton.addEventListener('click', () => {
+            this.triggerHaptic();
+            toggleSuggestions();
+        });
+
+        // Slide interaction: swipe up/down on toggle control
+        let pointerActive = false;
+        let startX = 0;
+        let startY = 0;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        const handleSwipeDelta = (deltaX, deltaY) => {
+            const absX = Math.abs(deltaX);
+            const absY = Math.abs(deltaY);
+
+            // Treat mostly-vertical swipes as slide gestures for suggestion reveal/hide.
+            if (absY > 18 && absY > absX) {
+                this.triggerHaptic();
+                if (deltaY < 0) {
+                    showSuggestions();
+                } else {
+                    hideSuggestions(true);
+                }
+            }
+        };
+
+        toggleButton.addEventListener('pointerdown', (e) => {
+            pointerActive = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            if (typeof toggleButton.setPointerCapture === 'function') {
+                try {
+                    toggleButton.setPointerCapture(e.pointerId);
+                } catch (_) {}
+            }
+        });
+
+        const handlePointerEnd = (e) => {
+            if (!pointerActive) return;
+            pointerActive = false;
+
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            handleSwipeDelta(deltaX, deltaY);
+        };
+
+        toggleButton.addEventListener('pointerup', handlePointerEnd);
+        toggleButton.addEventListener('pointercancel', () => {
+            pointerActive = false;
+        });
+
+        // Touch fallback for environments where pointer events are inconsistent.
+        toggleButton.addEventListener('touchstart', (e) => {
+            const touch = e.changedTouches && e.changedTouches[0];
+            if (!touch) return;
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+        }, { passive: true });
+
+        toggleButton.addEventListener('touchend', (e) => {
+            const touch = e.changedTouches && e.changedTouches[0];
+            if (!touch) return;
+            handleSwipeDelta(touch.clientX - touchStartX, touch.clientY - touchStartY);
+        }, { passive: true });
+
         bar.addEventListener('click', (e) => {
             const target = e.target;
             if (!(target instanceof HTMLElement)) return;
@@ -372,24 +506,18 @@ class Chat {
                 const text = target.textContent || '';
                 // Pass the suggestion text directly to sendMessage instead of relying on input field
                 this.sendMessage(text);
-                this.hideSuggestions();
+                hideSuggestions(true);
             }
         });
     }
 
     hideSuggestions() {
+        // setupSuggestions replaces this method with a functional implementation.
+        // Keep this fallback to avoid errors if called before setup finishes.
         const bar = this.container.querySelector('.chat-suggestions');
-        if (!bar || bar.hidden) return;
-        
-        // Add hiding class for slide-down animation
-        bar.classList.add('hiding');
-        
-        // After animation completes, hide the element
-        setTimeout(() => {
-            bar.hidden = true;
-            bar.classList.remove('hiding');
-            this.container.classList.remove('has-suggestions');
-        }, 300); // Match CSS transition duration
+        if (!bar) return;
+        bar.hidden = true;
+        this.container.classList.remove('has-suggestions');
     }
 
     triggerHaptic() {
@@ -473,7 +601,7 @@ class Chat {
         this.renderNewMessages();
 
         if (sender === 'user') {
-            this.hideSuggestions();
+            this.hideSuggestions({ animate: true });
         }
 
         // Restore focus if it was on a chat element
