@@ -29,9 +29,9 @@ const STATIC_ASSETS = dedupe([
     '/android-chrome-192x192.png',
     '/android-chrome-512x512.png',
     '/site.webmanifest',
-    'https://www.geuse.io/media/sprite.png',
-    'https://www.geuse.io/media/glitch.gif',
-    'https://www.geuse.io/media/fire.gif'
+    '/media/sprite.png',
+    '/media/glitch.gif',
+    '/media/fire.gif'
 ]);
 
 const HTML_ASSETS = dedupe([

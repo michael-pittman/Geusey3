@@ -1,18 +1,18 @@
-# Geuse Chat - 3D Glassmorphic Chat Interface with n8n Integration
+# Geuse Chat
 
-A modern 3D chat interface built with Three.js featuring ultra-transparent glassmorphic design that integrates with n8n workflows via webhooks.
+A 3D glassmorphic chat interface built with Three.js, featuring ultra-transparent design and n8n webhook integration. Live at [geuse.io](https://www.geuse.io).
 
 ## Features
 
-- **3D Particle Visualization**: Multiple scene types with interactive particle systems
+- **3D Particle Visualization**: Six scene modes (plane, cube, sphere, random, spiral, fibonacci) with 512 CSS3D sprites
 - **Glassmorphic Chat Interface**: Ultra-transparent liquid glass design with backdrop blur effects
+- **Curator Link**: Floating icon linking to [Geuse Curator](https://www.geuse.io/curator/)
 - **Smart Dark Mode**: System preference detection with manual toggle override
 - **Enhanced UX**: First-run greeting, suggestion chips, discoverability hints
-- **Accessibility**: Focus trap, reduced motion support, keyboard navigation
+- **Accessibility**: Focus trap, reduced motion support, keyboard navigation (Section 508)
 - **Haptic Feedback**: Tactile responses on supported devices
 - **n8n Webhook Integration**: Real-time workflow processing and responses
-- **AWS S3 Deployment**: Automated build and deployment system
-- **Configurable Webhook URLs**: Easy webhook management and updates
+- **AWS S3 Deployment**: Automated build and deployment with cache-optimized headers
 
 ## Quick Start
 
@@ -93,38 +93,47 @@ The deployment script will:
 ## Project Structure
 
 ```
-Geusey3-1/
-├── config.js              # Configuration file
-├── deploy.js              # Deployment script
-├── vite.config.js         # Vite configuration
-├── package.json           # Dependencies and scripts
+Geusey3/
 ├── src/
-│   ├── index.js           # Main 3D application with theme initialization
-│   ├── chat.js            # Chat interface with UX enhancements
-│   └── styles/
-│       └── chat.css       # Glassmorphic chat styles with dark mode
-├── tests/
-│   ├── theme.spec.ts      # Theme toggle and UX tests
-│   └── smoke.spec.ts      # Deployed site verification
-├── scripts/
-│   └── update-webhook.js  # Webhook URL updater
-└── public/                # Static assets
+│   ├── index.js           # Three.js particle system (6 visualization modes)
+│   ├── chat.js            # Chat UI with n8n webhook integration
+│   ├── core/              # EventHandler, GestureHandler
+│   ├── modules/           # cameraManager, eventHandlers
+│   ├── styles/chat.css    # Glassmorphic styling with CSS custom properties
+│   └── utils/             # apiUtils, themeManager, sceneGenerators, mobileOptimizer
+├── public/
+│   ├── media/             # sprite.png, glitch.gif, fire.gif, framelink150x.png
+│   ├── sw.js              # Service Worker template
+│   ├── privacy.html       # Privacy policy
+│   └── terms.html         # Terms of service
+├── tests/                 # 15 Playwright test files
+├── scripts/               # update-webhook.js, setup-aws.js
+├── docs/
+│   └── DEPLOYMENT.md      # AWS deployment guide
+├── config.js              # Webhook URL, S3, build settings
+├── vite.config.js         # Build optimization, code splitting
+├── deploy.js              # AWS S3 deployment with cache headers
+├── generate-sw.js         # Service Worker generator from build output
+└── playwright.config.ts   # Test configuration
 ```
 
 ## Available Scripts
 
-- `npm start` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run deploy` - Deploy to S3 (requires build first)
-- `npm run deploy:build` - Build and deploy in one command
-- `npm run update-webhook` - Update webhook URL
-- `npm test` - Run Playwright tests
-- `npm run test:ui` - Run Playwright tests with UI
+| Script | Description |
+|--------|-------------|
+| `npm start` | Start development server (localhost:3000) |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build locally |
+| `npm run deploy` | Deploy to S3 (run `build` first) |
+| `npm run deploy:build` | Build and deploy in one command |
+| `npm run update-webhook` | Update n8n webhook URL |
+| `npm run setup-aws` | Verify AWS CLI and credentials |
+| `npm test` | Run Playwright tests |
+| `npm run test:ui` | Run Playwright tests with UI |
 
 ## AWS S3 Configuration
 
-The deployment targets the S3 bucket `www.geuse.io` in the `us-east-1` region. Make sure your AWS credentials have the necessary permissions:
+Deployment targets the S3 bucket `www.geuse.io` in `us-east-1`. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed setup. Required permissions:
 
 - `s3:GetObject`
 - `s3:PutObject`
@@ -133,12 +142,12 @@ The deployment targets the S3 bucket `www.geuse.io` in the `us-east-1` region. M
 
 ## Testing
 
-The project includes comprehensive Playwright tests for:
+Playwright tests cover:
 
-- **Theme Toggle**: Dark/light mode switching and persistence
-- **UX Features**: First-run greeting, suggestions, focus trap
-- **Smoke Tests**: Deployed site verification and asset loading
-- **Responsive Design**: Mobile, tablet, and desktop viewport testing
+- **Theme**: Dark/light mode switching and persistence
+- **Chat UX**: First-run greeting, suggestions, focus trap, layout
+- **Rendering**: Incremental message rendering, font accessibility
+- **Responsive**: Mobile (iPhone 16 Pro), dynamic height validation
 
 Run tests with:
 ```bash
@@ -164,9 +173,8 @@ npm run test:ui       # Run with Playwright UI
 - Verify the webhook endpoint is accessible
 
 ### Testing Issues
-- Ensure Playwright browsers are installed: `npx playwright install`
-- Check that the development server is running for local tests
-- Verify network connectivity for smoke tests against deployed site
+- Install Playwright browsers: `npx playwright install`
+- Start the dev server for local tests: `npm start`
 
 ## License
 

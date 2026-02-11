@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 Geusey3/
 ├── src/                           # Source code
-│   ├── index.js                   # Main Three.js application (34KB)
-│   ├── chat.js                    # Chat interface component (22KB)
+│   ├── index.js                   # Main Three.js application
+│   ├── chat.js                    # Chat interface component
 │   ├── core/                      # Core event and interaction architecture
 │   │   ├── EventHandler.js       # Window/viewport/keyboard event management
 │   │   └── GestureHandler.js     # Touch gesture recognition (tap/longtap/swipe)
@@ -21,7 +21,6 @@ Geusey3/
 │       ├── apiUtils.js           # Centralized API calls & error handling
 │       ├── themeManager.js       # Theme detection & persistence
 │       ├── sceneGenerators.js    # Three.js scene position generators
-│       ├── dynamicTypeManager.js # iOS Dynamic Type accessibility support
 │       └── mobile/
 │           └── mobileOptimizer.js # Mobile performance & FPS monitoring
 ├── public/                        # Static assets
@@ -29,7 +28,7 @@ Geusey3/
 │   ├── media/                    # Images: sprite.png, glitch.gif, fire.gif
 │   ├── privacy.html              # Privacy policy
 │   └── terms.html                # Terms of service
-├── tests/                         # Playwright test suite (14 test files)
+├── tests/                         # Playwright test suite (15 test files)
 │   ├── theme.spec.ts             # Theme toggle & persistence
 │   ├── incremental-rendering.spec.ts
 │   ├── font-accessibility-audit.spec.js
@@ -37,11 +36,8 @@ Geusey3/
 ├── scripts/                       # Utility scripts
 │   ├── update-webhook.js         # Update n8n webhook URL
 │   └── setup-aws.js              # AWS configuration verification
-├── api/
-│   └── proxy.js                  # API proxy (currently empty/unused)
-├── .claude/                       # Claude Code agent configurations
-│   ├── agents/                   # 6 specialized agent definitions
-│   └── settings.local.json       # Local Claude settings
+├── docs/
+│   └── ChatKit/                  # Planned ChatKit integration docs
 ├── config.js                     # Centralized configuration
 ├── vite.config.js                # Vite build configuration
 ├── deploy.js                     # AWS S3 deployment script
@@ -142,7 +138,6 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 
 **Styling:**
 - **[src/styles/chat.css](src/styles/chat.css)**: Main glassmorphic styling with CSS custom properties system
-- **[src/styles/chat-enhanced.css](src/styles/chat-enhanced.css)**: Additional enhancements (if being developed)
 - Consolidated 70% CSS reduction with computed liquid glass materials
 - CSS custom properties system with base values and computed derivatives
 - Theme-aware CSS variables for dark/light mode
@@ -210,7 +205,6 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 - iOS/Android capability detection and feature gating
 
 **Mobile & Accessibility:**
-- iOS Dynamic Type support via dynamicTypeManager.js
 - Visual Viewport API integration for keyboard handling and viewport management
 - Safe area support for notched devices (env(safe-area-inset-*))
 - Focus management and ARIA compliance (Section 508)
@@ -229,7 +223,7 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 - All gestures use hit testing to distinguish canvas vs chat interactions
 
 **Testing Strategy:**
-- Playwright test suite with 14 test files
+- Playwright test suite with 15 test files
 - Cross-browser testing: Chromium, Firefox, WebKit
 - Theme functionality and UX feature validation
 - Font accessibility audits and iOS-specific tests
@@ -258,14 +252,14 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 - Focus management and keyboard navigation support
 - Screen reader optimizations with live regions
 - Reduced motion preferences respected (@media prefers-reduced-motion)
-- iOS Dynamic Type support for text scaling
 - Haptic feedback on supported devices
 - High contrast mode compatible
 
 **n8n Integration:**
-- Webhook URL: `https://n8n.geuse.io/webhook/a1688d74-03ad-42fa-99b7-a6a4f2211030`
+- Current webhook URL configured in [config.js](config.js): `https://n8n.geuse.io/webhook/5bdd4f4f-81fc-459b-a294-8fb800514dfb`
 - Session-based conversation tracking with generated session IDs
-- Configurable webhook URL management via scripts/update-webhook.js
+- Configurable webhook URL management via `npm run update-webhook "https://new-url"`
+- Build-time injection of webhook URL via Vite's `__WEBHOOK_URL__` global
 - POST requests with JSON payload (sessionId, message)
 - Centralized error handling with user-friendly messages
 
@@ -289,7 +283,30 @@ This is a **3D glassmorphic chat interface** built with **Three.js** that integr
 - Touch interaction optimizations
 - Viewport unit strategies for full coverage
 
+## ChatKit Integration (Planned)
+
+The project is planned to integrate OpenAI's ChatKit to replace the custom chat interface. See [PRD.md](PRD.md) for full requirements.
+
+**Integration Points:**
+- Replace custom chat UI in [src/chat.js](src/chat.js) with `@openai/chatkit-react` component
+- n8n session service workflow to issue ChatKit client secrets
+- Theme synchronization between Geuse theming and ChatKit options
+- Gesture handler integration for open/close events
+- Multimodal uploads (PDF, PNG, JPG, MP4, DOCX) with file size constraints
+- Custom widgets for project brief forms and CTA cards
+- Feature flag (`CHATKIT_ENABLED`) for gradual rollout
+
+**Key Considerations:**
+- Lazy-load ChatKit assets when user interacts with chat icon
+- Maintain compatibility with existing Three.js scene and gesture system
+- Preserve accessibility features (ARIA, focus trap, keyboard navigation)
+- React integration required (potentially first React code in the project)
+- Session token management via n8n webhook endpoint
+- Performance target: <150ms added latency for session initialization
+
 ## n8n Workflow Development
+
+See [.cursor/rules/n8n-mcp.mdc](/.cursor/rules/n8n-mcp.mdc) for comprehensive n8n-MCP workflow development guidelines.
 
 When working with n8n workflows for this project, follow this structured approach:
 
@@ -328,7 +345,6 @@ When working with n8n workflows for this project, follow this structured approac
 - [src/utils/apiUtils.js](src/utils/apiUtils.js) - API error handling, typed errors, user-friendly messages
 - [src/utils/themeManager.js](src/utils/themeManager.js) - Theme detection, persistence, meta tag updates
 - [src/utils/sceneGenerators.js](src/utils/sceneGenerators.js) - Six geometric position generators
-- [src/utils/dynamicTypeManager.js](src/utils/dynamicTypeManager.js) - iOS accessibility font scaling
 - [src/utils/mobile/mobileOptimizer.js](src/utils/mobile/mobileOptimizer.js) - FPS monitoring, filter reduction, haptic feedback
 
 **Configuration & Build:**
@@ -345,15 +361,20 @@ When working with n8n workflows for this project, follow this structured approac
 
 **Testing Infrastructure:**
 - [playwright.config.ts](playwright.config.ts) - Test configuration, 3 browsers, 30s timeout
-- [tests/](tests/) - 14 test files covering themes, rendering, accessibility, mobile
+- [tests/](tests/) - 15 test files covering themes, rendering, accessibility, mobile
 - Test categories: integration, layout, font audits, performance validation
 
 **Documentation:**
 - [README.md](README.md) - Project overview and quick start
 - [DEPLOYMENT.md](DEPLOYMENT.md) - AWS deployment instructions
-- [ACCESSIBILITY_INTEGRATION_GUIDE.md](ACCESSIBILITY_INTEGRATION_GUIDE.md) - Accessibility features
-- [FONT_VALIDATION_REPORT.md](FONT_VALIDATION_REPORT.md) - Font rendering analysis
-- [PRD.md](PRD.md) - Product requirements document
+- [PRD.md](PRD.md) - Product requirements document for ChatKit integration
+
+**ChatKit Documentation (docs/ChatKit/):**
+- [docs/ChatKit/chatkit.md](docs/ChatKit/chatkit.md) - Core ChatKit integration guide
+- [docs/ChatKit/chatkit_custom_theme.md](docs/ChatKit/chatkit_custom_theme.md) - Theme customization
+- [docs/ChatKit/chatKitWidgets.md](docs/ChatKit/chatKitWidgets.md) - Custom widget development
+- [docs/ChatKit/chatKitActions.md](docs/ChatKit/chatKitActions.md) - Action handling
+- [docs/ChatKit/chatKitAdvanced.md](docs/ChatKit/chatKitAdvanced.md) - Advanced configuration
 
 **Static Assets:**
 - [public/media/](public/media/) - sprite.png, glitch.gif, fire.gif
@@ -361,13 +382,8 @@ When working with n8n workflows for this project, follow this structured approac
 - All assets get content hashes during build for cache busting
 
 **Agent Configuration:**
-- [.claude/agents/](/.claude/agents/) - 6 specialized agent definitions
+- [.claude/agents/](/.claude/agents/) - 7 specialized agent definitions
 - [.claude/settings.local.json](/.claude/settings.local.json) - Local Claude settings
-
-**Unused/Legacy Files:**
-- [api/proxy.js](api/proxy.js) - Empty file, potential future API proxy
-- [src/Refrenceindex.html](src/Refrenceindex.html) - Empty reference file
-- [scripts/archive/](scripts/archive/) - Archived utility scripts
 
 ## Specialized Development Agents
 
@@ -377,6 +393,7 @@ This project leverages specialized Claude Code agents for comprehensive developm
 - `threejs-developer` - 3D particle systems, performance optimization, and Three.js scene management
 - `ui-designer` - Ultra-transparent design system, glassmorphic theming, and visual accessibility
 - `integration-specialist` - n8n webhook integration, session management, and real-time messaging
+- `chatkit-specialist` - OpenAI ChatKit integration, widget development, theme customization, and n8n workflow integration
 
 **Quality Assurance Agents:**
 - `testing-engineer` - Comprehensive testing with Playwright MCP, automatic cleanup, cross-browser validation
@@ -389,6 +406,7 @@ This project leverages specialized Claude Code agents for comprehensive developm
 - [.claude/agents/threejs-developer.md](/.claude/agents/threejs-developer.md)
 - [.claude/agents/ui-designer.md](/.claude/agents/ui-designer.md)
 - [.claude/agents/integration-specialist.md](/.claude/agents/integration-specialist.md)
+- [.claude/agents/chatkit-specialist.md](/.claude/agents/chatkit-specialist.md)
 - [.claude/agents/testing-engineer.md](/.claude/agents/testing-engineer.md)
 - [.claude/agents/documentation-specialist.md](/.claude/agents/documentation-specialist.md)
 - [.claude/agents/orchestrator.md](/.claude/agents/orchestrator.md)

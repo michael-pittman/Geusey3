@@ -350,6 +350,11 @@ export class GestureHandler {
                 return 'chat';
             }
 
+            // Check for floating UI (chat icon, curator link) - do not treat as canvas
+            if (current.id === 'chat-icon' || current.id === 'curator-link-icon') {
+                return 'ui';
+            }
+
             // Check for Three.js renderer
             if (current.id === 'threejs-renderer-container' ||
                 current.classList.contains('threejs-renderer') ||

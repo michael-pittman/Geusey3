@@ -3,7 +3,7 @@
 
 export const config = {
     // Webhook URL for n8n integration
-    webhookUrl: 'https://n8n.geuse.io/webhook/a1688d74-03ad-42fa-99b7-a6a4f2211030',
+    webhookUrl: 'https://n8n.geuse.io/webhook/5bdd4f4f-81fc-459b-a294-8fb800514dfb',
     
     // AWS S3 deployment settings
     s3: {

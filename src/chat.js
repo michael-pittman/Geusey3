@@ -329,8 +329,8 @@ class Chat {
         }
 
         const targetSrc = this.isVisible
-            ? 'https://www.geuse.io/media/fire.gif'
-            : 'https://www.geuse.io/media/glitch.gif';
+            ? '/media/fire.gif'
+            : '/media/glitch.gif';
 
         if (this.chatIcon.src !== targetSrc) {
             this.chatIcon.src = targetSrc;

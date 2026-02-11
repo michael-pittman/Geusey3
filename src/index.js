@@ -146,6 +146,48 @@ function setupThemeObserver() {
     return themeObserver;
 }
 
+function createCuratorLinkIcon() {
+    const link = document.createElement('a');
+    link.id = 'curator-link-icon';
+    link.href = 'https://www.geuse.io/curator/';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.style.cssText = `
+        position: fixed !important;
+        bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+        right: calc(20px + env(safe-area-inset-right, 0px)) !important;
+        left: auto !important;
+        width: 60px !important;
+        height: 60px !important;
+        cursor: pointer !important;
+        z-index: 1002 !important;
+        pointer-events: auto !important;
+        user-select: none !important;
+        touch-action: manipulation !important;
+    `;
+    link.setAttribute('aria-label', 'Open Geuse Curator');
+    link.setAttribute('title', 'Open Geuse Curator');
+
+    const img = document.createElement('img');
+    img.src = '/media/framelink150x.png';
+    img.alt = 'Open Geuse Curator';
+    img.style.cssText = `
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+        border-radius: 8px !important;
+        pointer-events: none !important;
+        user-select: none !important;
+        -webkit-user-drag: none !important;
+    `;
+    img.loading = 'eager';
+    img.draggable = false;
+    link.appendChild(img);
+
+    document.body.appendChild(link);
+    return link;
+}
+
 function createChatIconSprite() {
     const div = document.createElement('div');
     div.id = 'chat-icon';
@@ -164,9 +206,10 @@ function createChatIconSprite() {
     `;
     div.setAttribute('aria-label', 'Open chat');
     div.setAttribute('tabindex', '0');
+    div.setAttribute('role', 'button');
 
     const img = document.createElement('img');
-    img.src = 'https://www.geuse.io/media/glitch.gif';
+    img.src = '/media/glitch.gif';
     img.alt = 'Open chat interface';
     img.style.cssText = `
         width: 100% !important;
@@ -194,10 +237,22 @@ function createChatIconSprite() {
         }
     } catch (_) {}
 
-    div.addEventListener('click', async () => {
-        const chatInstance = await loadChat();
-        const isVisible = chatInstance.toggle();
-        img.src = isVisible ? 'https://www.geuse.io/media/fire.gif' : 'https://www.geuse.io/media/glitch.gif';
+    const openChat = async () => {
+        try {
+            const chatInstance = await loadChat();
+            const isVisible = chatInstance.toggle();
+            img.src = isVisible ? '/media/fire.gif' : '/media/glitch.gif';
+        } catch (err) {
+            console.error('Chat failed to load:', err);
+        }
+    };
+
+    div.addEventListener('click', openChat);
+    div.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openChat();
+        }
     });
 
     document.body.appendChild(div);
@@ -261,10 +316,18 @@ function init() {
         // Setup theme change observer to automatically update background
         setupThemeObserver();
         
-        // CRITICAL: Ensure chat icon is created and positioned before 3D renderer
+        // CRITICAL: Ensure floating UI icons are created before 3D renderer
+        createCuratorLinkIcon();
         createChatIconSprite();
         
-        // Defensive check to ensure chat icon visibility
+        // Defensive check to ensure floating icon visibility
+        const curatorIcon = document.getElementById('curator-link-icon');
+        if (curatorIcon) {
+            curatorIcon.style.setProperty('z-index', '1000', 'important');
+            curatorIcon.style.setProperty('pointer-events', 'auto', 'important');
+            curatorIcon.style.setProperty('position', 'fixed', 'important');
+        }
+
         const chatIcon = document.getElementById('chat-icon');
         if (chatIcon) {
             // Force proper stacking and visibility
@@ -316,7 +379,7 @@ function init() {
             createChunk();
         });
         
-        image.src = 'https://www.geuse.io/media/sprite.png';
+        image.src = '/media/sprite.png';
         
         // Create a dedicated container for the renderer - FULL VIEWPORT COVERAGE WITH INTERACTION
         const rendererContainer = document.createElement('div');
@@ -445,11 +508,14 @@ function init() {
         rendererContainer.appendChild(canvas);
         
         // Ensure UI elements stay above the interactive canvas
-        const existingChatIcon = document.getElementById('chat-icon');
-        if (existingChatIcon) {
-            existingChatIcon.style.setProperty('z-index', '1002', 'important');
-            existingChatIcon.style.setProperty('pointer-events', 'auto', 'important');
-        }
+        const floatingUiIds = ['curator-link-icon', 'chat-icon'];
+        floatingUiIds.forEach((id) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.setProperty('z-index', '1002', 'important');
+                element.style.setProperty('pointer-events', 'auto', 'important');
+            }
+        });
         
         // Initialize CameraManager with TrackballControls
         cameraManager = new CameraManager(camera, renderer);
