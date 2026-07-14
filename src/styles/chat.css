@@ -544,6 +544,44 @@ body {
 
 :root[data-theme="dark"] .chat-hint-pill { color: var(--bubble-text); }
 
+/* Brand mark → CV: fixed above Three.js scene so it stays clickable */
+#container.brand-link {
+    position: fixed !important;
+    top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translateX(-50%) translateZ(0) !important;
+    z-index: 1002 !important;
+    margin: 0 !important;
+    padding: 8px 12px !important;
+    color: inherit !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    user-select: none !important;
+    touch-action: manipulation !important;
+    isolation: isolate !important;
+    will-change: transform, opacity !important;
+    backface-visibility: hidden !important;
+    transition: opacity 0.2s ease, transform 0.2s ease !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+#container.brand-link:hover {
+    opacity: 0.72 !important;
+}
+
+#container.brand-link:active {
+    transform: translateX(-50%) translateZ(0) scale(0.98) !important;
+}
+
+#container.brand-link:focus-visible {
+    outline: 2px solid currentColor !important;
+    outline-offset: 4px !important;
+    border-radius: 4px !important;
+}
+
 /* Floating external link icon above chat icon */
 #curator-link-icon {
     position: fixed !important;

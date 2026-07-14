@@ -107,9 +107,10 @@ Geusey3/
 │   ├── privacy.html       # Privacy policy
 │   └── terms.html         # Terms of service
 ├── tests/                 # 15 Playwright test files
-├── scripts/               # update-webhook.js, setup-aws.js
+├── scripts/               # curator-ops.sh, update-webhook.js, setup-aws.js
 ├── docs/
-│   └── DEPLOYMENT.md      # AWS deployment guide
+│   ├── DEPLOYMENT.md      # AWS deployment guide
+│   └── CURATOR_RUNBOOK.md # Curator backend ops runbook (stop/start safe)
 ├── config.js              # Webhook URL, S3, build settings
 ├── vite.config.js         # Build optimization, code splitting
 ├── deploy.js              # AWS S3 deployment with cache headers
@@ -126,6 +127,14 @@ Geusey3/
 | `npm run preview` | Preview production build locally |
 | `npm run deploy` | Deploy to S3 (run `build` first) |
 | `npm run deploy:build` | Build and deploy in one command |
+| `npm run curator:start` | Start Curator backend (EC2 + checks) |
+| `npm run curator:stop` | Stop Curator backend EC2 instance |
+| `npm run curator:restart` | Restart Curator backend |
+| `npm run curator:status` | Show Curator backend status + run healthcheck |
+| `npm run curator:healthcheck` | Check Curator backend endpoints used by the Curator UI |
+| `npm run curator:db-stats` | Show Curator DB row counts for artworks + images (remote via SSM) |
+| `npm run curator:import-opendata` | Full import from NGA Open Data (idempotent + verified, remote via SSM) |
+| `npm run curator:sync-images` | Refresh Curator thumbnails in Postgres (remote via SSM) |
 | `npm run update-webhook` | Update n8n webhook URL |
 | `npm run setup-aws` | Verify AWS CLI and credentials |
 | `npm test` | Run Playwright tests |

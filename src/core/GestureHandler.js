@@ -350,8 +350,11 @@ export class GestureHandler {
                 return 'chat';
             }
 
-            // Check for floating UI (chat icon, curator link) - do not treat as canvas
-            if (current.id === 'chat-icon' || current.id === 'curator-link-icon') {
+            // Check for floating UI (brand CV link, chat icon, curator link) - do not treat as canvas
+            if (current.id === 'container' ||
+                current.id === 'chat-icon' ||
+                current.id === 'curator-link-icon' ||
+                current.classList.contains('brand-link')) {
                 return 'ui';
             }
 

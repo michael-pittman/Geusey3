@@ -256,6 +256,26 @@ function createChatIconSprite() {
     });
 
     document.body.appendChild(div);
+
+    // Deep link: /#chat or ?chat=1 opens chat on load / hash change
+    const openChatFromLink = async () => {
+        const params = new URLSearchParams(window.location.search);
+        const wantsChat =
+            window.location.hash === '#chat' ||
+            params.get('chat') === '1' ||
+            params.get('chat') === 'open';
+        if (!wantsChat) return;
+        try {
+            const chatInstance = await loadChat();
+            chatInstance.open();
+            img.src = '/media/fire.gif';
+        } catch (err) {
+            console.error('Chat deep link failed:', err);
+        }
+    };
+    openChatFromLink();
+    window.addEventListener('hashchange', openChatFromLink);
+
     return div;
 }
 
@@ -508,12 +528,15 @@ function init() {
         rendererContainer.appendChild(canvas);
         
         // Ensure UI elements stay above the interactive canvas
-        const floatingUiIds = ['curator-link-icon', 'chat-icon'];
+        const floatingUiIds = ['container', 'curator-link-icon', 'chat-icon'];
         floatingUiIds.forEach((id) => {
             const element = document.getElementById(id);
             if (element) {
                 element.style.setProperty('z-index', '1002', 'important');
                 element.style.setProperty('pointer-events', 'auto', 'important');
+                if (id === 'container') {
+                    element.style.setProperty('position', 'fixed', 'important');
+                }
             }
         });
         

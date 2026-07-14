@@ -264,6 +264,20 @@ class Chat {
         }
     }
 
+    open() {
+        if (!this.isVisible) {
+            this.toggle();
+        }
+        return this.isVisible;
+    }
+
+    close() {
+        if (this.isVisible) {
+            this.toggle();
+        }
+        return this.isVisible;
+    }
+
     toggle() {
         this.isVisible = !this.isVisible;
 

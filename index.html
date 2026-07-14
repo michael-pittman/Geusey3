@@ -99,7 +99,7 @@
         }
         
         /* Safe area support for content containers (not Three.js renderer) */
-        main, #container {
+        main {
             padding-top: var(--safe-area-inset-top);
             padding-right: var(--safe-area-inset-right);
             padding-bottom: var(--safe-area-inset-bottom);
@@ -159,9 +159,15 @@
     <header role="banner">
         <h1 class="visually-hidden">Geuse - Digital Solutions and Chat Interface</h1>
     </header>
+
+    <!-- Brand → CV: direct body child so z-index beats the Three.js layer (main is z-index 0) -->
+    <a id="container"
+       class="brand-link"
+       href="/cv/"
+       aria-label="Open Geuse CV"
+       title="Open Geuse CV">- G E U S E -</a>
     
     <main role="main" id="main-content">
-        <div id="container">- G E U S E -</div>
         <div class="visually-hidden">
             <h2>Interactive 3D Particle Animation</h2>
             <p>Navigate through different 3D particle formations. Click the chat icon to start a conversation.</p>
