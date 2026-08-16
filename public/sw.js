@@ -197,6 +197,14 @@ const getRequestType = (url) => {
 // Fetch event with different caching strategies
 self.addEventListener('fetch', (event) => {
     const requestUrl = event.request.url;
+
+    // The Cache API only supports GET; cache.put() on other methods throws,
+    // which the strategy handlers below turn into a bogus 503. Never intercept
+    // non-GET requests or cross-origin requests (e.g. ai.geuse.io API calls
+    // made by the /artwork/ share page) - let the browser handle them natively.
+    if (event.request.method !== 'GET') return;
+    if (new URL(requestUrl).origin !== self.location.origin) return;
+
     const requestType = getRequestType(requestUrl);
 
     // COMPLETELY bypass Service Worker for webhook and API calls - let browser handle natively
